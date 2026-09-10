@@ -1630,40 +1630,6 @@ function resetScanner() {
    PAGE CLOSE
 ========================================== */
 
-  /* ==========================================
-   SWITCH BACK TO SCANNER
-========================================== */
-
-function switchBackToScanner() {
-
-  processing = false;
-
-  lastQR = "";
-
-  lastScanTime = 0;
-
-  fileInput.value = "";
-
-  preview.src = "";
-
-  preview.style.display = "none";
-
-  statusBox.innerHTML = "";
-
-  statusBox.className = "";
-
-  statusBox.style.display = "none";
-
-  hideDetails();
-
-  scanAgainButton.style.display = "none";
-
-  stopCamera();
-
-  startCamera();
-
-}
-  
 window.addEventListener(
   "beforeunload",
   function() {

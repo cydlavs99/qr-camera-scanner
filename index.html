@@ -15,13 +15,11 @@
 
   <title>Serial Number Time In / Time Out</title>
 
-
   <style>
 
     * {
       box-sizing: border-box;
     }
-
 
     html,
     body {
@@ -39,13 +37,11 @@
 
     }
 
-
     body {
 
       padding: 15px;
 
     }
-
 
     .container {
 
@@ -66,7 +62,6 @@
 
     }
 
-
     h1 {
 
       text-align: center;
@@ -80,7 +75,6 @@
 
     }
 
-
     .subtitle {
 
       text-align: center;
@@ -93,17 +87,11 @@
 
     }
 
-
-    /* =========================
-       SERIAL NUMBER INPUT
-    ========================= */
-
     .input-section {
 
       margin-top: 5px;
 
     }
-
 
     .input-label {
 
@@ -118,7 +106,6 @@
       color: #212529;
 
     }
-
 
     #serialNumber {
 
@@ -145,7 +132,6 @@
 
     }
 
-
     #serialNumber:focus {
 
       border-color: #0d6efd;
@@ -155,7 +141,6 @@
         rgba(13, 110, 253, .15);
 
     }
-
 
     #serialNumber::placeholder {
 
@@ -167,11 +152,6 @@
 
     }
 
-
-    /* =========================
-       BUTTONS
-    ========================= */
-
     .button-group {
 
       display: flex;
@@ -181,7 +161,6 @@
       margin-top: 12px;
 
     }
-
 
     button {
 
@@ -206,7 +185,6 @@
 
     }
 
-
     button:disabled {
 
       opacity: .55;
@@ -214,7 +192,6 @@
       cursor: not-allowed;
 
     }
-
 
     #scanButton {
 
@@ -224,7 +201,6 @@
 
     }
 
-
     #clearButton {
 
       background: #6c757d;
@@ -232,11 +208,6 @@
       color: #ffffff;
 
     }
-
-
-    /* =========================
-       ENTER HINT
-    ========================= */
 
     .hint {
 
@@ -249,11 +220,6 @@
       font-size: 13px;
 
     }
-
-
-    /* =========================
-       STATUS
-    ========================= */
 
     #status {
 
@@ -275,7 +241,6 @@
 
     }
 
-
     .processing {
 
       background: #fff3cd;
@@ -283,7 +248,6 @@
       color: #664d03;
 
     }
-
 
     .timein {
 
@@ -293,7 +257,6 @@
 
     }
 
-
     .timeout {
 
       background: #f8d7da;
@@ -301,7 +264,6 @@
       color: #842029;
 
     }
-
 
     .success {
 
@@ -311,7 +273,6 @@
 
     }
 
-
     .error {
 
       background: #f8d7da;
@@ -319,11 +280,6 @@
       color: #842029;
 
     }
-
-
-    /* =========================
-       DETAILS
-    ========================= */
 
     .details-box {
 
@@ -342,7 +298,6 @@
 
     }
 
-
     .details-title {
 
       text-align: center;
@@ -356,7 +311,6 @@
       color: #212529;
 
     }
-
 
     .detail-row {
 
@@ -373,13 +327,11 @@
 
     }
 
-
     .detail-row:last-child {
 
       border-bottom: none;
 
     }
-
 
     .detail-label {
 
@@ -391,7 +343,6 @@
       font-size: 14px;
 
     }
-
 
     .detail-value {
 
@@ -407,7 +358,6 @@
 
     }
 
-
     .serial-value {
 
       font-size: 18px;
@@ -416,7 +366,6 @@
 
     }
 
-
     .plate-value {
 
       font-size: 18px;
@@ -424,11 +373,6 @@
       letter-spacing: 1px;
 
     }
-
-
-    /* =========================
-       SCAN AGAIN
-    ========================= */
 
     #scanAgain {
 
@@ -444,11 +388,6 @@
 
     }
 
-
-    /* =========================
-       DIVIDER
-    ========================= */
-
     .divider {
 
       text-align: center;
@@ -463,11 +402,6 @@
       font-size: 13px;
 
     }
-
-
-    /* =========================
-       INFO BOX
-    ========================= */
 
     .info-box {
 
@@ -489,11 +423,6 @@
 
     }
 
-
-    /* =========================
-       MOBILE
-    ========================= */
-
     @media (max-width: 600px) {
 
       body {
@@ -501,7 +430,6 @@
         padding: 8px;
 
       }
-
 
       .container {
 
@@ -511,13 +439,11 @@
 
       }
 
-
       h1 {
 
         font-size: 21px;
 
       }
-
 
       #serialNumber {
 
@@ -527,13 +453,11 @@
 
       }
 
-
       .button-group {
 
         flex-direction: column;
 
       }
-
 
       button {
 
@@ -542,7 +466,6 @@
       }
 
     }
-
 
     @media (max-width: 450px) {
 
@@ -553,7 +476,6 @@
         gap: 4px;
 
       }
-
 
       .detail-label,
       .detail-value {
@@ -570,29 +492,19 @@
 
 </head>
 
-
 <body>
 
-
 <div class="container">
-
 
   <h1>
     SERIAL NUMBER TIME IN / TIME OUT
   </h1>
 
-
   <div class="subtitle">
     Enter the registered Serial Number
   </div>
 
-
-  <!-- =========================
-       SERIAL NUMBER
-  ========================== -->
-
   <div class="input-section">
-
 
     <label
       class="input-label"
@@ -601,7 +513,6 @@
       SERIAL NUMBER
 
     </label>
-
 
     <input
       id="serialNumber"
@@ -612,9 +523,7 @@
       spellcheck="false"
       placeholder="Enter Serial Number">
 
-
     <div class="button-group">
-
 
       <button
         id="scanButton"
@@ -624,7 +533,6 @@
         ⏱️ TIME IN / TIME OUT
 
       </button>
-
 
       <button
         id="clearButton"
@@ -637,37 +545,23 @@
 
     </div>
 
-
     <div class="hint">
-
       Press ENTER after entering the Serial Number.
-
     </div>
 
-
   </div>
-
 
   <div class="divider">
     ● ● ●
   </div>
 
-
-  <!-- =========================
-       DETAILS
-  ========================== -->
-
   <div
     id="detailsBox"
     class="details-box">
 
-
     <div class="details-title">
-
       PERSON / VEHICLE DETAILS
-
     </div>
-
 
     <div class="detail-row">
 
@@ -678,13 +572,10 @@
       <div
         id="detailSerial"
         class="detail-value serial-value">
-
         -
-
       </div>
 
     </div>
-
 
     <div class="detail-row">
 
@@ -695,13 +586,10 @@
       <div
         id="detailName"
         class="detail-value">
-
         -
-
       </div>
 
     </div>
-
 
     <div class="detail-row">
 
@@ -712,13 +600,10 @@
       <div
         id="detailOffice"
         class="detail-value">
-
         -
-
       </div>
 
     </div>
-
 
     <div class="detail-row">
 
@@ -729,13 +614,10 @@
       <div
         id="detailVehicle"
         class="detail-value">
-
         -
-
       </div>
 
     </div>
-
 
     <div class="detail-row">
 
@@ -746,13 +628,10 @@
       <div
         id="detailContact"
         class="detail-value">
-
         -
-
       </div>
 
     </div>
-
 
     <div class="detail-row">
 
@@ -763,13 +642,10 @@
       <div
         id="detailColor"
         class="detail-value">
-
         -
-
       </div>
 
     </div>
-
 
     <div class="detail-row">
 
@@ -780,29 +656,14 @@
       <div
         id="detailPlate"
         class="detail-value plate-value">
-
         -
-
       </div>
 
     </div>
 
-
   </div>
 
-
-  <!-- =========================
-       STATUS
-  ========================== -->
-
-  <div
-    id="status">
-  </div>
-
-
-  <!-- =========================
-       SCAN AGAIN
-  ========================== -->
+  <div id="status"></div>
 
   <button
     id="scanAgain"
@@ -812,11 +673,6 @@
     🔄 SCAN ANOTHER SERIAL NUMBER
 
   </button>
-
-
-  <!-- =========================
-       INFO
-  ========================== -->
 
   <div class="info-box">
 
@@ -835,24 +691,16 @@
 
   </div>
 
-
 </div>
-
 
 <script>
 
-
 /************************************************************
- * GOOGLE APPS SCRIPT WEB APP
- *
- * GITHUB → GOOGLE APPS SCRIPT
- *
- * IMPORTANT:
- * Ito ang /exec URL ng Google Apps Script.
+ * GOOGLE APPS SCRIPT WEB APP URL
  ************************************************************/
 
 const GAS_WEB_APP_URL =
-  'https://script.google.com/macros/s/AKfycbz99giTshfJpzrm0n0jQJVqScSUlH-mWFJAmFfG3WhMKns0A6cP5sPSpWAl1KiCcyUfZA/exec';
+  'https://script.google.com/macros/s/AKfycbz99giTshfJpzrmn0jQJVqScSUlH-mWFJAmFfG3WhMKns0A6cP5sPSpWAl1KiCcyUfZA/exec';
 
 
 /************************************************************
@@ -867,90 +715,50 @@ let processing = false;
  ************************************************************/
 
 const serialInput =
-  document.getElementById(
-    'serialNumber'
-  );
-
+  document.getElementById('serialNumber');
 
 const scanButton =
-  document.getElementById(
-    'scanButton'
-  );
-
+  document.getElementById('scanButton');
 
 const clearButton =
-  document.getElementById(
-    'clearButton'
-  );
-
+  document.getElementById('clearButton');
 
 const statusBox =
-  document.getElementById(
-    'status'
-  );
-
+  document.getElementById('status');
 
 const detailsBox =
-  document.getElementById(
-    'detailsBox'
-  );
-
+  document.getElementById('detailsBox');
 
 const scanAgainButton =
-  document.getElementById(
-    'scanAgain'
-  );
-
+  document.getElementById('scanAgain');
 
 const detailSerial =
-  document.getElementById(
-    'detailSerial'
-  );
-
+  document.getElementById('detailSerial');
 
 const detailName =
-  document.getElementById(
-    'detailName'
-  );
-
+  document.getElementById('detailName');
 
 const detailOffice =
-  document.getElementById(
-    'detailOffice'
-  );
-
+  document.getElementById('detailOffice');
 
 const detailVehicle =
-  document.getElementById(
-    'detailVehicle'
-  );
-
+  document.getElementById('detailVehicle');
 
 const detailContact =
-  document.getElementById(
-    'detailContact'
-  );
-
+  document.getElementById('detailContact');
 
 const detailColor =
-  document.getElementById(
-    'detailColor'
-  );
-
+  document.getElementById('detailColor');
 
 const detailPlate =
-  document.getElementById(
-    'detailPlate'
-  );
+  document.getElementById('detailPlate');
 
 
 /************************************************************
- * NORMALIZE SERIAL
+ * NORMALIZE
  ************************************************************/
 
-function normalizeSerialValue(
-  value
-) {
+function normalizeSerialValue(value) {
 
   if (
     value === null ||
@@ -961,36 +769,25 @@ function normalizeSerialValue(
 
   }
 
-
-  return String(value)
-    .trim();
+  return String(value).trim();
 
 }
 
 
 /************************************************************
- * SUBMIT SERIAL NUMBER
- *
- * GITHUB → GOOGLE APPS SCRIPT
- *
- * JSONP is used because GitHub Pages
- * and Google Apps Script are different origins.
+ * SUBMIT
  ************************************************************/
 
 function submitSerialNumber() {
 
   if (processing) {
-
     return;
-
   }
-
 
   let serial =
     normalizeSerialValue(
       serialInput.value
     );
-
 
   if (!serial) {
 
@@ -999,35 +796,20 @@ function submitSerialNumber() {
       'error'
     );
 
-
     serialInput.focus();
 
     return;
-
   }
-
-
-  /*
-   * Uppercase for consistent searching.
-   */
 
   serial =
     serial.toUpperCase();
 
-
   serialInput.value =
     serial;
 
-
-  /*
-   * Verify URL.
-   */
-
   if (
     !GAS_WEB_APP_URL ||
-    !GAS_WEB_APP_URL.endsWith(
-      '/exec'
-    )
+    !GAS_WEB_APP_URL.endsWith('/exec')
   ) {
 
     showStatus(
@@ -1036,41 +818,29 @@ function submitSerialNumber() {
     );
 
     return;
-
   }
 
-
   processing = true;
-
 
   scanButton.disabled =
     true;
 
-
   clearButton.disabled =
     true;
-
 
   scanAgainButton.style.display =
     'none';
 
-
   hideDetails();
-
 
   showStatus(
     'PROCESSING...<br>' +
-    '<small>' +
-    'Serial Number: ' +
+    '<small>Serial Number: ' +
     escapeHtml(serial) +
     '</small>',
     'processing'
   );
 
-
-  /*
-   * Generate a unique JSONP callback.
-   */
 
   const callbackName =
     'serialScanCallback_' +
@@ -1081,67 +851,37 @@ function submitSerialNumber() {
     );
 
 
-  /*
-   * Create script element first.
-   */
-
   const script =
-    document.createElement(
-      'script'
-    );
+    document.createElement('script');
 
+  script.async = true;
 
-  script.async =
-    true;
+  let finished = false;
 
+  let timeoutId = null;
 
-  /*
-   * Track whether this request
-   * has already finished.
-   */
-
-  let finished =
-    false;
-
-
-  /*
-   * Cleanup function specific
-   * to this request.
-   */
 
   function finishRequest() {
 
     if (finished) {
-
       return;
-
     }
-
 
     finished = true;
 
-
     processing = false;
-
 
     scanButton.disabled =
       false;
 
-
     clearButton.disabled =
       false;
 
+    if (timeoutId) {
 
-    if (
-      timeoutId
-    ) {
-
-      clearTimeout(
-        timeoutId
-      );
+      clearTimeout(timeoutId);
 
     }
-
 
     if (
       script &&
@@ -1154,99 +894,63 @@ function submitSerialNumber() {
 
     }
 
-
     try {
 
-      delete window[
-        callbackName
-      ];
+      delete window[callbackName];
 
     }
 
     catch (error) {
 
-      window[
-        callbackName
-      ] = undefined;
+      window[callbackName] =
+        undefined;
 
     }
 
   }
 
 
-  /*
-   * Create JSONP callback.
-   */
-
   window[callbackName] =
     function(result) {
 
       if (finished) {
-
         return;
-
       }
-
 
       finishRequest();
 
-
-      handleScanResult(
-        result
-      );
+      handleScanResult(result);
 
     };
 
-
-  /*
-   * Build request URL.
-   *
-   * action=processScan
-   * qr=SERIAL NUMBER
-   * callback=CALLBACK FUNCTION
-   */
 
   const url =
     GAS_WEB_APP_URL +
     '?action=processScan' +
     '&qr=' +
-    encodeURIComponent(
-      serial
-    ) +
+    encodeURIComponent(serial) +
     '&callback=' +
-    encodeURIComponent(
-      callbackName
-    ) +
+    encodeURIComponent(callbackName) +
     '&_=' +
     Date.now();
 
-
-  /*
-   * Network/server error.
-   */
 
   script.onerror =
     function() {
 
       if (finished) {
-
         return;
-
       }
 
-
       finishRequest();
-
 
       showStatus(
         'UNABLE TO CONNECT TO GOOGLE APPS SCRIPT',
         'error'
       );
 
-
       scanAgainButton.style.display =
         'block';
-
 
       serialInput.focus();
 
@@ -1255,33 +959,23 @@ function submitSerialNumber() {
     };
 
 
-  /*
-   * Timeout protection.
-   */
-
-  const timeoutId =
+  timeoutId =
     setTimeout(
       function() {
 
         if (finished) {
-
           return;
-
         }
 
-
         finishRequest();
-
 
         showStatus(
           'REQUEST TIMEOUT. PLEASE TRY AGAIN.',
           'error'
         );
 
-
         scanAgainButton.style.display =
           'block';
-
 
         serialInput.focus();
 
@@ -1292,29 +986,9 @@ function submitSerialNumber() {
     );
 
 
-  /*
-   * Save URL into script.
-   */
+  script.src = url;
 
-  script.src =
-    url;
-
-
-  /*
-   * Add script to page.
-   *
-   * Google Apps Script should return:
-   *
-   * serialScanCallback_xxxxx({
-   *   success: true,
-   *   action: "TIME IN",
-   *   ...
-   * });
-   */
-
-  document.head.appendChild(
-    script
-  );
+  document.head.appendChild(script);
 
 }
 
@@ -1323,16 +997,12 @@ function submitSerialNumber() {
  * HANDLE RESULT
  ************************************************************/
 
-function handleScanResult(
-  result
-) {
+function handleScanResult(result) {
 
   processing = false;
 
-
   scanButton.disabled =
     false;
-
 
   clearButton.disabled =
     false;
@@ -1342,16 +1012,13 @@ function handleScanResult(
 
     hideDetails();
 
-
     showStatus(
       'NO RESPONSE FROM SERVER.',
       'error'
     );
 
-
     scanAgainButton.style.display =
       'block';
-
 
     serialInput.focus();
 
@@ -1360,20 +1027,10 @@ function handleScanResult(
   }
 
 
-  /*
-   * Successful scan.
-   */
-
   if (result.success) {
 
-    showDetails(
-      result
-    );
+    showDetails(result);
 
-
-    /*
-     * TIME IN
-     */
 
     if (
       result.action ===
@@ -1387,11 +1044,6 @@ function handleScanResult(
 
     }
 
-
-    /*
-     * TIME OUT
-     */
-
     else if (
       result.action ===
       'TIME OUT'
@@ -1403,11 +1055,6 @@ function handleScanResult(
       );
 
     }
-
-
-    /*
-     * Other success response.
-     */
 
     else {
 
@@ -1422,17 +1069,8 @@ function handleScanResult(
     }
 
 
-    /*
-     * Allow another scan.
-     */
-
     scanAgainButton.style.display =
       'block';
-
-
-    /*
-     * Keep Serial Number visible.
-     */
 
     serialInput.focus();
 
@@ -1440,15 +1078,9 @@ function handleScanResult(
 
   }
 
-
-  /*
-   * Invalid serial / backend error.
-   */
-
   else {
 
     hideDetails();
-
 
     showStatus(
       escapeHtml(
@@ -1458,10 +1090,8 @@ function handleScanResult(
       'error'
     );
 
-
     scanAgainButton.style.display =
       'block';
-
 
     serialInput.focus();
 
@@ -1473,12 +1103,10 @@ function handleScanResult(
 
 
 /************************************************************
- * SHOW DETAILS
+ * DETAILS
  ************************************************************/
 
-function showDetails(
-  result
-) {
+function showDetails(result) {
 
   detailSerial.textContent =
     valueOrDash(
@@ -1486,43 +1114,36 @@ function showDetails(
       result.personId
     );
 
-
   detailName.textContent =
     valueOrDash(
       result.name ||
       result.rank
     );
 
-
   detailOffice.textContent =
     valueOrDash(
       result.office
     );
-
 
   detailVehicle.textContent =
     valueOrDash(
       result.vehicle
     );
 
-
   detailContact.textContent =
     valueOrDash(
       result.contact
     );
-
 
   detailColor.textContent =
     valueOrDash(
       result.color
     );
 
-
   detailPlate.textContent =
     valueOrDash(
       result.plate
     );
-
 
   detailsBox.style.display =
     'block';
@@ -1531,12 +1152,10 @@ function showDetails(
 
 
 /************************************************************
- * VALUE OR DASH
+ * VALUE
  ************************************************************/
 
-function valueOrDash(
-  value
-) {
+function valueOrDash(value) {
 
   if (
     value === null ||
@@ -1547,7 +1166,6 @@ function valueOrDash(
     return '-';
 
   }
-
 
   return String(value);
 
@@ -1563,30 +1181,23 @@ function hideDetails() {
   detailsBox.style.display =
     'none';
 
-
   detailSerial.textContent =
     '-';
-
 
   detailName.textContent =
     '-';
 
-
   detailOffice.textContent =
     '-';
-
 
   detailVehicle.textContent =
     '-';
 
-
   detailContact.textContent =
     '-';
 
-
   detailColor.textContent =
     '-';
-
 
   detailPlate.textContent =
     '-';
@@ -1595,21 +1206,16 @@ function hideDetails() {
 
 
 /************************************************************
- * SHOW STATUS
+ * STATUS
  ************************************************************/
 
-function showStatus(
-  message,
-  type
-) {
+function showStatus(message, type) {
 
   statusBox.innerHTML =
     message;
 
-
   statusBox.className =
     '';
-
 
   if (type) {
 
@@ -1619,7 +1225,6 @@ function showStatus(
 
   }
 
-
   statusBox.style.display =
     'block';
 
@@ -1627,40 +1232,31 @@ function showStatus(
 
 
 /************************************************************
- * CLEAR SCANNER
+ * CLEAR
  ************************************************************/
 
 function clearScanner() {
 
   if (processing) {
-
     return;
-
   }
-
 
   serialInput.value =
     '';
 
-
   hideDetails();
-
 
   statusBox.innerHTML =
     '';
 
-
   statusBox.className =
     '';
-
 
   statusBox.style.display =
     'none';
 
-
   scanAgainButton.style.display =
     'none';
-
 
   serialInput.focus();
 
@@ -1674,34 +1270,25 @@ function clearScanner() {
 function scanAgain() {
 
   if (processing) {
-
     return;
-
   }
-
 
   serialInput.value =
     '';
 
-
   hideDetails();
-
 
   statusBox.innerHTML =
     '';
 
-
   statusBox.className =
     '';
-
 
   statusBox.style.display =
     'none';
 
-
   scanAgainButton.style.display =
     'none';
-
 
   serialInput.focus();
 
@@ -1709,7 +1296,7 @@ function scanAgain() {
 
 
 /************************************************************
- * ENTER KEY
+ * ENTER
  ************************************************************/
 
 serialInput.addEventListener(
@@ -1717,12 +1304,10 @@ serialInput.addEventListener(
   function(event) {
 
     if (
-      event.key ===
-      'Enter'
+      event.key === 'Enter'
     ) {
 
       event.preventDefault();
-
 
       submitSerialNumber();
 
@@ -1733,7 +1318,7 @@ serialInput.addEventListener(
 
 
 /************************************************************
- * ESC KEY
+ * ESC
  ************************************************************/
 
 serialInput.addEventListener(
@@ -1741,12 +1326,10 @@ serialInput.addEventListener(
   function(event) {
 
     if (
-      event.key ===
-      'Escape'
+      event.key === 'Escape'
     ) {
 
       event.preventDefault();
-
 
       clearScanner();
 
@@ -1760,9 +1343,7 @@ serialInput.addEventListener(
  * ESCAPE HTML
  ************************************************************/
 
-function escapeHtml(
-  value
-) {
+function escapeHtml(value) {
 
   if (
     value === null ||
@@ -1772,7 +1353,6 @@ function escapeHtml(
     return '';
 
   }
-
 
   return String(value)
 
@@ -1818,7 +1398,6 @@ window.addEventListener(
 );
 
 </script>
-
 
 </body>
 

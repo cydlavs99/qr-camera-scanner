@@ -802,7 +802,7 @@
 
   <!-- =========================
        SCAN AGAIN
-  ========================== -->
+  ========================= -->
 
   <button
     id="scanAgain"
@@ -816,7 +816,7 @@
 
   <!-- =========================
        INFO
-  ========================== -->
+  ========================= -->
 
   <div class="info-box">
 
@@ -840,6 +840,20 @@
 
 
 <script>
+
+
+/************************************************************
+ * GOOGLE APPS SCRIPT WEB APP
+ *
+ * IMPORTANT:
+ *
+ * PALITAN ANG URL SA IBABA NG ACTUAL
+ * GOOGLE APPS SCRIPT WEB APP /exec URL.
+ *
+ ************************************************************/
+
+const GAS_WEB_APP_URL =
+  'https://script.google.com/macros/s/AKfycbz99giTshfJpzrm0n0jQJVqScSUlH-mWFJAmFfG3WhMKns0A6cP5sPSpWAl1KiCcyUfZA/exec';
 
 
 /************************************************************
@@ -957,6 +971,11 @@ function normalizeSerialValue(
 
 /************************************************************
  * SUBMIT SERIAL NUMBER
+ *
+ * GITHUB → GOOGLE APPS SCRIPT
+ *
+ * JSONP is used because the page is hosted
+ * on GitHub and the backend is Google Apps Script.
  ************************************************************/
 
 function submitSerialNumber() {
@@ -989,19 +1008,30 @@ function submitSerialNumber() {
   }
 
 
-  /*
-   * Convert to uppercase.
-   *
-   * This is only for presentation/search
-   * consistency.
-   */
-
   serial =
     serial.toUpperCase();
 
 
   serialInput.value =
     serial;
+
+
+  if (
+    !GAS_WEB_APP_URL ||
+    GAS_WEB_APP_URL.indexOf(
+      '/exec'
+    ) === -1
+  ) {
+
+    showStatus(
+      'GOOGLE APPS SCRIPT URL IS NOT CONFIGURED',
+      'error'
+    );
+
+
+    return;
+
+  }
 
 
   processing = true;
@@ -1033,91 +1063,251 @@ function submitSerialNumber() {
 
 
   /*
-   * Call the Apps Script server.
-   *
-   * This directly calls:
-   *
-   * processScan(serial)
+   * Unique JSONP callback.
    */
 
-  google.script.run
-
-    .withSuccessHandler(
-      function(result) {
-
-        processing = false;
-
-
-        scanButton.disabled =
-          false;
+  const callbackName =
+    'qrScanCallback_' +
+    Date.now() +
+    '_' +
+    Math.floor(
+      Math.random() * 100000
+    );
 
 
-        clearButton.disabled =
-          false;
+  /*
+   * Create callback on window.
+   */
 
+  window[callbackName] =
+    function(result) {
+
+      try {
 
         handleScanResult(
           result
         );
 
       }
-    )
 
-    .withFailureHandler(
-      function(error) {
+      finally {
 
-        processing = false;
-
-
-        scanButton.disabled =
-          false;
-
-
-        clearButton.disabled =
-          false;
-
-
-        console.error(
-          'Apps Script error:',
-          error
+        cleanupJsonp(
+          callbackName,
+          script
         );
 
+      }
 
-        let message =
-          'SYSTEM ERROR';
+    };
 
+
+  /*
+   * Create JSONP request.
+   */
+
+  const script =
+    document.createElement(
+      'script'
+    );
+
+
+  const url =
+    GAS_WEB_APP_URL +
+    '?action=processScan' +
+    '&qr=' +
+    encodeURIComponent(
+      serial
+    ) +
+    '&callback=' +
+    encodeURIComponent(
+      callbackName
+    ) +
+    '&_=' +
+    Date.now();
+
+
+  /*
+   * Network/server error.
+   */
+
+  script.onerror =
+    function() {
+
+      processing = false;
+
+
+      scanButton.disabled =
+        false;
+
+
+      clearButton.disabled =
+        false;
+
+
+      cleanupJsonp(
+        callbackName,
+        script
+      );
+
+
+      showStatus(
+        'UNABLE TO CONNECT TO GOOGLE APPS SCRIPT',
+        'error'
+      );
+
+
+      scanAgainButton.style.display =
+        'block';
+
+
+      serialInput.focus();
+
+      serialInput.select();
+
+    };
+
+
+  /*
+   * Timeout protection.
+   */
+
+  const timeoutId =
+    setTimeout(
+      function() {
 
         if (
-          error &&
-          error.message
+          window[callbackName]
         ) {
 
-          message =
-            error.message;
+          processing = false;
+
+
+          scanButton.disabled =
+            false;
+
+
+          clearButton.disabled =
+            false;
+
+
+          cleanupJsonp(
+            callbackName,
+            script
+          );
+
+
+          showStatus(
+            'REQUEST TIMEOUT. PLEASE TRY AGAIN.',
+            'error'
+          );
+
+
+          scanAgainButton.style.display =
+            'block';
+
+
+          serialInput.focus();
+
+          serialInput.select();
 
         }
 
-
-        showStatus(
-          escapeHtml(message),
-          'error'
-        );
-
-
-        scanAgainButton.style.display =
-          'block';
-
-
-        serialInput.focus();
-
-        serialInput.select();
-
-      }
-    )
-
-    .processScan(
-      serial
+      },
+      30000
     );
+
+
+  /*
+   * Save timeout ID.
+   */
+
+  script.dataset.timeoutId =
+    String(
+      timeoutId
+    );
+
+
+  script.src =
+    url;
+
+
+  script.async =
+    true;
+
+
+  document
+    .head
+    .appendChild(
+      script
+    );
+
+}
+
+
+/************************************************************
+ * CLEANUP JSONP
+ ************************************************************/
+
+function cleanupJsonp(
+  callbackName,
+  script
+) {
+
+  /*
+   * Stop timeout.
+   */
+
+  if (
+    script &&
+    script.dataset &&
+    script.dataset.timeoutId
+  ) {
+
+    clearTimeout(
+      Number(
+        script.dataset.timeoutId
+      )
+    );
+
+  }
+
+
+  /*
+   * Remove script.
+   */
+
+  if (
+    script &&
+    script.parentNode
+  ) {
+
+    script.parentNode.removeChild(
+      script
+    );
+
+  }
+
+
+  /*
+   * Remove global callback.
+   */
+
+  try {
+
+    delete window[
+      callbackName
+    ];
+
+  }
+
+  catch (error) {
+
+    window[
+      callbackName
+    ] = undefined;
+
+  }
 
 }
 
@@ -1129,6 +1319,17 @@ function submitSerialNumber() {
 function handleScanResult(
   result
 ) {
+
+  processing = false;
+
+
+  scanButton.disabled =
+    false;
+
+
+  clearButton.disabled =
+    false;
+
 
   if (!result) {
 
@@ -1144,6 +1345,8 @@ function handleScanResult(
     scanAgainButton.style.display =
       'block';
 
+
+    serialInput.focus();
 
     return;
 
@@ -1198,15 +1401,9 @@ function handleScanResult(
       'block';
 
 
-    /*
-     * Keep the Serial Number visible
-     * so the operator can verify it.
-     */
-
     serialInput.focus();
 
     serialInput.select();
-
 
   }
 

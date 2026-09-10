@@ -3,2315 +3,1325 @@
 
 <head>
 
-<meta charset="UTF-8">
+  <meta charset="UTF-8">
 
-<meta
-  name="viewport"
-  content="width=device-width, initial-scale=1.0">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  >
 
-<meta
-  name="theme-color"
-  content="#198754">
+  <meta
+    name="theme-color"
+    content="#0b5cff"
+  >
 
-<title>
-QR Time In / Time Out
-</title>
+  <title>CGFLEET QR Scanner</title>
 
-<script
-  src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js">
-</script>
+  <script
+    src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"
+  ></script>
 
-<style>
+  <style>
+    * { box-sizing: border-box; }
 
-* {
-  box-sizing: border-box;
-}
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f3f6fa;
+      color: #111827;
+    }
 
-html,
-body {
-  margin: 0;
-  padding: 0;
-  min-height: 100%;
-  font-family:
-    Arial,
-    Helvetica,
-    sans-serif;
-  background: #f2f4f7;
-}
+    .wrap {
+      width: min(960px, 100%);
+      margin: 0 auto;
+      padding: 16px;
+    }
 
-body {
-  padding: 12px;
-}
+    .card {
+      background: #fff;
+      border-radius: 18px;
+      padding: 20px;
+      box-shadow: 0 5px 24px rgba(0,0,0,.08);
+    }
 
-.container {
-  width: 100%;
-  max-width: 560px;
-  margin: 0 auto;
-  background: #ffffff;
-  border-radius: 18px;
-  padding: 18px;
-  box-shadow:
-    0 5px 25px
-    rgba(0,0,0,.12);
-}
+    h1 {
+      margin: 0 0 6px;
+      font-size: clamp(24px, 5vw, 36px);
+    }
 
-h1 {
-  text-align: center;
-  margin: 0 0 6px;
-  font-size: 24px;
-}
+    .sub {
+      margin: 0;
+      color: #64748b;
+    }
 
-.subtitle {
-  text-align: center;
-  color: #666;
-  font-size: 14px;
-  margin-bottom: 18px;
-}
+    .videoBox {
+      position: relative;
+      width: 100%;
+      max-width: 720px;
+      margin: 18px auto;
+      background: #000;
+      border-radius: 16px;
+      overflow: hidden;
+      aspect-ratio: 4 / 3;
+    }
 
-button {
-  width: 100%;
-  border: none;
-  border-radius: 11px;
-  padding: 15px;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-  margin-top: 8px;
-}
+    video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
 
-button:disabled {
-  opacity: .5;
-  cursor: not-allowed;
-}
+    .frame {
+      position: absolute;
+      inset: 16% 15%;
+      border: 3px solid #00ff44;
+      border-radius: 18px;
+      pointer-events: none;
+      box-shadow:
+        0 0 0 9999px rgba(0,0,0,.14);
+    }
 
-.camera-btn {
-  background: #0d6efd;
-  color: white;
-}
+    .buttons {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      max-width: 720px;
+      margin: 0 auto;
+    }
 
-.upload-btn {
-  background: #6f42c1;
-  color: white;
-}
+    button,
+    .upload {
+      min-height: 52px;
+      border: 0;
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
-.scan-btn {
-  background: #198754;
-  color: white;
-}
+    button {
+      background: #0b5cff;
+      color: #fff;
+    }
 
-.clear-btn {
-  background: #6c757d;
-  color: white;
-}
+    button.stop {
+      background: #dc2626;
+    }
 
-.stop-btn {
-  background: #dc3545;
-  color: white;
-}
+    .upload {
+      background: #e8eef8;
+      color: #123456;
+    }
 
-.again-btn {
-  background: #212529;
-  color: white;
-  display: none;
-}
+    input[type=file] {
+      display: none;
+    }
 
-.camera-box {
-  display: none;
-  margin-top: 12px;
-  position: relative;
-  overflow: hidden;
-  border-radius: 14px;
-  background: #000;
-}
+    .status {
+      max-width: 720px;
+      margin: 12px auto 0;
+      padding: 12px;
+      border-radius: 10px;
+      background: #eef2f7;
+      color: #334155;
+      text-align: center;
+      font-weight: 700;
+    }
 
-#video {
-  width: 100%;
-  display: block;
-  background: #000;
-}
+    .result {
+      display: none;
+      max-width: 720px;
+      margin: 18px auto 0;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid #e2e8f0;
+    }
 
-#canvas {
-  display: none;
-}
+    .head {
+      padding: 14px 18px;
+      font-size: 22px;
+      font-weight: 800;
+    }
 
-.overlay {
-  position: absolute;
-  width: 70%;
-  aspect-ratio: 1;
-  left: 50%;
-  top: 45%;
-  transform:
-    translate(-50%,-50%);
-  border:
-    3px solid #00ff00;
-  border-radius: 15px;
-  box-shadow:
-    0 0 0 9999px
-    rgba(0,0,0,.35);
-  pointer-events: none;
-}
+    .in .head {
+      background: #00ff00;
+      color: #000;
+    }
 
-.camera-status {
-  color: white;
-  background: rgba(0,0,0,.75);
-  text-align: center;
-  padding: 10px;
-  font-size: 13px;
-}
+    .out .head {
+      background: #ff0000;
+      color: #fff;
+    }
 
-.file-input {
-  display: none;
-}
+    .error .head {
+      background: #111827;
+      color: #fff;
+    }
 
-.label {
-  display: block;
-  font-weight: bold;
-  margin-top: 18px;
-  margin-bottom: 7px;
-}
+    .details {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      background: #fff;
+    }
 
-input {
-  width: 100%;
-  padding: 17px;
-  border:
-    2px solid #198754;
-  border-radius: 12px;
-  font-size: 21px;
-  font-weight: bold;
-  text-align: center;
-  outline: none;
-  text-transform: uppercase;
-}
+    .item {
+      padding: 13px 16px;
+      border-top: 1px solid #e5e7eb;
+    }
 
-input:focus {
-  border-color: #0d6efd;
-}
+    .label {
+      font-size: 11px;
+      color: #64748b;
+      text-transform: uppercase;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
 
-.status {
-  display: none;
-  margin-top: 16px;
-  padding: 18px;
-  border-radius: 12px;
-  text-align: center;
-  font-weight: bold;
-  font-size: 21px;
-  line-height: 1.4;
-}
+    .value {
+      font-size: 16px;
+      font-weight: 700;
+      word-break: break-word;
+    }
 
-.processing {
-  display: block;
-  background: #fff3cd;
-  color: #664d03;
-}
+    .hint {
+      max-width: 720px;
+      margin: 14px auto 0;
+      text-align: center;
+      color: #64748b;
+      line-height: 1.45;
+    }
 
-.timein {
-  display: block;
-  background: #d1e7dd;
-  color: #0f5132;
-}
+    canvas {
+      display: none;
+    }
 
-.timeout {
-  display: block;
-  background: #f8d7da;
-  color: #842029;
-}
+    @media(max-width:600px) {
+      .wrap {
+        padding: 10px;
+      }
 
-.error {
-  display: block;
-  background: #f8d7da;
-  color: #842029;
-}
+      .card {
+        padding: 14px;
+      }
 
-.details {
-  display: none;
-  margin-top: 16px;
-  padding: 16px;
-  background: #f8f9fa;
-  border-radius: 12px;
-  border: 1px solid #ddd;
-}
+      .buttons {
+        grid-template-columns: 1fr;
+      }
 
-.details h2 {
-  text-align: center;
-  font-size: 18px;
-  margin-top: 0;
-}
+      .details {
+        grid-template-columns: 1fr;
+      }
 
-.detail {
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-  padding: 10px 0;
-  border-bottom:
-    1px solid #ddd;
-}
-
-.detail:last-child {
-  border-bottom: none;
-}
-
-.detail-label {
-  color: #666;
-}
-
-.detail-value {
-  font-weight: bold;
-  text-align: right;
-  word-break: break-word;
-}
-
-.info {
-  margin-top: 18px;
-  padding: 13px;
-  background: #e9ecef;
-  border-radius: 10px;
-  text-align: center;
-  color: #495057;
-  font-size: 13px;
-  line-height: 1.5;
-}
-
-@media(max-width:500px) {
-
-  .container {
-    padding: 13px;
-  }
-
-  h1 {
-    font-size: 21px;
-  }
-
-  .detail {
-    flex-direction: column;
-  }
-
-  .detail-value {
-    text-align: left;
-  }
-
-}
-
-</style>
+      .frame {
+        inset: 14% 10%;
+      }
+    }
+  </style>
 
 </head>
 
 <body>
 
-<div class="container">
+<div class="wrap">
 
-<h1>
-SERIAL NUMBER TIME IN / TIME OUT
-</h1>
+  <div class="card">
 
-<div class="subtitle">
-Scan QR Code or enter Serial Number
-</div>
+    <h1>CGFLEET QR Scanner</h1>
 
+    <p class="sub">
+      Camera Scan + QR Image Upload
+    </p>
 
-<!-- CAMERA -->
+    <div class="videoBox">
 
-<button
-  id="cameraButton"
-  class="camera-btn"
-  type="button">
-📷 SCAN QR WITH CAMERA
-</button>
+      <video
+        id="video"
+        autoplay
+        playsinline
+        muted
+      ></video>
 
+      <div class="frame"></div>
 
-<!-- UPLOAD -->
+    </div>
 
-<button
-  id="uploadButton"
-  class="upload-btn"
-  type="button">
-🖼️ UPLOAD QR IMAGE
-</button>
+    <canvas id="canvas"></canvas>
 
-<input
-  id="fileInput"
-  class="file-input"
-  type="file"
-  accept="image/*">
+    <div class="buttons">
 
+      <button
+        type="button"
+        onclick="startCamera()"
+      >
+        START CAMERA
+      </button>
 
-<!-- CAMERA BOX -->
+      <button
+        type="button"
+        class="stop"
+        onclick="stopCamera()"
+      >
+        STOP CAMERA
+      </button>
 
-<div
-  id="cameraBox"
-  class="camera-box">
+      <label
+        class="upload"
+        for="fileInput"
+      >
+        UPLOAD QR / SCREENSHOT
+      </label>
 
-  <video
-    id="video"
-    autoplay
-    playsinline>
-  </video>
+      <input
+        id="fileInput"
+        type="file"
+        accept="image/png,image/jpeg,image/webp"
+      >
 
-  <canvas
-    id="canvas">
-  </canvas>
+    </div>
 
-  <div class="overlay"></div>
+    <div
+      id="status"
+      class="status"
+    >
+      Ready. Start camera or upload a QR image.
+    </div>
 
-  <div
-    id="cameraStatus"
-    class="camera-status">
-    Point camera at QR code.
+    <p class="hint">
+      Camera access requires an HTTPS GitHub Pages address.
+      Allow camera permission on the device.
+    </p>
+
+    <div
+      id="result"
+      class="result"
+    >
+
+      <div
+        id="head"
+        class="head"
+      ></div>
+
+      <div
+        id="details"
+        class="details"
+      ></div>
+
+    </div>
+
   </div>
-
-</div>
-
-
-<button
-  id="stopButton"
-  class="stop-btn"
-  type="button"
-  style="display:none;">
-✖ STOP CAMERA
-</button>
-
-
-<!-- SERIAL -->
-
-<label
-  class="label"
-  for="serialInput">
-SERIAL NUMBER
-</label>
-
-<input
-  id="serialInput"
-  type="text"
-  autocomplete="off"
-  autocapitalize="characters"
-  spellcheck="false"
-  placeholder="ENTER SERIAL NUMBER">
-
-
-<button
-  id="scanButton"
-  class="scan-btn"
-  type="button">
-⏱️ TIME IN / TIME OUT
-</button>
-
-
-<button
-  id="clearButton"
-  class="clear-btn"
-  type="button">
-🗑️ CLEAR
-</button>
-
-
-<!-- STATUS -->
-
-<div
-  id="status"
-  class="status">
-</div>
-
-
-<!-- DETAILS -->
-
-<div
-  id="details"
-  class="details">
-
-<h2>
-PERSON / VEHICLE DETAILS
-</h2>
-
-<div class="detail">
-  <span class="detail-label">
-    Serial Number
-  </span>
-
-  <span
-    id="dSerial"
-    class="detail-value">
-    -
-  </span>
-</div>
-
-<div class="detail">
-  <span class="detail-label">
-    Rank / Full Name
-  </span>
-
-  <span
-    id="dName"
-    class="detail-value">
-    -
-  </span>
-</div>
-
-<div class="detail">
-  <span class="detail-label">
-    Office / Unit
-  </span>
-
-  <span
-    id="dOffice"
-    class="detail-value">
-    -
-  </span>
-</div>
-
-<div class="detail">
-  <span class="detail-label">
-    Contact Number
-  </span>
-
-  <span
-    id="dContact"
-    class="detail-value">
-    -
-  </span>
-</div>
-
-<div class="detail">
-  <span class="detail-label">
-    Vehicle / Model
-  </span>
-
-  <span
-    id="dVehicle"
-    class="detail-value">
-    -
-  </span>
-</div>
-
-<div class="detail">
-  <span class="detail-label">
-    Color
-  </span>
-
-  <span
-    id="dColor"
-    class="detail-value">
-    -
-  </span>
-</div>
-
-<div class="detail">
-  <span class="detail-label">
-    Plate Number
-  </span>
-
-  <span
-    id="dPlate"
-    class="detail-value">
-    -
-  </span>
-</div>
-
-</div>
-
-
-<button
-  id="againButton"
-  class="again-btn"
-  type="button">
-🔄 SCAN ANOTHER
-</button>
-
-
-<div class="info">
-
-<strong>QR FORMAT</strong><br>
-
-QR Code contains
-<strong>PERSON ID</strong>.<br><br>
-
-The Person ID is linked to the
-REGISTERED sheet.<br><br>
-
-🟢 First scan = TIME IN<br>
-🔴 Next scan = TIME OUT<br>
-🟢 Next scan = TIME IN<br>
-🔴 Next scan = TIME OUT
-
-</div>
 
 </div>
 
 
 <script>
 
-/************************************************************
- * GOOGLE APPS SCRIPT WEB APP
- *
- * IMPORTANT:
- * This is the SAME deployed Web App URL.
- ************************************************************/
-
-const GAS_WEB_APP_URL =
-  'https://script.google.com/macros/s/AKfycbzDXk1OhklMmCb-GgIm1sTo-lz4RG8EgsqQBgLg0lGeGTWDbI2BLTpkn29fOKvBg7B4Ww/exec';
-
-
-/************************************************************
- * STATE
- ************************************************************/
-
-let processing =
-  false;
-
-let stream =
-  null;
-
-let scanning =
-  false;
-
-let animationFrame =
-  null;
-
-let requestTimeout =
-  null;
-
-let uploadProcessing =
-  false;
+  /*
+   * ========================================================
+   * PASTE YOUR GOOGLE APPS SCRIPT WEB APP /exec URL HERE
+   *
+   * Example:
+   * https://script.google.com/macros/s/XXXXXXXX/exec
+   * ========================================================
+   */
+  const APPS_SCRIPT_URL =
+    "PASTE_YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE";
 
 
-/************************************************************
- * ELEMENTS
- ************************************************************/
+  let stream = null;
+  let scanning = false;
+  let busy = false;
 
-const video =
-  document.getElementById(
-    'video'
-  );
+  let lastDecoded = "";
+  let lastDecodedAt = 0;
 
-const canvas =
-  document.getElementById(
-    'canvas'
-  );
+  const video =
+    document.getElementById(
+      "video"
+    );
 
-const cameraBox =
-  document.getElementById(
-    'cameraBox'
-  );
+  const canvas =
+    document.getElementById(
+      "canvas"
+    );
 
-const cameraStatus =
-  document.getElementById(
-    'cameraStatus'
-  );
+  const ctx =
+    canvas.getContext(
+      "2d",
+      {
+        willReadFrequently: true
+      }
+    );
 
-const cameraButton =
-  document.getElementById(
-    'cameraButton'
-  );
+  const fileInput =
+    document.getElementById(
+      "fileInput"
+    );
 
-const stopButton =
-  document.getElementById(
-    'stopButton'
-  );
+  const status =
+    document.getElementById(
+      "status"
+    );
 
-const uploadButton =
-  document.getElementById(
-    'uploadButton'
-  );
+  const result =
+    document.getElementById(
+      "result"
+    );
 
-const fileInput =
-  document.getElementById(
-    'fileInput'
-  );
+  const head =
+    document.getElementById(
+      "head"
+    );
 
-const serialInput =
-  document.getElementById(
-    'serialInput'
-  );
-
-const scanButton =
-  document.getElementById(
-    'scanButton'
-  );
-
-const clearButton =
-  document.getElementById(
-    'clearButton'
-  );
-
-const statusBox =
-  document.getElementById(
-    'status'
-  );
-
-const details =
-  document.getElementById(
-    'details'
-  );
-
-const againButton =
-  document.getElementById(
-    'againButton'
-  );
-
-
-/************************************************************
- * DETAIL ELEMENTS
- ************************************************************/
-
-const dSerial =
-  document.getElementById(
-    'dSerial'
-  );
-
-const dName =
-  document.getElementById(
-    'dName'
-  );
-
-const dOffice =
-  document.getElementById(
-    'dOffice'
-  );
-
-const dContact =
-  document.getElementById(
-    'dContact'
-  );
-
-const dVehicle =
-  document.getElementById(
-    'dVehicle'
-  );
-
-const dColor =
-  document.getElementById(
-    'dColor'
-  );
-
-const dPlate =
-  document.getElementById(
-    'dPlate'
-  );
-
-
-/************************************************************
- * NORMALIZE QR VALUE
- *
- * QR should contain PERSON ID.
- *
- * Also supports:
- * - plain text
- * - JSON
- * - URL
- * - SERIAL:
- * - QR:
- * - CODE:
- ************************************************************/
-
-function normalizeSerial(
-  value
-) {
-
-  if (
-    value === null ||
-    value === undefined
-  ) {
-
-    return '';
-
-  }
-
-
-  let text =
-    String(
-      value
+  const details =
+    document.getElementById(
+      "details"
     );
 
 
-  text =
-    text
-      .replace(
-        /^\uFEFF/,
-        ''
-      )
-      .replace(
-        /[\u200B-\u200D\u2060]/g,
-        ''
-      )
-      .replace(
-        /\r\n/g,
-        '\n'
-      )
-      .replace(
-        /\r/g,
-        '\n'
-      )
-      .trim();
-
-
   /*
-   * JSON QR
+   * ========================================================
+   * CAMERA
+   * ========================================================
    */
 
-  if (
-    text.startsWith('{')
-  ) {
+  async function startCamera() {
 
-    try {
+    clearResult();
 
-      const obj =
-        JSON.parse(
-          text
-        );
+    if (!window.isSecureContext) {
 
-
-      const candidates = [
-
-        obj.personId,
-
-        obj.personID,
-
-        obj.serial,
-
-        obj.serialNumber,
-
-        obj.qr,
-
-        obj.code,
-
-        obj.value,
-
-        obj.data,
-
-        obj.text
-
-      ];
-
-
-      for (
-        const item of candidates
-      ) {
-
-        if (
-          item !== undefined &&
-          item !== null
-        ) {
-
-          const result =
-            normalizeSerial(
-              item
-            );
-
-
-          if (result) {
-
-            return result;
-
-          }
-
-        }
-
-      }
-
-    }
-
-    catch (error) {
-
-      // Continue.
-
-    }
-
-  }
-
-
-  /*
-   * URL QR
-   */
-
-  if (
-    /^https?:\/\//i.test(
-      text
-    )
-  ) {
-
-    try {
-
-      const url =
-        new URL(
-          text
-        );
-
-
-      const keys = [
-
-        'personId',
-
-        'personID',
-
-        'serial',
-
-        'serialNumber',
-
-        'qr',
-
-        'code',
-
-        'value',
-
-        'data',
-
-        'text'
-
-      ];
-
-
-      for (
-        const key of keys
-      ) {
-
-        const value =
-          url.searchParams.get(
-            key
-          );
-
-
-        if (value) {
-
-          return normalizeSerial(
-            value
-          );
-
-        }
-
-      }
-
-    }
-
-    catch (error) {
-
-      // Continue.
-
-    }
-
-  }
-
-
-  /*
-   * Prefix support
-   */
-
-  const match =
-    text.match(
-      /^(?:PERSON\s*ID|PERSONID|SERIAL|SERIAL\s*NUMBER|QR|CODE)\s*[:=#-]\s*(.+)$/i
-    );
-
-
-  if (match) {
-
-    text =
-      match[1].trim();
-
-  }
-
-
-  /*
-   * Remove line breaks / tabs.
-   */
-
-  text =
-    text
-      .replace(
-        /[\r\n\t]/g,
-        ''
-      )
-      .trim();
-
-
-  /*
-   * Remove wrapping quotes.
-   */
-
-  if (
-    (
-      text.startsWith('"') &&
-      text.endsWith('"')
-    ) ||
-    (
-      text.startsWith("'") &&
-      text.endsWith("'")
-    )
-  ) {
-
-    text =
-      text.substring(
-        1,
-        text.length - 1
+      showError(
+        "HTTPS REQUIRED",
+        "Open this page using the HTTPS GitHub Pages address."
       );
 
-  }
-
-
-  return text.trim();
-
-}
-
-
-/************************************************************
- * SHOW STATUS
- ************************************************************/
-
-function showStatus(
-  message,
-  type
-) {
-
-  statusBox.className =
-    'status ' +
-    type;
-
-  statusBox.innerHTML =
-    message;
-
-}
-
-
-/************************************************************
- * CLEAR STATUS
- ************************************************************/
-
-function clearStatus() {
-
-  statusBox.className =
-    'status';
-
-  statusBox.innerHTML =
-    '';
-
-}
-
-
-/************************************************************
- * CLEAR DETAILS
- ************************************************************/
-
-function clearDetails() {
-
-  details.style.display =
-    'none';
-
-  dSerial.textContent =
-    '-';
-
-  dName.textContent =
-    '-';
-
-  dOffice.textContent =
-    '-';
-
-  dContact.textContent =
-    '-';
-
-  dVehicle.textContent =
-    '-';
-
-  dColor.textContent =
-    '-';
-
-  dPlate.textContent =
-    '-';
-
-}
-
-
-/************************************************************
- * SHOW DETAILS
- ************************************************************/
-
-function showDetails(
-  result
-) {
-
-  dSerial.textContent =
-    result.serial ||
-    '-';
-
-  dName.textContent =
-    result.name ||
-    '-';
-
-  dOffice.textContent =
-    result.office ||
-    '-';
-
-  dContact.textContent =
-    result.contact ||
-    '-';
-
-  dVehicle.textContent =
-    result.vehicle ||
-    '-';
-
-  dColor.textContent =
-    result.color ||
-    '-';
-
-  dPlate.textContent =
-    result.plate ||
-    '-';
-
-
-  details.style.display =
-    'block';
-
-}
-
-
-/************************************************************
- * ENABLE CONTROLS
- ************************************************************/
-
-function enableControls() {
-
-  processing =
-    false;
-
-  scanButton.disabled =
-    false;
-
-  clearButton.disabled =
-    false;
-
-  cameraButton.disabled =
-    false;
-
-  uploadButton.disabled =
-    false;
-
-}
-
-
-/************************************************************
- * DISABLE CONTROLS
- ************************************************************/
-
-function disableControls() {
-
-  scanButton.disabled =
-    true;
-
-  clearButton.disabled =
-    true;
-
-  cameraButton.disabled =
-    true;
-
-  uploadButton.disabled =
-    true;
-
-}
-
-
-/************************************************************
- * START CAMERA
- ************************************************************/
-
-async function startCamera() {
-
-  if (processing) {
-
-    return;
-
-  }
-
-
-  if (
-    !navigator.mediaDevices ||
-    !navigator.mediaDevices.getUserMedia
-  ) {
-
-    showStatus(
-      'CAMERA IS NOT SUPPORTED BY THIS BROWSER.',
-      'error'
-    );
-
-    return;
-
-  }
-
-
-  try {
+      return;
+    }
+
+    if (
+      !navigator.mediaDevices ||
+      !navigator.mediaDevices.getUserMedia
+    ) {
+
+      showError(
+        "CAMERA NOT SUPPORTED",
+        "Your current browser does not support camera access."
+      );
+
+      return;
+    }
 
     stopCamera();
 
+    setStatus(
+      "Opening camera..."
+    );
 
-    stream =
-      await navigator.mediaDevices
-        .getUserMedia({
+    try {
 
-          video: {
+      /*
+       * Prefer rear camera.
+       */
+      stream =
+        await navigator.mediaDevices
+          .getUserMedia({
 
-            facingMode: {
-              ideal: 'environment'
+            video: {
+              facingMode: {
+                ideal: "environment"
+              },
+
+              width: {
+                ideal: 1280
+              },
+
+              height: {
+                ideal: 720
+              }
             },
 
-            width: {
-              ideal: 1280
-            },
+            audio: false
+          });
 
-            height: {
-              ideal: 720
-            }
+    } catch (firstError) {
 
-          },
+      console.error(
+        firstError
+      );
 
-          audio: false
+      /*
+       * Desktop/fallback camera.
+       */
+      try {
 
-        });
+        stream =
+          await navigator.mediaDevices
+            .getUserMedia({
 
+              video: true,
+
+              audio: false
+            });
+
+      } catch (secondError) {
+
+        console.error(
+          secondError
+        );
+
+        showError(
+          "CAMERA ERROR",
+          "Hindi mabuksan ang camera. Check HTTPS at browser camera permission."
+        );
+
+        return;
+      }
+    }
 
     video.srcObject =
       stream;
 
-
-    cameraBox.style.display =
-      'block';
-
-
-    stopButton.style.display =
-      'block';
-
-
-    cameraStatus.textContent =
-      'Point the camera at the QR code.';
-
-
-    await video.play();
-
+    try {
+      await video.play();
+    } catch (e) {
+      console.error(e);
+    }
 
     scanning =
       true;
 
-
-    scanCameraFrame();
-
-  }
-
-  catch (error) {
-
-    console.error(
-      error
+    setStatus(
+      "Camera active. Point the QR inside the green frame."
     );
 
-
-    showStatus(
-      'CAMERA ACCESS DENIED OR UNAVAILABLE.',
-      'error'
-    );
-
-  }
-
-}
-
-
-/************************************************************
- * CAMERA SCAN FRAME
- ************************************************************/
-
-function scanCameraFrame() {
-
-  if (
-    !scanning ||
-    !stream
-  ) {
-
-    return;
-
-  }
-
-
-  if (
-    video.readyState <
-    2
-  ) {
-
-    animationFrame =
-      requestAnimationFrame(
-        scanCameraFrame
-      );
-
-    return;
-
-  }
-
-
-  const width =
-    video.videoWidth;
-
-
-  const height =
-    video.videoHeight;
-
-
-  if (
-    !width ||
-    !height
-  ) {
-
-    animationFrame =
-      requestAnimationFrame(
-        scanCameraFrame
-      );
-
-    return;
-
-  }
-
-
-  canvas.width =
-    width;
-
-
-  canvas.height =
-    height;
-
-
-  const context =
-    canvas.getContext(
-      '2d',
-      {
-        willReadFrequently:
-          true
-      }
-    );
-
-
-  context.drawImage(
-    video,
-    0,
-    0,
-    width,
-    height
-  );
-
-
-  const imageData =
-    context.getImageData(
-      0,
-      0,
-      width,
-      height
-    );
-
-
-  const code =
-    jsQR(
-      imageData.data,
-      width,
-      height,
-      {
-        inversionAttempts:
-          'attemptBoth'
-      }
-    );
-
-
-  if (
-    code &&
-    code.data
-  ) {
-
-    const decoded =
-      normalizeSerial(
-        code.data
-      );
-
-
-    if (decoded) {
-
-      stopCamera();
-
-
-      serialInput.value =
-        decoded;
-
-
-      submitSerialNumber();
-
-
-      return;
-
-    }
-
-  }
-
-
-  animationFrame =
     requestAnimationFrame(
       scanCameraFrame
     );
-
-}
-
-
-/************************************************************
- * STOP CAMERA
- ************************************************************/
-
-function stopCamera() {
-
-  scanning =
-    false;
+  }
 
 
-  if (
-    animationFrame
-  ) {
+  function stopCamera() {
 
-    cancelAnimationFrame(
-      animationFrame
+    scanning =
+      false;
+
+    if (stream) {
+
+      stream
+        .getTracks()
+        .forEach(
+          function(track) {
+            track.stop();
+          }
+        );
+
+      stream =
+        null;
+    }
+
+    video.srcObject =
+      null;
+
+    setStatus(
+      "Camera stopped."
     );
-
-
-    animationFrame =
-      null;
-
   }
 
 
-  if (
-    stream
-  ) {
+  function scanCameraFrame() {
 
-    stream
-      .getTracks()
-      .forEach(
-        function(track) {
-
-          track.stop();
-
-        }
-      );
-
-
-    stream =
-      null;
-
-  }
-
-
-  video.pause();
-
-
-  video.srcObject =
-    null;
-
-
-  cameraBox.style.display =
-    'none';
-
-
-  stopButton.style.display =
-    'none';
-
-}
-
-
-/************************************************************
- * OPEN FILE
- ************************************************************/
-
-uploadButton.addEventListener(
-  'click',
-  function() {
+    if (!scanning) {
+      return;
+    }
 
     if (
-      !processing &&
-      !uploadProcessing
+      video.readyState >= 2 &&
+      video.videoWidth > 0 &&
+      !busy
     ) {
 
-      fileInput.value =
-        '';
+      const maxWidth =
+        1000;
 
-      fileInput.click();
+      const scale =
+        Math.min(
+          1,
+          maxWidth /
+            video.videoWidth
+        );
 
+      canvas.width =
+        Math.floor(
+          video.videoWidth *
+          scale
+        );
+
+      canvas.height =
+        Math.floor(
+          video.videoHeight *
+          scale
+        );
+
+      ctx.drawImage(
+        video,
+        0,
+        0,
+        canvas.width,
+        canvas.height
+      );
+
+      const imageData =
+        ctx.getImageData(
+          0,
+          0,
+          canvas.width,
+          canvas.height
+        );
+
+      const code =
+        jsQR(
+          imageData.data,
+          imageData.width,
+          imageData.height,
+          {
+            inversionAttempts:
+              "attemptBoth"
+          }
+        );
+
+      if (
+        code &&
+        code.data
+      ) {
+
+        handleDecodedQR(
+          code.data
+        );
+
+        return;
+      }
     }
 
-  }
-);
-
-
-/************************************************************
- * FILE SELECT
- ************************************************************/
-
-fileInput.addEventListener(
-  'change',
-  function(event) {
-
-    const file =
-      event.target.files &&
-      event.target.files[0];
-
-
-    if (!file) {
-
-      return;
-
-    }
-
-
-    decodeImage(
-      file
+    requestAnimationFrame(
+      scanCameraFrame
     );
-
-  }
-);
-
-
-/************************************************************
- * DECODE IMAGE
- ************************************************************/
-
-function decodeImage(
-  file
-) {
-
-  if (processing) {
-
-    return;
-
   }
 
 
-  if (uploadProcessing) {
-
-    return;
-
-  }
-
-
-  if (
-    typeof jsQR !==
-    'function'
-  ) {
-
-    showStatus(
-      'QR LIBRARY FAILED TO LOAD. REFRESH THE PAGE.',
-      'error'
-    );
-
-    return;
-
-  }
-
-
-  uploadProcessing =
-    true;
-
-
-  showStatus(
-    '🖼️ READING QR IMAGE...',
-    'processing'
-  );
-
-
-  const reader =
-    new FileReader();
-
-
-  reader.onload =
-    function() {
-
-      const image =
-        new Image();
-
-
-      image.onload =
-        function() {
-
-          try {
-
-            const maxSize =
-              1800;
-
-
-            let width =
-              image.naturalWidth;
-
-
-            let height =
-              image.naturalHeight;
-
-
-            if (
-              width > maxSize ||
-              height > maxSize
-            ) {
-
-              const ratio =
-                Math.min(
-                  maxSize / width,
-                  maxSize / height
-                );
-
-
-              width =
-                Math.floor(
-                  width * ratio
-                );
-
-
-              height =
-                Math.floor(
-                  height * ratio
-                );
-
-            }
-
-
-            canvas.width =
-              width;
-
-
-            canvas.height =
-              height;
-
-
-            const context =
-              canvas.getContext(
-                '2d',
-                {
-                  willReadFrequently:
-                    true
-                }
-              );
-
-
-            context.drawImage(
-              image,
-              0,
-              0,
-              width,
-              height
-            );
-
-
-            const imageData =
-              context.getImageData(
-                0,
-                0,
-                width,
-                height
-              );
-
-
-            const code =
-              jsQR(
-                imageData.data,
-                width,
-                height,
-                {
-                  inversionAttempts:
-                    'attemptBoth'
-                }
-              );
-
-
-            uploadProcessing =
-              false;
-
-
-            if (
-              !code ||
-              !code.data
-            ) {
-
-              showStatus(
-                'NO QR CODE FOUND IN IMAGE.',
-                'error'
-              );
-
-              return;
-
-            }
-
-
-            const serial =
-              normalizeSerial(
-                code.data
-              );
-
-
-            if (!serial) {
-
-              showStatus(
-                'QR CODE WAS READ BUT CONTAINS NO PERSON ID.',
-                'error'
-              );
-
-              return;
-
-            }
-
-
-            serialInput.value =
-              serial;
-
-
-            submitSerialNumber();
-
-          }
-
-          catch (error) {
-
-            uploadProcessing =
-              false;
-
-
-            showStatus(
-              'UNABLE TO READ QR IMAGE.',
-              'error'
-            );
-
-
-            console.error(
-              error
-            );
-
-          }
-
-        };
-
-
-      image.onerror =
-        function() {
-
-          uploadProcessing =
-            false;
-
-
-          showStatus(
-            'INVALID IMAGE FILE.',
-            'error'
+  /*
+   * ========================================================
+   * UPLOAD
+   * ========================================================
+   */
+
+  fileInput.addEventListener(
+    "change",
+    async function() {
+
+      const file =
+        this.files &&
+        this.files[0];
+
+      if (!file) {
+        return;
+      }
+
+      clearResult();
+
+      if (
+        !file.type.startsWith(
+          "image/"
+        )
+      ) {
+
+        showError(
+          "INVALID FILE",
+          "Use PNG, JPG/JPEG, WebP, or a screenshot."
+        );
+
+        this.value =
+          "";
+
+        return;
+      }
+
+      try {
+
+        setStatus(
+          "Reading uploaded QR image..."
+        );
+
+        const img =
+          await loadImage(
+            file
           );
 
-        };
+        const code =
+          decodeImage(
+            img
+          );
 
+        if (
+          !code ||
+          !code.data
+        ) {
 
-      image.src =
-        reader.result;
+          showError(
+            "QR NOT FOUND",
+            "Hindi mabasa ang QR. Gumamit ng malinaw na screenshot o larawan."
+          );
 
-    };
+          return;
+        }
 
+        handleDecodedQR(
+          code.data
+        );
 
-  reader.onerror =
-    function() {
+      } catch (error) {
 
-      uploadProcessing =
-        false;
+        console.error(
+          error
+        );
 
+        showError(
+          "IMAGE ERROR",
+          "Hindi mabuksan o mabasa ang image."
+        );
 
-      showStatus(
-        'UNABLE TO READ FILE.',
-        'error'
-      );
+      } finally {
 
-    };
-
-
-  reader.readAsDataURL(
-    file
+        this.value =
+          "";
+      }
+    }
   );
 
-}
 
+  function loadImage(file) {
 
-/************************************************************
- * SUBMIT PERSON ID TO GOOGLE APPS SCRIPT
- ************************************************************/
+    return new Promise(
+      function(resolve, reject) {
 
-function submitSerialNumber() {
+        const url =
+          URL.createObjectURL(
+            file
+          );
 
-  if (processing) {
+        const img =
+          new Image();
 
-    return;
+        img.onload =
+          function() {
 
+            URL.revokeObjectURL(
+              url
+            );
+
+            resolve(img);
+          };
+
+        img.onerror =
+          function() {
+
+            URL.revokeObjectURL(
+              url
+            );
+
+            reject(
+              new Error(
+                "Unable to load image."
+              )
+            );
+          };
+
+        img.src =
+          url;
+      }
+    );
   }
 
 
-  const serial =
-    normalizeSerial(
-      serialInput.value
-    );
+  function decodeImage(img) {
 
+    const sizes = [
+      1600,
+      1200,
+      900,
+      700
+    ];
 
-  if (!serial) {
+    for (
+      let i = 0;
+      i < sizes.length;
+      i++
+    ) {
 
-    showStatus(
-      'PLEASE ENTER OR SCAN A PERSON ID.',
-      'error'
-    );
+      const maxWidth =
+        sizes[i];
 
+      const scale =
+        Math.min(
+          1,
+          maxWidth /
+            img.naturalWidth
+        );
 
-    serialInput.focus();
+      const width =
+        Math.max(
+          1,
+          Math.floor(
+            img.naturalWidth *
+            scale
+          )
+        );
 
+      const height =
+        Math.max(
+          1,
+          Math.floor(
+            img.naturalHeight *
+            scale
+          )
+        );
 
-    return;
+      canvas.width =
+        width;
 
+      canvas.height =
+        height;
+
+      ctx.clearRect(
+        0,
+        0,
+        width,
+        height
+      );
+
+      ctx.drawImage(
+        img,
+        0,
+        0,
+        width,
+        height
+      );
+
+      const imageData =
+        ctx.getImageData(
+          0,
+          0,
+          width,
+          height
+        );
+
+      const code =
+        jsQR(
+          imageData.data,
+          imageData.width,
+          imageData.height,
+          {
+            inversionAttempts:
+              "attemptBoth"
+          }
+        );
+
+      if (
+        code &&
+        code.data
+      ) {
+        return code;
+      }
+    }
+
+    return null;
   }
 
 
-  if (
-    !GAS_WEB_APP_URL ||
-    !/\/exec$/i.test(
-      GAS_WEB_APP_URL
-    )
+  /*
+   * ========================================================
+   * QR VALUE
+   * ========================================================
+   */
+
+  function handleDecodedQR(
+    raw
   ) {
 
-    showStatus(
-      'GOOGLE APPS SCRIPT WEB APP URL IS NOT CONFIGURED.',
-      'error'
-    );
+    if (busy) {
+      return;
+    }
 
+    const serial =
+      normalizeSerial(
+        raw
+      );
 
-    return;
+    if (
+      !isValidSerial(
+        serial
+      )
+    ) {
 
-  }
-
-
-  serialInput.value =
-    serial;
-
-
-  processing =
-    true;
-
-
-  disableControls();
-
-
-  clearDetails();
-
-
-  againButton.style.display =
-    'none';
-
-
-  showStatus(
-    '⏳ PROCESSING...<br>' +
-    '<small>' +
-    escapeHtml(
-      serial
-    ) +
-    '</small>',
-    'processing'
-  );
-
-
-  /*
-   * Unique JSONP callback.
-   */
-
-  const callbackName =
-    'qrScannerCallback_' +
-    Date.now() +
-    '_' +
-    Math.floor(
-      Math.random() *
-      1000000
-    );
-
-
-  const script =
-    document.createElement(
-      'script'
-    );
-
-
-  script.async =
-    true;
-
-
-  let finished =
-    false;
-
-
-  function finish() {
-
-    if (finished) {
+      showError(
+        "INVALID QR CODE",
+        "The QR must contain only a valid Serial Number such as O-12345 or 023449."
+      );
 
       return;
-
     }
 
+    const now =
+      Date.now();
 
-    finished =
-      true;
-
-
+    /*
+     * Camera frames often decode the same QR repeatedly.
+     */
     if (
-      requestTimeout
+      serial ===
+        lastDecoded &&
+      now -
+        lastDecodedAt <
+        2500
     ) {
+      return;
+    }
 
-      clearTimeout(
-        requestTimeout
+    lastDecoded =
+      serial;
+
+    lastDecodedAt =
+      now;
+
+    sendScan(
+      serial
+    );
+  }
+
+
+  function normalizeSerial(
+    value
+  ) {
+
+    return String(
+      value || ""
+    )
+      .replace(
+        /\u00A0/g,
+        " "
+      )
+      .trim()
+      .toUpperCase();
+  }
+
+
+  function isValidSerial(
+    serial
+  ) {
+
+    if (!serial) {
+      return false;
+    }
+
+    return /^[A-Z0-9][A-Z0-9 _-]{1,39}$/
+      .test(
+        serial
       );
-
-
-      requestTimeout =
-        null;
-
-    }
-
-
-    if (
-      script &&
-      script.parentNode
-    ) {
-
-      script.parentNode.removeChild(
-        script
-      );
-
-    }
-
-
-    try {
-
-      delete window[
-        callbackName
-      ];
-
-    }
-
-    catch (error) {
-
-      window[
-        callbackName
-      ] =
-        undefined;
-
-    }
-
-
-    enableControls();
-
   }
 
 
   /*
-   * JSONP callback
+   * ========================================================
+   * GOOGLE APPS SCRIPT JSONP
+   * ========================================================
    */
 
-  window[
-    callbackName
-  ] =
-    function(result) {
+  function sendScan(
+    serial
+  ) {
 
-      if (finished) {
+    if (
+      !APPS_SCRIPT_URL ||
+      APPS_SCRIPT_URL.includes(
+        "PASTE_YOUR"
+      )
+    ) {
 
-        return;
-
-      }
-
-
-      finish();
-
-
-      handleResult(
-        result
+      showError(
+        "APPS SCRIPT URL NOT SET",
+        "Paste the deployed Apps Script /exec URL into index.html first."
       );
 
-    };
+      return;
+    }
 
+    busy =
+      true;
 
-  /*
-   * Network error
-   */
+    setStatus(
+      "Processing " +
+      serial +
+      "..."
+    );
 
-  script.onerror =
-    function() {
+    const callbackName =
+      "cgfleetCallback_" +
+      Date.now() +
+      "_" +
+      Math.floor(
+        Math.random() *
+        100000
+      );
+
+    const script =
+      document.createElement(
+        "script"
+      );
+
+    let finished =
+      false;
+
+    function cleanup() {
+
+      try {
+        script.remove();
+      } catch (e) {}
+
+      try {
+        delete window[
+          callbackName
+        ];
+      } catch (e) {}
+    }
+
+    function finish() {
 
       if (finished) {
-
-        return;
-
+        return false;
       }
 
+      finished =
+        true;
 
-      finish();
+      cleanup();
 
+      busy =
+        false;
 
-      showStatus(
-        'UNABLE TO CONNECT TO GOOGLE APPS SCRIPT.',
-        'error'
+      return true;
+    }
+
+    const timeout =
+      setTimeout(
+        function() {
+
+          if (!finish()) {
+            return;
+          }
+
+          showError(
+            "CONNECTION ERROR",
+            "Walang response mula sa Google Apps Script. Check ang /exec URL at deployment."
+          );
+
+          resumeCamera();
+
+        },
+        15000
       );
 
 
-      againButton.style.display =
-        'block';
+    window[
+      callbackName
+    ] =
+      function(data) {
 
-    };
+        clearTimeout(
+          timeout
+        );
+
+        if (!finish()) {
+          return;
+        }
+
+        if (
+          !data ||
+          data.success !== true
+        ) {
+
+          showError(
+            data && data.error
+              ? data.error
+              : "SCAN ERROR",
+
+            data && data.message
+              ? data.message
+              : "Hindi ma-process ang QR code."
+          );
+
+          resumeCamera();
+
+          return;
+        }
+
+        showSuccess(
+          data
+        );
+
+        resumeCamera(
+          1000
+        );
+      };
 
 
-  /*
-   * Timeout
-   */
+    script.onerror =
+      function() {
 
-  requestTimeout =
+        clearTimeout(
+          timeout
+        );
+
+        if (!finish()) {
+          return;
+        }
+
+        showError(
+          "CONNECTION ERROR",
+          "Hindi ma-access ang Google Apps Script Web App."
+        );
+
+        resumeCamera();
+      };
+
+
+    const separator =
+      APPS_SCRIPT_URL.includes(
+        "?"
+      )
+        ? "&"
+        : "?";
+
+
+    script.src =
+      APPS_SCRIPT_URL +
+      separator +
+      "action=scan" +
+      "&serial=" +
+      encodeURIComponent(
+        serial
+      ) +
+      "&callback=" +
+      encodeURIComponent(
+        callbackName
+      );
+
+
+    document.body.appendChild(
+      script
+    );
+  }
+
+
+  function resumeCamera(
+    delay = 0
+  ) {
+
+    if (!scanning) {
+      return;
+    }
+
     setTimeout(
       function() {
 
-        if (finished) {
+        if (scanning) {
 
-          return;
-
+          requestAnimationFrame(
+            scanCameraFrame
+          );
         }
-
-
-        finish();
-
-
-        showStatus(
-          'REQUEST TIMEOUT. PLEASE TRY AGAIN.',
-          'error'
-        );
-
-
-        againButton.style.display =
-          'block';
-
       },
-      30000
+      delay
     );
-
-
-  /*
-   * IMPORTANT:
-   *
-   * This exactly matches
-   * Code.gs doGet(e).
-   */
-
-  const url =
-    GAS_WEB_APP_URL +
-    '?action=processScan' +
-    '&qr=' +
-    encodeURIComponent(
-      serial
-    ) +
-    '&callback=' +
-    encodeURIComponent(
-      callbackName
-    ) +
-    '&_=' +
-    Date.now();
-
-
-  script.src =
-    url;
-
-
-  document.head.appendChild(
-    script
-  );
-
-}
-
-
-/************************************************************
- * HANDLE RESULT
- ************************************************************/
-
-function handleResult(
-  result
-) {
-
-  if (!result) {
-
-    showStatus(
-      'NO RESPONSE FROM SERVER.',
-      'error'
-    );
-
-
-    againButton.style.display =
-      'block';
-
-
-    return;
-
-  }
-
-
-  if (
-    result.success
-  ) {
-
-    showDetails(
-      result
-    );
-
-
-    if (
-      result.action ===
-      'TIME IN'
-    ) {
-
-      showStatus(
-        '🟢 TIME IN<br>' +
-        '<small>' +
-        escapeHtml(
-          result.dateTime ||
-          ''
-        ) +
-        '</small>',
-        'timein'
-      );
-
-    }
-
-
-    else if (
-      result.action ===
-      'TIME OUT'
-    ) {
-
-      showStatus(
-        '🔴 TIME OUT<br>' +
-        '<small>' +
-        escapeHtml(
-          result.dateTime ||
-          ''
-        ) +
-        '</small>',
-        'timeout'
-      );
-
-    }
-
-
-    else {
-
-      showStatus(
-        '✅ SCAN SUCCESSFUL',
-        'timein'
-      );
-
-    }
-
-
-    againButton.style.display =
-      'block';
-
-
-    return;
-
   }
 
 
   /*
-   * Backend error
+   * ========================================================
+   * RESULT UI
+   * ========================================================
    */
 
-  showStatus(
-    '❌ ' +
-    escapeHtml(
-      result.message ||
-      'INVALID PERSON ID'
-    ),
-    'error'
-  );
-
-
-  againButton.style.display =
-    'block';
-
-}
-
-
-/************************************************************
- * CLEAR
- ************************************************************/
-
-function clearScanner() {
-
-  stopCamera();
-
-
-  if (
-    requestTimeout
+  function showSuccess(
+    data
   ) {
 
-    clearTimeout(
-      requestTimeout
+    const isIn =
+      data.action ===
+      "TIME IN";
+
+    result.className =
+      "result " +
+      (
+        isIn
+          ? "in"
+          : "out"
+      );
+
+    head.textContent =
+      isIn
+        ? "TIME IN — GREEN"
+        : "TIME OUT — RED";
+
+    details.innerHTML =
+      item(
+        "Serial Number",
+        data.serial
+      ) +
+      item(
+        "Rank / Full Name",
+        data.name
+      ) +
+      item(
+        "Office / Unit",
+        data.office
+      ) +
+      item(
+        "Contact Number",
+        data.contact
+      ) +
+      item(
+        "Vehicle / Model",
+        data.vehicle
+      ) +
+      item(
+        "Color of Vehicle",
+        data.color
+      ) +
+      item(
+        "Car Plate Number",
+        data.plate
+      ) +
+      item(
+        "Date / Time",
+        data.dateTime
+      ) +
+      item(
+        "Current Status",
+        data.status
+      );
+
+    result.style.display =
+      "block";
+
+    setStatus(
+      data.action +
+      " recorded successfully."
     );
-
-
-    requestTimeout =
-      null;
-
   }
 
 
-  processing =
-    false;
-
-
-  uploadProcessing =
-    false;
-
-
-  serialInput.value =
-    '';
-
-
-  clearStatus();
-
-
-  clearDetails();
-
-
-  againButton.style.display =
-    'none';
-
-
-  serialInput.focus();
-
-
-  enableControls();
-
-}
-
-
-/************************************************************
- * SCAN AGAIN
- ************************************************************/
-
-againButton.addEventListener(
-  'click',
-  function() {
-
-    clearScanner();
-
-  }
-);
-
-
-/************************************************************
- * STOP CAMERA
- ************************************************************/
-
-stopButton.addEventListener(
-  'click',
-  function() {
-
-    stopCamera();
-
-  }
-);
-
-
-/************************************************************
- * CAMERA BUTTON
- ************************************************************/
-
-cameraButton.addEventListener(
-  'click',
-  function() {
-
-    startCamera();
-
-  }
-);
-
-
-/************************************************************
- * SCAN BUTTON
- ************************************************************/
-
-scanButton.addEventListener(
-  'click',
-  function() {
-
-    submitSerialNumber();
-
-  }
-);
-
-
-/************************************************************
- * ENTER KEY
- ************************************************************/
-
-serialInput.addEventListener(
-  'keydown',
-  function(event) {
-
-    if (
-      event.key ===
-      'Enter'
-    ) {
-
-      event.preventDefault();
-
-
-      submitSerialNumber();
-
-    }
-
-  }
-);
-
-
-/************************************************************
- * ESCAPE HTML
- ************************************************************/
-
-function escapeHtml(
-  value
-) {
-
-  if (
-    value === null ||
-    value === undefined
+  function showError(
+    title,
+    message
   ) {
 
-    return '';
+    result.className =
+      "result error";
 
+    head.textContent =
+      title;
+
+    details.innerHTML =
+      item(
+        "Message",
+        message
+      );
+
+    result.style.display =
+      "block";
+
+    setStatus(
+      title
+    );
   }
 
 
-  return String(
+  function clearResult() {
+
+    result.style.display =
+      "none";
+  }
+
+
+  function setStatus(
+    message
+  ) {
+
+    status.textContent =
+      message;
+  }
+
+
+  function item(
+    label,
     value
-  )
-    .replace(
-      /&/g,
-      '&amp;'
-    )
-    .replace(
-      /</g,
-      '&lt;'
-    )
-    .replace(
-      />/g,
-      '&gt;'
-    )
-    .replace(
-      /"/g,
-      '&quot;'
-    )
-    .replace(
-      /'/g,
-      '&#039;'
+  ) {
+
+    return (
+      '<div class="item">' +
+        '<div class="label">' +
+          escapeHtml(
+            label
+          ) +
+        '</div>' +
+        '<div class="value">' +
+          escapeHtml(
+            value || "-"
+          ) +
+        '</div>' +
+      '</div>'
     );
+  }
 
-}
 
+  function escapeHtml(
+    value
+  ) {
 
-/************************************************************
- * INITIALIZE
- ************************************************************/
-
-clearDetails();
-
-serialInput.focus();
+    return String(
+      value == null
+        ? ""
+        : value
+    )
+      .replace(
+        /&/g,
+        "&amp;"
+      )
+      .replace(
+        /</g,
+        "&lt;"
+      )
+      .replace(
+        />/g,
+        "&gt;"
+      )
+      .replace(
+        /"/g,
+        "&quot;"
+      )
+      .replace(
+        /'/g,
+        "&#039;"
+      );
+  }
 
 </script>
 
 </body>
-
 </html>

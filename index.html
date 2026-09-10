@@ -83,9 +83,17 @@
     }
 
     @keyframes scan {
-      0% { top: 10%; }
-      50% { top: 90%; }
-      100% { top: 10%; }
+      0% {
+        top: 10%;
+      }
+
+      50% {
+        top: 90%;
+      }
+
+      100% {
+        top: 10%;
+      }
     }
 
     .camera-status {
@@ -115,6 +123,11 @@
       text-align: center;
     }
 
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
     #startCamera {
       background: #198754;
       color: white;
@@ -129,6 +142,13 @@
       width: 100%;
       margin-top: 10px;
       background: #6f42c1;
+      color: white;
+    }
+
+    #backToScanner {
+      width: 100%;
+      margin-top: 10px;
+      background: #343a40;
       color: white;
     }
 
@@ -246,6 +266,7 @@
     }
 
     @media (max-width: 450px) {
+
       .buttons {
         flex-direction: column;
       }
@@ -316,6 +337,12 @@
     🔄 SWITCH CAMERA
   </button>
 
+  <button
+    id="backToScanner"
+    onclick="switchBackToScanner()">
+    ↩️ SWITCH BACK TO SCANNER
+  </button>
+
   <div class="divider">
     OR
   </div>
@@ -347,35 +374,60 @@
       <div class="detail-label">
         Rank / Full Name
       </div>
-      <div id="detailName" class="detail-value">-</div>
+
+      <div
+        id="detailName"
+        class="detail-value">
+        -
+      </div>
     </div>
 
     <div class="detail-row">
       <div class="detail-label">
         Office / Unit
       </div>
-      <div id="detailOffice" class="detail-value">-</div>
+
+      <div
+        id="detailOffice"
+        class="detail-value">
+        -
+      </div>
     </div>
 
     <div class="detail-row">
       <div class="detail-label">
         Vehicle / Model
       </div>
-      <div id="detailVehicle" class="detail-value">-</div>
+
+      <div
+        id="detailVehicle"
+        class="detail-value">
+        -
+      </div>
     </div>
 
     <div class="detail-row">
       <div class="detail-label">
         Contact Number
       </div>
-      <div id="detailContact" class="detail-value">-</div>
+
+      <div
+        id="detailContact"
+        class="detail-value">
+        -
+      </div>
     </div>
 
     <div class="detail-row">
       <div class="detail-label">
         Plate Number
       </div>
-      <div id="detailPlate" class="detail-value plate-value">-</div>
+
+      <div
+        id="detailPlate"
+        class="detail-value plate-value">
+        -
+      </div>
     </div>
 
   </div>
@@ -394,6 +446,11 @@
 
 const GAS_URL =
   "https://script.google.com/macros/s/AKfycbxKPOKY98yBA9Y-lZOiOa9Wzxx7a2nP6fwIE74yYKZGHjPh9QcpuB7pBcK8UQaOegON9g/exec";
+
+
+/* ==========================================
+   ELEMENTS
+========================================== */
 
 const video =
   document.getElementById("video");
@@ -424,6 +481,12 @@ const scanAgainButton =
 const cameraStatus =
   document.getElementById("cameraStatus");
 
+const switchButton =
+  document.getElementById("switchCamera");
+
+const backButton =
+  document.getElementById("backToScanner");
+
 const detailName =
   document.getElementById("detailName");
 
@@ -439,13 +502,20 @@ const detailContact =
 const detailPlate =
   document.getElementById("detailPlate");
 
+
+/* ==========================================
+   VARIABLES
+========================================== */
+
 let stream = null;
 
 let scanning = false;
 
 let processing = false;
 
-let cameraMode = "environment";
+let cameras = [];
+
+let currentCameraIndex = 0;
 
 let lastQR = "";
 
@@ -453,7 +523,48 @@ let lastScanTime = 0;
 
 
 /* ==========================================
-   CAMERA
+   LOAD CAMERAS
+========================================== */
+
+async function loadCameras() {
+
+  try {
+
+    const devices =
+      await navigator.mediaDevices.enumerateDevices();
+
+    cameras =
+      devices.filter(function(device) {
+
+        return device.kind === "videoinput";
+
+      });
+
+    console.log(
+      "Available cameras:",
+      cameras
+    );
+
+    updateSwitchButton();
+
+  }
+
+  catch (error) {
+
+    console.error(
+      "Unable to enumerate cameras:",
+      error
+    );
+
+    cameras = [];
+
+  }
+
+}
+
+
+/* ==========================================
+   START CAMERA
 ========================================== */
 
 async function startCamera() {
@@ -466,8 +577,10 @@ async function startCamera() {
 
     stopCamera();
 
-    if (!navigator.mediaDevices ||
-        !navigator.mediaDevices.getUserMedia) {
+    if (
+      !navigator.mediaDevices ||
+      !navigator.mediaDevices.getUserMedia
+    ) {
 
       showStatus(
         "CAMERA NOT SUPPORTED<br>" +
@@ -478,16 +591,77 @@ async function startCamera() {
       return;
     }
 
+
+    /*
+     * First request permission.
+     */
+
+    const tempStream =
+      await navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: false
+      });
+
+
+    tempStream
+      .getTracks()
+      .forEach(function(track) {
+        track.stop();
+      });
+
+
+    /*
+     * Get all available cameras.
+     */
+
+    await loadCameras();
+
+
+    if (cameras.length === 0) {
+
+      showStatus(
+        "NO CAMERA FOUND",
+        "error"
+      );
+
+      return;
+    }
+
+
+    /*
+     * Make sure index is valid.
+     */
+
+    if (
+      currentCameraIndex < 0 ||
+      currentCameraIndex >= cameras.length
+    ) {
+
+      currentCameraIndex = 0;
+
+    }
+
+
+    const camera =
+      cameras[currentCameraIndex];
+
+
+    /*
+     * Open selected camera.
+     */
+
     stream =
       await navigator.mediaDevices.getUserMedia({
 
         video: {
-          facingMode: {
-            ideal: cameraMode
+          deviceId: {
+            exact: camera.deviceId
           },
+
           width: {
             ideal: 1280
           },
+
           height: {
             ideal: 720
           }
@@ -497,11 +671,16 @@ async function startCamera() {
 
       });
 
-    video.srcObject = stream;
+
+    video.srcObject =
+      stream;
+
 
     await video.play();
 
+
     scanning = true;
+
 
     cameraStatus.innerHTML =
       "🟢 CAMERA ON";
@@ -512,15 +691,27 @@ async function startCamera() {
     cameraStatus.style.color =
       "#0f5132";
 
+
     hideResult();
 
-    requestAnimationFrame(scanCamera);
+
+    updateSwitchButton();
+
+
+    requestAnimationFrame(
+      scanCamera
+    );
 
   }
 
   catch (error) {
 
-    console.error(error);
+    console.error(
+      "Camera error:",
+      error
+    );
+
+    scanning = false;
 
     cameraStatus.innerHTML =
       "🔴 CAMERA ERROR";
@@ -531,16 +722,14 @@ async function startCamera() {
     cameraStatus.style.color =
       "#842029";
 
+
     showStatus(
 
       "CAMERA PERMISSION BLOCKED<br>" +
 
       "<small>" +
-
       "Allow camera access for this website, " +
-
       "then reload the page." +
-
       "</small>",
 
       "error"
@@ -552,9 +741,14 @@ async function startCamera() {
 }
 
 
+/* ==========================================
+   STOP CAMERA
+========================================== */
+
 function stopCamera() {
 
   scanning = false;
+
 
   if (stream) {
 
@@ -570,7 +764,9 @@ function stopCamera() {
 
   }
 
+
   video.srcObject = null;
+
 
   cameraStatus.innerHTML =
     "🔴 Camera OFF";
@@ -584,19 +780,179 @@ function stopCamera() {
 }
 
 
+/* ==========================================
+   SWITCH CAMERA
+========================================== */
+
 async function switchCamera() {
 
   if (processing) {
     return;
   }
 
-  if (cameraMode === "environment") {
-    cameraMode = "user";
-  } else {
-    cameraMode = "environment";
+
+  /*
+   * If cameras are not loaded yet,
+   * load them first.
+   */
+
+  if (!cameras || cameras.length === 0) {
+
+    await loadCameras();
+
   }
 
+
+  if (!cameras || cameras.length <= 1) {
+
+    showStatus(
+      "ONLY ONE CAMERA FOUND",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  /*
+   * Move to next camera.
+   */
+
+  currentCameraIndex++;
+
+
+  if (
+    currentCameraIndex >= cameras.length
+  ) {
+
+    currentCameraIndex = 0;
+
+  }
+
+
+  /*
+   * Start selected camera.
+   */
+
   await startCamera();
+
+}
+
+
+/* ==========================================
+   SWITCH BACK TO SCANNER
+========================================== */
+
+async function switchBackToScanner() {
+
+  if (processing) {
+    return;
+  }
+
+
+  /*
+   * Stop current camera.
+   */
+
+  stopCamera();
+
+
+  /*
+   * Clear current result.
+   */
+
+  processing = false;
+
+  lastQR = "";
+
+  lastScanTime = 0;
+
+
+  /*
+   * Clear uploaded image.
+   */
+
+  fileInput.value = "";
+
+  preview.src = "";
+
+  preview.style.display =
+    "none";
+
+
+  /*
+   * Clear status.
+   */
+
+  statusBox.innerHTML =
+    "";
+
+  statusBox.className =
+    "";
+
+  statusBox.style.display =
+    "none";
+
+
+  /*
+   * Clear details.
+   */
+
+  hideDetails();
+
+
+  scanAgainButton.style.display =
+    "none";
+
+
+  /*
+   * Return to first camera.
+   */
+
+  currentCameraIndex = 0;
+
+
+  /*
+   * Start scanner again.
+   */
+
+  await startCamera();
+
+}
+
+
+/* ==========================================
+   UPDATE SWITCH BUTTON
+========================================== */
+
+function updateSwitchButton() {
+
+  if (!switchButton) {
+    return;
+  }
+
+
+  if (!cameras || cameras.length <= 1) {
+
+    switchButton.innerHTML =
+      "🔄 SWITCH CAMERA";
+
+    switchButton.disabled = false;
+
+    return;
+
+  }
+
+
+  switchButton.innerHTML =
+    "🔄 SWITCH CAMERA (" +
+    (currentCameraIndex + 1) +
+    "/" +
+    cameras.length +
+    ")";
+
+  switchButton.disabled = false;
 
 }
 
@@ -607,35 +963,50 @@ async function switchCamera() {
 
 function scanCamera() {
 
-  if (!scanning || processing) {
+  if (
+    !scanning ||
+    processing
+  ) {
+
     return;
+
   }
+
 
   if (
     video.readyState !==
     video.HAVE_ENOUGH_DATA
   ) {
 
-    requestAnimationFrame(scanCamera);
+    requestAnimationFrame(
+      scanCamera
+    );
 
     return;
+
   }
+
 
   if (
     video.videoWidth <= 0 ||
     video.videoHeight <= 0
   ) {
 
-    requestAnimationFrame(scanCamera);
+    requestAnimationFrame(
+      scanCamera
+    );
 
     return;
+
   }
+
 
   canvas.width =
     video.videoWidth;
 
   canvas.height =
     video.videoHeight;
+
 
   ctx.drawImage(
     video,
@@ -645,6 +1016,7 @@ function scanCamera() {
     canvas.height
   );
 
+
   const imageData =
     ctx.getImageData(
       0,
@@ -653,6 +1025,7 @@ function scanCamera() {
       canvas.height
     );
 
+
   const code =
     jsQR(
       imageData.data,
@@ -660,21 +1033,27 @@ function scanCamera() {
       imageData.height
     );
 
+
   if (code) {
 
-    handleQR(code.data);
+    handleQR(
+      code.data
+    );
 
     return;
 
   }
 
-  requestAnimationFrame(scanCamera);
+
+  requestAnimationFrame(
+    scanCamera
+  );
 
 }
 
 
 /* ==========================================
-   UPLOAD
+   UPLOAD QR
 ========================================== */
 
 fileInput.addEventListener(
@@ -684,23 +1063,30 @@ fileInput.addEventListener(
     const file =
       event.target.files[0];
 
+
     if (!file) {
       return;
     }
 
+
     stopCamera();
+
 
     processing = false;
 
+
     hideDetails();
+
 
     showStatus(
       "READING QR CODE...",
       "processing"
     );
 
+
     const reader =
       new FileReader();
+
 
     reader.onload =
       function(e) {
@@ -711,29 +1097,37 @@ fileInput.addEventListener(
         preview.style.display =
           "block";
 
+
         const img =
           new Image();
+
 
         img.onload =
           function() {
 
-            scanUploadedImage(img);
+            scanUploadedImage(
+              img
+            );
 
           };
+
 
         img.src =
           e.target.result;
 
       };
 
-    reader.readAsDataURL(file);
+
+    reader.readAsDataURL(
+      file
+    );
 
   }
 );
 
 
 /* ==========================================
-   UPLOADED IMAGE
+   SCAN UPLOADED IMAGE
 ========================================== */
 
 function scanUploadedImage(img) {
@@ -744,6 +1138,7 @@ function scanUploadedImage(img) {
   canvas.height =
     img.naturalHeight;
 
+
   ctx.drawImage(
     img,
     0,
@@ -751,6 +1146,7 @@ function scanUploadedImage(img) {
     canvas.width,
     canvas.height
   );
+
 
   const imageData =
     ctx.getImageData(
@@ -760,12 +1156,14 @@ function scanUploadedImage(img) {
       canvas.height
     );
 
+
   const code =
     jsQR(
       imageData.data,
       imageData.width,
       imageData.height
     );
+
 
   if (!code) {
 
@@ -775,13 +1173,19 @@ function scanUploadedImage(img) {
       "error"
     );
 
+
     scanAgainButton.style.display =
       "block";
 
+
     return;
+
   }
 
-  handleQR(code.data);
+
+  handleQR(
+    code.data
+  );
 
 }
 
@@ -796,18 +1200,24 @@ function handleQR(qrValue) {
     return;
   }
 
+
   qrValue =
     String(qrValue).trim();
 
+
   const now =
     Date.now();
+
 
   if (
     qrValue === lastQR &&
     now - lastScanTime < 3000
   ) {
+
     return;
+
   }
+
 
   lastQR =
     qrValue;
@@ -815,32 +1225,43 @@ function handleQR(qrValue) {
   lastScanTime =
     now;
 
+
   processing = true;
 
+
   stopCamera();
+
 
   showStatus(
     "PROCESSING...",
     "processing"
   );
 
+
   /*
    * JSONP request to Google Apps Script.
-   * This avoids browser CORS problems.
    */
 
   const callbackName =
     "qrCallback_" +
     Date.now() +
     "_" +
-    Math.floor(Math.random() * 100000);
+    Math.floor(
+      Math.random() * 100000
+    );
+
 
   window[callbackName] =
     function(result) {
 
+      let script =
+        null;
+
+
       try {
 
         processing = false;
+
 
         if (!result) {
 
@@ -849,17 +1270,27 @@ function handleQR(qrValue) {
             "error"
           );
 
+
           scanAgainButton.style.display =
             "block";
 
+
           return;
+
         }
+
 
         if (result.success) {
 
-          showDetails(result);
+          showDetails(
+            result
+          );
 
-          if (result.action === "TIME IN") {
+
+          if (
+            result.action ===
+            "TIME IN"
+          ) {
 
             showStatus(
               "🟢 TIME IN",
@@ -869,7 +1300,8 @@ function handleQR(qrValue) {
           }
 
           else if (
-            result.action === "TIME OUT"
+            result.action ===
+            "TIME OUT"
           ) {
 
             showStatus(
@@ -895,6 +1327,7 @@ function handleQR(qrValue) {
 
           hideDetails();
 
+
           showStatus(
             result.message ||
             "INVALID QR CODE",
@@ -902,6 +1335,7 @@ function handleQR(qrValue) {
           );
 
         }
+
 
         scanAgainButton.style.display =
           "block";
@@ -912,10 +1346,15 @@ function handleQR(qrValue) {
 
         delete window[callbackName];
 
-        if (script &&
-            script.parentNode) {
 
-          script.parentNode.removeChild(script);
+        if (
+          script &&
+          script.parentNode
+        ) {
+
+          script.parentNode.removeChild(
+            script
+          );
 
         }
 
@@ -923,11 +1362,18 @@ function handleQR(qrValue) {
 
     };
 
-  const script =
-    document.createElement("script");
+
+  script =
+    document.createElement(
+      "script"
+    );
+
 
   const encodedQR =
-    encodeURIComponent(qrValue);
+    encodeURIComponent(
+      qrValue
+    );
+
 
   script.src =
     GAS_URL +
@@ -937,12 +1383,17 @@ function handleQR(qrValue) {
     "&callback=" +
     callbackName;
 
+
   script.onerror =
     function() {
 
       processing = false;
 
-      delete window[callbackName];
+
+      delete window[
+        callbackName
+      ];
+
 
       showStatus(
         "CONNECTION ERROR<br>" +
@@ -950,16 +1401,25 @@ function handleQR(qrValue) {
         "error"
       );
 
+
       scanAgainButton.style.display =
         "block";
 
+
       if (script.parentNode) {
-        script.parentNode.removeChild(script);
+
+        script.parentNode.removeChild(
+          script
+        );
+
       }
 
     };
 
-  document.body.appendChild(script);
+
+  document.body.appendChild(
+    script
+  );
 
 }
 
@@ -971,25 +1431,44 @@ function handleQR(qrValue) {
 function showDetails(result) {
 
   detailName.textContent =
-    valueOrDash(result.name);
+    valueOrDash(
+      result.name
+    );
+
 
   detailOffice.textContent =
-    valueOrDash(result.office);
+    valueOrDash(
+      result.office
+    );
+
 
   detailVehicle.textContent =
-    valueOrDash(result.vehicle);
+    valueOrDash(
+      result.vehicle
+    );
+
 
   detailContact.textContent =
-    valueOrDash(result.contact);
+    valueOrDash(
+      result.contact
+    );
+
 
   detailPlate.textContent =
-    valueOrDash(result.plate);
+    valueOrDash(
+      result.plate
+    );
+
 
   detailsBox.style.display =
     "block";
 
 }
 
+
+/* ==========================================
+   VALUE OR DASH
+========================================== */
 
 function valueOrDash(value) {
 
@@ -1003,27 +1482,37 @@ function valueOrDash(value) {
 
   }
 
+
   return String(value);
 
 }
 
+
+/* ==========================================
+   HIDE DETAILS
+========================================== */
 
 function hideDetails() {
 
   detailsBox.style.display =
     "none";
 
+
   detailName.textContent =
     "-";
+
 
   detailOffice.textContent =
     "-";
 
+
   detailVehicle.textContent =
     "-";
 
+
   detailContact.textContent =
     "-";
+
 
   detailPlate.textContent =
     "-";
@@ -1035,15 +1524,23 @@ function hideDetails() {
    STATUS
 ========================================== */
 
-function showStatus(message, type) {
+function showStatus(
+  message,
+  type
+) {
 
   statusBox.innerHTML =
     message;
 
+
   statusBox.className =
     "";
 
-  statusBox.classList.add(type);
+
+  statusBox.classList.add(
+    type
+  );
+
 
   statusBox.style.display =
     "block";
@@ -1051,12 +1548,18 @@ function showStatus(message, type) {
 }
 
 
+/* ==========================================
+   HIDE RESULT
+========================================== */
+
 function hideResult() {
 
   statusBox.style.display =
     "none";
 
+
   hideDetails();
+
 
   scanAgainButton.style.display =
     "none";
@@ -1065,37 +1568,60 @@ function hideResult() {
 
 
 /* ==========================================
-   RESET
+   RESET SCANNER
 ========================================== */
 
 function resetScanner() {
 
   stopCamera();
 
+
   processing = false;
+
 
   lastQR = "";
 
+
   lastScanTime = 0;
+
 
   fileInput.value = "";
 
+
   preview.src = "";
+
 
   preview.style.display =
     "none";
 
-  statusBox.innerHTML = "";
 
-  statusBox.className = "";
+  statusBox.innerHTML =
+    "";
+
+
+  statusBox.className =
+    "";
+
 
   statusBox.style.display =
     "none";
 
+
   hideDetails();
+
 
   scanAgainButton.style.display =
     "none";
+
+
+  /*
+   * Automatically return to scanner.
+   */
+
+  currentCameraIndex = 0;
+
+
+  startCamera();
 
 }
 
@@ -1107,7 +1633,23 @@ function resetScanner() {
 window.addEventListener(
   "beforeunload",
   function() {
+
     stopCamera();
+
+  }
+);
+
+
+/* ==========================================
+   INITIALIZE
+========================================== */
+
+window.addEventListener(
+  "load",
+  function() {
+
+    loadCameras();
+
   }
 );
 

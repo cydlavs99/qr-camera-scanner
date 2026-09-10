@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>QR Time In / Time Out Scanner</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 15px;
+      background: #f4f6f8;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 520px;
+      margin: auto;
+      background: white;
+      border-radius: 18px;
+      padding: 20px;
+      box-shadow: 0 4px 20px rgba(0,0,0,.15);
+    }
+
+    h1 {
+      text-align: center;
+      margin: 0 0 8px;
+      font-size: 24px;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #666;
+      margin-bottom: 18px;
+    }
+
+    .camera-box {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      background: #111;
+      border-radius: 15px;
+      overflow: hidden;
+    }
+
+    #video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    #canvas {
+      display: none;
+    }
+
+    .scan-frame {
+      position: absolute;
+      width: 68%;
+      height: 68%;
+      left: 16%;
+      top: 16%;
+      border: 3px solid #00ff66;
+      border-radius: 16px;
+      pointer-events: none;
+    }
+
+    .scan-line {
+      position: absolute;
+      width: 80%;
+      left: 10%;
+      height: 2px;
+      background: #00ff66;
+      animation: scan 2s linear infinite;
+      pointer-events: none;
+    }
+
+    @keyframes scan {
+      0% {
+        top: 10%;
+      }
+
+      50% {
+        top: 90%;
+      }
+
+      100% {
+        top: 10%;
+      }
+    }
+
+    .camera-status {
+      margin-top: 10px;
+      padding: 10px;
+      text-align: center;
+      border-radius: 8px;
+      background: #e9ecef;
+      font-weight: bold;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    button {
+      flex: 1;
+      border: none;
+      border-radius: 9px;
+      padding: 14px 10px;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    #startButton {
+      background: #198754;
+      color: white;
+    }
+
+    #stopButton {
+      background: #dc3545;
+      color: white;
+    }
+
+    #switchButton {
+      width: 100%;
+      margin-top: 10px;
+      background: #7952b3;
+      color: white;
+    }
+
+    button:disabled {
+      opacity: .5;
+      cursor: not-allowed;
+    }
+
+    #message {
+      display: none;
+      margin-top: 18px;
+      padding: 16px;
+      border-radius: 12px;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .info {
+      background: #fff3cd;
+      color: #664d03;
+    }
+
+    .error {
+      background: #f8d7da;
+      color: #842029;
+    }
+
+    .success {
+      background: #d1e7dd;
+      color: #0f5132;
+    }
+
+    .help {
+      margin-top: 18px;
+      padding: 14px;
+      background: #f8f9fa;
+      border-radius: 10px;
+      color: #555;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 450px) {
+      .buttons {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <h1>QR TIME IN / TIME OUT</h1>
+
+  <div class="subtitle">
+    Camera QR Scanner
+  </div>
+
+  <div class="camera-box">
+
+    <video
+      id="video"
+      autoplay
+      muted
+      playsinline>
+    </video>
+
+    <div class="scan-frame"></div>
+    <div class="scan-line"></div>
+
+  </div>
+
+  <canvas id="canvas"></canvas>
+
+  <div
+    id="cameraStatus"
+    class="camera-status">
+    🔴 Camera OFF
+  </div>
+
+  <div class="buttons">
+
+    <button
+      id="startButton"
+      onclick="startCamera()">
+      📷 START CAMERA
+    </button>
+
+    <button
+      id="stopButton"
+      onclick="stopCamera()">
+      ⛔ STOP CAMERA
+    </button>
+
+  </div>
+
+  <button
+    id="switchButton"
+    onclick="switchCamera()">
+    🔄 SWITCH CAMERA
+  </button>
+
+  <div
+    id="message">
+  </div>
+
+  <div class="help">
+    <b>How to use:</b><br>
+    1. Press START CAMERA.<br>
+    2. Allow camera permission.<br>
+    3. Point the camera at the QR Code.<br>
+    4. The QR Code will be sent automatically to the monitoring system.
+  </div>
+
+</div>
+
+<script>
+
+  /*
+   * =====================================================
+   * IMPORTANT
+   * =====================================================
+   *
+   * PALITAN ITO NG IYONG GOOGLE APPS SCRIPT WEB APP URL.
+   *
+   * Halimbawa:
+   *
+   * https://script.google.com/macros/s/XXXXXXXXXXXX/exec
+   *
+   */
+
+  const GAS_WEB_APP_URL =
+    "https://script.google.com/macros/s/AKfycbxKPOKY98yBA9Y-lZOiOa9Wzxx7a2nP6fwIE74yYKZGHjPh9QcpuB7pBcK8UQaOegON9g/exec";
+
+
+  /*
+   * =====================================================
+   * ELEMENTS
+   * =====================================================
+   */
+
+  const video =
+    document.getElementById("video");
+
+  const canvas =
+    document.getElementById("canvas");
+
+  const ctx =
+    canvas.getContext(
+      "2d",
+      {
+        willReadFrequently: true
+      }
+    );
+
+  const cameraStatus =
+    document.getElementById("cameraStatus");
+
+  const messageBox =
+    document.getElementById("message");
+
+
+  /*
+   * =====================================================
+   * VARIABLES
+   * =====================================================
+   */
+
+  let stream = null;
+
+  let scanning = false;
+
+  let processing = false;
+
+  let currentFacingMode = "environment";
+
+  let lastQR = "";
+
+  let lastScanTime = 0;
+
+
+  /*
+   * =====================================================
+   * START CAMERA
+   * =====================================================
+   */
+
+  async function startCamera() {
+
+    if (processing) {
+      return;
+    }
+
+    hideMessage();
+
+    stopCamera();
+
+    if (
+      !navigator.mediaDevices ||
+      !navigator.mediaDevices.getUserMedia
+    ) {
+
+      showMessage(
+        "CAMERA NOT SUPPORTED",
+        "error"
+      );
+
+      return;
+    }
+
+    try {
+
+      stream =
+        await navigator.mediaDevices.getUserMedia({
+
+          video: {
+
+            facingMode: {
+              ideal: currentFacingMode
+            },
+
+            width: {
+              ideal: 1280
+            },
+
+            height: {
+              ideal: 720
+            }
+
+          },
+
+          audio: false
+
+        });
+
+      video.srcObject =
+        stream;
+
+      await video.play();
+
+      scanning = true;
+
+      cameraStatus.innerHTML =
+        "🟢 CAMERA ON";
+
+      cameraStatus.style.background =
+        "#d1e7dd";
+
+      cameraStatus.style.color =
+        "#0f5132";
+
+      requestAnimationFrame(
+        scanCamera
+      );
+
+    }
+
+    catch (error) {
+
+      console.error(error);
+
+      cameraStatus.innerHTML =
+        "🔴 CAMERA ERROR";
+
+      cameraStatus.style.background =
+        "#f8d7da";
+
+      cameraStatus.style.color =
+        "#842029";
+
+      showMessage(
+
+        "CAMERA PERMISSION BLOCKED<br>" +
+
+        "<small>" +
+
+        "Allow camera access in your browser, " +
+
+        "then press START CAMERA again." +
+
+        "</small>",
+
+        "error"
+
+      );
+
+    }
+
+  }
+
+
+  /*
+   * =====================================================
+   * STOP CAMERA
+   * =====================================================
+   */
+
+  function stopCamera() {
+
+    scanning = false;
+
+    if (stream) {
+
+      stream
+        .getTracks()
+        .forEach(function(track) {
+
+          track.stop();
+
+        });
+
+      stream = null;
+    }
+
+    video.srcObject = null;
+
+    cameraStatus.innerHTML =
+      "🔴 CAMERA OFF";
+
+    cameraStatus.style.background =
+      "#e9ecef";
+
+    cameraStatus.style.color =
+      "#212529";
+  }
+
+
+  /*
+   * =====================================================
+   * SWITCH CAMERA
+   * =====================================================
+   */
+
+  async function switchCamera() {
+
+    if (processing) {
+      return;
+    }
+
+    currentFacingMode =
+      currentFacingMode === "environment"
+        ? "user"
+        : "environment";
+
+    await startCamera();
+  }
+
+
+  /*
+   * =====================================================
+   * SCAN CAMERA
+   * =====================================================
+   */
+
+  function scanCamera() {
+
+    if (
+      !scanning ||
+      processing
+    ) {
+      return;
+    }
+
+    if (
+      video.readyState !==
+      video.HAVE_ENOUGH_DATA
+    ) {
+
+      requestAnimationFrame(
+        scanCamera
+      );
+
+      return;
+    }
+
+    if (
+      video.videoWidth <= 0 ||
+      video.videoHeight <= 0
+    ) {
+
+      requestAnimationFrame(
+        scanCamera
+      );
+
+      return;
+    }
+
+    canvas.width =
+      video.videoWidth;
+
+    canvas.height =
+      video.videoHeight;
+
+    ctx.drawImage(
+
+      video,
+
+      0,
+
+      0,
+
+      canvas.width,
+
+      canvas.height
+
+    );
+
+    const imageData =
+      ctx.getImageData(
+
+        0,
+
+        0,
+
+        canvas.width,
+
+        canvas.height
+
+      );
+
+    const code =
+      jsQR(
+
+        imageData.data,
+
+        imageData.width,
+
+        imageData.height,
+
+        {
+          inversionAttempts:
+            "attemptBoth"
+        }
+
+      );
+
+    if (code && code.data) {
+
+      handleQR(
+        code.data
+      );
+
+      return;
+    }
+
+    requestAnimationFrame(
+      scanCamera
+    );
+  }
+
+
+  /*
+   * =====================================================
+   * HANDLE QR
+   * =====================================================
+   */
+
+  function handleQR(qrValue) {
+
+    if (!qrValue) {
+      return;
+    }
+
+    qrValue =
+      String(qrValue).trim();
+
+    if (!qrValue) {
+      return;
+    }
+
+    const now =
+      Date.now();
+
+    /*
+     * Prevent duplicate scan
+     */
+
+    if (
+
+      qrValue === lastQR &&
+
+      now - lastScanTime < 3000
+
+    ) {
+
+      return;
+    }
+
+    lastQR =
+      qrValue;
+
+    lastScanTime =
+      now;
+
+    processing = true;
+
+    scanning = false;
+
+    stopCamera();
+
+    showMessage(
+      "QR CODE FOUND<br><br>PROCESSING...",
+      "info"
+    );
+
+    /*
+     * =================================================
+     * SEND QR TO GOOGLE APPS SCRIPT
+     * =================================================
+     *
+     * We use normal browser navigation instead of
+     * fetch/google.script.run.
+     *
+     * This works from an external HTTPS page.
+     */
+
+    if (
+
+      !GAS_WEB_APP_URL ||
+
+      GAS_WEB_APP_URL.indexOf(
+        "PASTE_YOUR"
+      ) !== -1
+
+    ) {
+
+      processing = false;
+
+      showMessage(
+
+        "WEB APP URL NOT SET<br>" +
+
+        "<small>" +
+
+        "Please put your Google Apps Script " +
+
+        "Web App URL inside GAS_WEB_APP_URL."
+
+        + "</small>",
+
+        "error"
+
+      );
+
+      return;
+    }
+
+    const targetURL =
+      GAS_WEB_APP_URL +
+
+      "?qr=" +
+
+      encodeURIComponent(
+        qrValue
+      );
+
+    window.location.href =
+      targetURL;
+  }
+
+
+  /*
+   * =====================================================
+   * MESSAGE
+   * =====================================================
+   */
+
+  function showMessage(
+    message,
+    type
+  ) {
+
+    messageBox.innerHTML =
+      message;
+
+    messageBox.className =
+      "";
+
+    messageBox.classList.add(
+      type
+    );
+
+    messageBox.style.display =
+      "block";
+  }
+
+
+  function hideMessage() {
+
+    messageBox.innerHTML =
+      "";
+
+    messageBox.className =
+      "";
+
+    messageBox.style.display =
+      "none";
+  }
+
+
+  /*
+   * =====================================================
+   * CLEANUP
+   * =====================================================
+   */
+
+  window.addEventListener(
+    "beforeunload",
+    function() {
+      stopCamera();
+    }
+  );
+
+</script>
+
+</body>
+</html>

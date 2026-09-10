@@ -13,13 +13,29 @@
     name="theme-color"
     content="#198754">
 
-  <title>Serial Number Time In / Time Out</title>
+  <title>
+    Serial Number Time In / Time Out
+  </title>
+
+  <!--
+    QR DECODER LIBRARY
+
+    Used for:
+    1. Camera QR scanning
+    2. Uploaded QR image scanning
+  -->
+
+  <script
+    src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js">
+  </script>
+
 
   <style>
 
     * {
       box-sizing: border-box;
     }
+
 
     html,
     body {
@@ -37,11 +53,13 @@
 
     }
 
+
     body {
 
       padding: 15px;
 
     }
+
 
     .container {
 
@@ -62,6 +80,7 @@
 
     }
 
+
     h1 {
 
       text-align: center;
@@ -75,6 +94,7 @@
 
     }
 
+
     .subtitle {
 
       text-align: center;
@@ -87,11 +107,291 @@
 
     }
 
-    .input-section {
+
+    /* =====================================================
+       QR SCANNER
+    ===================================================== */
+
+    .qr-section {
 
       margin-top: 5px;
 
     }
+
+
+    .qr-title {
+
+      display: block;
+
+      text-align: center;
+
+      font-size: 16px;
+
+      font-weight: bold;
+
+      margin-bottom: 10px;
+
+      color: #212529;
+
+    }
+
+
+    .qr-buttons {
+
+      display: flex;
+
+      gap: 10px;
+
+      margin-bottom: 12px;
+
+    }
+
+
+    .qr-button {
+
+      width: 100%;
+
+      border: none;
+
+      border-radius: 10px;
+
+      padding: 15px 10px;
+
+      font-size: 16px;
+
+      font-weight: bold;
+
+      cursor: pointer;
+
+      color: #ffffff;
+
+      user-select: none;
+
+      -webkit-tap-highlight-color:
+        transparent;
+
+    }
+
+
+    #cameraButton {
+
+      background: #0d6efd;
+
+    }
+
+
+    #uploadButton {
+
+      background: #6f42c1;
+
+    }
+
+
+    .camera-box {
+
+      display: none;
+
+      position: relative;
+
+      width: 100%;
+
+      background: #000000;
+
+      border-radius: 14px;
+
+      overflow: hidden;
+
+      margin-top: 10px;
+
+    }
+
+
+    #video {
+
+      display: block;
+
+      width: 100%;
+
+      height: auto;
+
+      background: #000000;
+
+    }
+
+
+    #cameraCanvas {
+
+      display: none;
+
+    }
+
+
+    .scan-overlay {
+
+      position: absolute;
+
+      left: 50%;
+
+      top: 50%;
+
+      width: 65%;
+
+      aspect-ratio: 1 / 1;
+
+      transform: translate(
+        -50%,
+        -50%
+      );
+
+      border:
+        3px solid #00ff00;
+
+      border-radius: 15px;
+
+      pointer-events: none;
+
+      box-shadow:
+        0 0 0 9999px
+        rgba(0, 0, 0, 0.35);
+
+    }
+
+
+    .scan-corner {
+
+      position: absolute;
+
+      width: 30px;
+      height: 30px;
+
+      border-color: #ffffff;
+
+      border-style: solid;
+
+    }
+
+
+    .corner-tl {
+
+      top: -3px;
+      left: -3px;
+
+      border-width:
+        5px 0 0 5px;
+
+    }
+
+
+    .corner-tr {
+
+      top: -3px;
+      right: -3px;
+
+      border-width:
+        5px 5px 0 0;
+
+    }
+
+
+    .corner-bl {
+
+      bottom: -3px;
+      left: -3px;
+
+      border-width:
+        0 0 5px 5px;
+
+    }
+
+
+    .corner-br {
+
+      bottom: -3px;
+      right: -3px;
+
+      border-width:
+        0 5px 5px 0;
+
+    }
+
+
+    .camera-status {
+
+      text-align: center;
+
+      color: #ffffff;
+
+      background: rgba(
+        0,
+        0,
+        0,
+        0.75
+      );
+
+      padding: 9px;
+
+      font-size: 13px;
+
+    }
+
+
+    #stopCameraButton {
+
+      display: none;
+
+      width: 100%;
+
+      margin-top: 10px;
+
+      background: #dc3545;
+
+      color: #ffffff;
+
+      border: none;
+
+      border-radius: 10px;
+
+      padding: 13px;
+
+      font-size: 15px;
+
+      font-weight: bold;
+
+      cursor: pointer;
+
+    }
+
+
+    .upload-input {
+
+      display: none;
+
+    }
+
+
+    .upload-hint {
+
+      text-align: center;
+
+      color: #777777;
+
+      font-size: 13px;
+
+      margin-top: 5px;
+
+    }
+
+
+    /* =====================================================
+       SERIAL INPUT
+    ===================================================== */
+
+    .input-section {
+
+      margin-top: 20px;
+
+    }
+
 
     .input-label {
 
@@ -106,6 +406,7 @@
       color: #212529;
 
     }
+
 
     #serialNumber {
 
@@ -132,15 +433,22 @@
 
     }
 
+
     #serialNumber:focus {
 
       border-color: #0d6efd;
 
       box-shadow:
         0 0 0 3px
-        rgba(13, 110, 253, .15);
+        rgba(
+          13,
+          110,
+          253,
+          .15
+        );
 
     }
+
 
     #serialNumber::placeholder {
 
@@ -152,6 +460,11 @@
 
     }
 
+
+    /* =====================================================
+       BUTTONS
+    ===================================================== */
+
     .button-group {
 
       display: flex;
@@ -161,6 +474,7 @@
       margin-top: 12px;
 
     }
+
 
     button {
 
@@ -185,6 +499,7 @@
 
     }
 
+
     button:disabled {
 
       opacity: .55;
@@ -192,6 +507,7 @@
       cursor: not-allowed;
 
     }
+
 
     #scanButton {
 
@@ -201,6 +517,7 @@
 
     }
 
+
     #clearButton {
 
       background: #6c757d;
@@ -208,6 +525,11 @@
       color: #ffffff;
 
     }
+
+
+    /* =====================================================
+       HINT
+    ===================================================== */
 
     .hint {
 
@@ -219,7 +541,14 @@
 
       font-size: 13px;
 
+      line-height: 1.5;
+
     }
+
+
+    /* =====================================================
+       STATUS
+    ===================================================== */
 
     #status {
 
@@ -241,6 +570,7 @@
 
     }
 
+
     .processing {
 
       background: #fff3cd;
@@ -248,6 +578,7 @@
       color: #664d03;
 
     }
+
 
     .timein {
 
@@ -257,6 +588,7 @@
 
     }
 
+
     .timeout {
 
       background: #f8d7da;
@@ -264,6 +596,7 @@
       color: #842029;
 
     }
+
 
     .success {
 
@@ -273,6 +606,7 @@
 
     }
 
+
     .error {
 
       background: #f8d7da;
@@ -280,6 +614,11 @@
       color: #842029;
 
     }
+
+
+    /* =====================================================
+       DETAILS
+    ===================================================== */
 
     .details-box {
 
@@ -298,6 +637,7 @@
 
     }
 
+
     .details-title {
 
       text-align: center;
@@ -311,6 +651,7 @@
       color: #212529;
 
     }
+
 
     .detail-row {
 
@@ -327,11 +668,13 @@
 
     }
 
+
     .detail-row:last-child {
 
       border-bottom: none;
 
     }
+
 
     .detail-label {
 
@@ -343,6 +686,7 @@
       font-size: 14px;
 
     }
+
 
     .detail-value {
 
@@ -358,6 +702,7 @@
 
     }
 
+
     .serial-value {
 
       font-size: 18px;
@@ -366,6 +711,7 @@
 
     }
 
+
     .plate-value {
 
       font-size: 18px;
@@ -373,6 +719,11 @@
       letter-spacing: 1px;
 
     }
+
+
+    /* =====================================================
+       SCAN AGAIN
+    ===================================================== */
 
     #scanAgain {
 
@@ -388,6 +739,11 @@
 
     }
 
+
+    /* =====================================================
+       DIVIDER
+    ===================================================== */
+
     .divider {
 
       text-align: center;
@@ -402,6 +758,11 @@
       font-size: 13px;
 
     }
+
+
+    /* =====================================================
+       INFO BOX
+    ===================================================== */
 
     .info-box {
 
@@ -423,13 +784,21 @@
 
     }
 
-    @media (max-width: 600px) {
+
+    /* =====================================================
+       MOBILE
+    ===================================================== */
+
+    @media (
+      max-width: 600px
+    ) {
 
       body {
 
         padding: 8px;
 
       }
+
 
       .container {
 
@@ -439,11 +808,20 @@
 
       }
 
+
       h1 {
 
         font-size: 21px;
 
       }
+
+
+      .qr-buttons {
+
+        flex-direction: column;
+
+      }
+
 
       #serialNumber {
 
@@ -453,11 +831,13 @@
 
       }
 
+
       .button-group {
 
         flex-direction: column;
 
       }
+
 
       button {
 
@@ -467,7 +847,10 @@
 
     }
 
-    @media (max-width: 450px) {
+
+    @media (
+      max-width: 450px
+    ) {
 
       .detail-row {
 
@@ -476,6 +859,7 @@
         gap: 4px;
 
       }
+
 
       .detail-label,
       .detail-value {
@@ -492,19 +876,161 @@
 
 </head>
 
+
 <body>
 
+
 <div class="container">
+
 
   <h1>
     SERIAL NUMBER TIME IN / TIME OUT
   </h1>
 
+
   <div class="subtitle">
-    Enter the registered Serial Number
+    Scan QR Code or enter the registered Serial Number
   </div>
 
+
+  <!-- =====================================================
+       QR SCANNER
+  ====================================================== -->
+
+  <div class="qr-section">
+
+
+    <div class="qr-title">
+      QR CODE SCANNER
+    </div>
+
+
+    <div class="qr-buttons">
+
+
+      <button
+        id="cameraButton"
+        class="qr-button"
+        type="button"
+        onclick="startCamera()">
+
+        📷 SCAN QR WITH CAMERA
+
+      </button>
+
+
+      <button
+        id="uploadButton"
+        class="qr-button"
+        type="button"
+        onclick="openUpload()">
+
+        🖼️ UPLOAD QR IMAGE
+
+      </button>
+
+
+    </div>
+
+
+    <input
+      id="qrFileInput"
+      class="upload-input"
+      type="file"
+      accept="image/*">
+
+
+    <div
+      id="uploadHint"
+      class="upload-hint">
+
+      You can scan using camera or upload
+      a screenshot/photo of the QR code.
+
+    </div>
+
+
+    <!-- CAMERA -->
+
+    <div
+      id="cameraBox"
+      class="camera-box">
+
+
+      <video
+        id="video"
+        autoplay
+        playsinline>
+      </video>
+
+
+      <canvas
+        id="cameraCanvas">
+      </canvas>
+
+
+      <div class="scan-overlay">
+
+
+        <div
+          class="scan-corner corner-tl">
+        </div>
+
+
+        <div
+          class="scan-corner corner-tr">
+        </div>
+
+
+        <div
+          class="scan-corner corner-bl">
+        </div>
+
+
+        <div
+          class="scan-corner corner-br">
+        </div>
+
+
+      </div>
+
+
+      <div
+        id="cameraStatus"
+        class="camera-status">
+
+        Point the camera at the QR code.
+
+      </div>
+
+
+    </div>
+
+
+    <button
+      id="stopCameraButton"
+      type="button"
+      onclick="stopCamera()">
+
+      ✖ STOP CAMERA
+
+    </button>
+
+
+  </div>
+
+
+  <div class="divider">
+    ● ● ●
+  </div>
+
+
+  <!-- =====================================================
+       MANUAL SERIAL NUMBER
+  ====================================================== -->
+
   <div class="input-section">
+
 
     <label
       class="input-label"
@@ -513,6 +1039,7 @@
       SERIAL NUMBER
 
     </label>
+
 
     <input
       id="serialNumber"
@@ -523,7 +1050,9 @@
       spellcheck="false"
       placeholder="Enter Serial Number">
 
+
     <div class="button-group">
+
 
       <button
         id="scanButton"
@@ -533,6 +1062,7 @@
         ⏱️ TIME IN / TIME OUT
 
       </button>
+
 
       <button
         id="clearButton"
@@ -545,23 +1075,36 @@
 
     </div>
 
+
     <div class="hint">
-      Press ENTER after entering the Serial Number.
+
+      QR scan automatically submits the decoded
+      Serial Number.<br>
+
+      Manual entry: press ENTER after entering
+      the Serial Number.
+
     </div>
 
+
   </div>
 
-  <div class="divider">
-    ● ● ●
-  </div>
+
+  <!-- =====================================================
+       DETAILS
+  ====================================================== -->
 
   <div
     id="detailsBox"
     class="details-box">
 
+
     <div class="details-title">
+
       PERSON / VEHICLE DETAILS
+
     </div>
+
 
     <div class="detail-row">
 
@@ -572,10 +1115,13 @@
       <div
         id="detailSerial"
         class="detail-value serial-value">
+
         -
+
       </div>
 
     </div>
+
 
     <div class="detail-row">
 
@@ -586,10 +1132,13 @@
       <div
         id="detailName"
         class="detail-value">
+
         -
+
       </div>
 
     </div>
+
 
     <div class="detail-row">
 
@@ -600,10 +1149,13 @@
       <div
         id="detailOffice"
         class="detail-value">
+
         -
+
       </div>
 
     </div>
+
 
     <div class="detail-row">
 
@@ -614,10 +1166,13 @@
       <div
         id="detailVehicle"
         class="detail-value">
+
         -
+
       </div>
 
     </div>
+
 
     <div class="detail-row">
 
@@ -628,10 +1183,13 @@
       <div
         id="detailContact"
         class="detail-value">
+
         -
+
       </div>
 
     </div>
+
 
     <div class="detail-row">
 
@@ -642,10 +1200,13 @@
       <div
         id="detailColor"
         class="detail-value">
+
         -
+
       </div>
 
     </div>
+
 
     <div class="detail-row">
 
@@ -656,14 +1217,29 @@
       <div
         id="detailPlate"
         class="detail-value plate-value">
+
         -
+
       </div>
 
     </div>
 
+
   </div>
 
-  <div id="status"></div>
+
+  <!-- =====================================================
+       STATUS
+  ====================================================== -->
+
+  <div
+    id="status">
+  </div>
+
+
+  <!-- =====================================================
+       SCAN AGAIN
+  ====================================================== -->
 
   <button
     id="scanAgain"
@@ -674,29 +1250,45 @@
 
   </button>
 
+
+  <!-- =====================================================
+       INFO
+  ====================================================== -->
+
   <div class="info-box">
 
     <strong>How it works</strong><br>
 
-    Enter the Serial Number registered
-    in the <strong>Registered</strong> sheet.<br>
+    QR Code contains the
+    <strong>Serial Number only</strong>.<br><br>
 
-    First scan = <strong>TIME IN</strong><br>
+    📷 Camera scan → Decode QR<br>
 
-    Next scan = <strong>TIME OUT</strong><br>
+    🖼️ Upload image → Decode QR<br>
 
-    Next scan = <strong>TIME IN</strong><br>
+    ⏱️ First scan = <strong>TIME IN</strong><br>
+
+    🔴 Next scan = <strong>TIME OUT</strong><br>
+
+    🟢 Next scan = <strong>TIME IN</strong><br>
 
     This cycle continues every scan.
 
   </div>
 
+
 </div>
+
 
 <script>
 
+
 /************************************************************
- * GOOGLE APPS SCRIPT WEB APP URL
+ * GOOGLE APPS SCRIPT WEB APP
+ *
+ * GITHUB → GOOGLE APPS SCRIPT
+ *
+ * QR CONTENT = SERIAL NUMBER ONLY
  ************************************************************/
 
 const GAS_WEB_APP_URL =
@@ -707,7 +1299,24 @@ const GAS_WEB_APP_URL =
  * STATE
  ************************************************************/
 
-let processing = false;
+let processing =
+  false;
+
+
+let cameraStream =
+  null;
+
+
+let cameraScanning =
+  false;
+
+
+let cameraAnimationFrame =
+  null;
+
+
+let uploadProcessing =
+  false;
 
 
 /************************************************************
@@ -715,50 +1324,126 @@ let processing = false;
  ************************************************************/
 
 const serialInput =
-  document.getElementById('serialNumber');
+  document.getElementById(
+    'serialNumber'
+  );
+
 
 const scanButton =
-  document.getElementById('scanButton');
+  document.getElementById(
+    'scanButton'
+  );
+
 
 const clearButton =
-  document.getElementById('clearButton');
+  document.getElementById(
+    'clearButton'
+  );
+
 
 const statusBox =
-  document.getElementById('status');
+  document.getElementById(
+    'status'
+  );
+
 
 const detailsBox =
-  document.getElementById('detailsBox');
+  document.getElementById(
+    'detailsBox'
+  );
+
 
 const scanAgainButton =
-  document.getElementById('scanAgain');
+  document.getElementById(
+    'scanAgain'
+  );
+
 
 const detailSerial =
-  document.getElementById('detailSerial');
+  document.getElementById(
+    'detailSerial'
+  );
+
 
 const detailName =
-  document.getElementById('detailName');
+  document.getElementById(
+    'detailName'
+  );
+
 
 const detailOffice =
-  document.getElementById('detailOffice');
+  document.getElementById(
+    'detailOffice'
+  );
+
 
 const detailVehicle =
-  document.getElementById('detailVehicle');
+  document.getElementById(
+    'detailVehicle'
+  );
+
 
 const detailContact =
-  document.getElementById('detailContact');
+  document.getElementById(
+    'detailContact'
+  );
+
 
 const detailColor =
-  document.getElementById('detailColor');
+  document.getElementById(
+    'detailColor'
+  );
+
 
 const detailPlate =
-  document.getElementById('detailPlate');
+  document.getElementById(
+    'detailPlate'
+  );
+
+
+const cameraBox =
+  document.getElementById(
+    'cameraBox'
+  );
+
+
+const video =
+  document.getElementById(
+    'video'
+  );
+
+
+const cameraCanvas =
+  document.getElementById(
+    'cameraCanvas'
+  );
+
+
+const cameraStatus =
+  document.getElementById(
+    'cameraStatus'
+  );
+
+
+const stopCameraButton =
+  document.getElementById(
+    'stopCameraButton'
+  );
+
+
+const qrFileInput =
+  document.getElementById(
+    'qrFileInput'
+  );
 
 
 /************************************************************
- * NORMALIZE
+ * NORMALIZE SERIAL
  ************************************************************/
 
-function normalizeSerialValue(value) {
+function normalizeSerialValue(
+  value
+) {
 
   if (
     value === null ||
@@ -769,47 +1454,840 @@ function normalizeSerialValue(value) {
 
   }
 
-  return String(value).trim();
+
+  return String(value)
+    .trim();
 
 }
 
 
 /************************************************************
- * SUBMIT
+ * OPEN UPLOAD
+ ************************************************************/
+
+function openUpload() {
+
+  if (processing) {
+
+    return;
+
+  }
+
+
+  qrFileInput.value =
+    '';
+
+
+  qrFileInput.click();
+
+}
+
+
+/************************************************************
+ * HANDLE UPLOADED IMAGE
+ ************************************************************/
+
+qrFileInput.addEventListener(
+  'change',
+  function(event) {
+
+    const file =
+      event.target.files &&
+      event.target.files[0];
+
+
+    if (!file) {
+
+      return;
+
+    }
+
+
+    decodeUploadedQR(
+      file
+    );
+
+  }
+);
+
+
+/************************************************************
+ * DECODE UPLOADED QR
+ ************************************************************/
+
+function decodeUploadedQR(
+  file
+) {
+
+  if (processing) {
+
+    return;
+
+  }
+
+
+  if (uploadProcessing) {
+
+    return;
+
+  }
+
+
+  /*
+   * Check QR library.
+   */
+
+  if (
+    typeof jsQR !==
+    'function'
+  ) {
+
+    showStatus(
+      'QR SCANNER LIBRARY FAILED TO LOAD. PLEASE REFRESH THE PAGE.',
+      'error'
+    );
+
+    return;
+
+  }
+
+
+  uploadProcessing =
+    true;
+
+
+  showStatus(
+    '🖼️ READING QR IMAGE...<br>' +
+    '<small>' +
+    escapeHtml(
+      file.name
+    ) +
+    '</small>',
+    'processing'
+  );
+
+
+  const reader =
+    new FileReader();
+
+
+  reader.onload =
+    function() {
+
+      const image =
+        new Image();
+
+
+      image.onload =
+        function() {
+
+          try {
+
+            const canvas =
+              document.createElement(
+                'canvas'
+              );
+
+
+            const maxSize =
+              1600;
+
+
+            let width =
+              image.naturalWidth;
+
+
+            let height =
+              image.naturalHeight;
+
+
+            /*
+             * Limit very large images.
+             */
+
+            if (
+              width >
+              maxSize ||
+              height >
+              maxSize
+            ) {
+
+              const ratio =
+                Math.min(
+                  maxSize / width,
+                  maxSize / height
+                );
+
+
+              width =
+                Math.round(
+                  width * ratio
+                );
+
+
+              height =
+                Math.round(
+                  height * ratio
+                );
+
+            }
+
+
+            canvas.width =
+              width;
+
+
+            canvas.height =
+              height;
+
+
+            const context =
+              canvas.getContext(
+                '2d',
+                {
+                  willReadFrequently:
+                    true
+                }
+              );
+
+
+            context.drawImage(
+              image,
+              0,
+              0,
+              width,
+              height
+            );
+
+
+            const imageData =
+              context.getImageData(
+                0,
+                0,
+                width,
+                height
+              );
+
+
+            const code =
+              jsQR(
+                imageData.data,
+                imageData.width,
+                imageData.height,
+                {
+                  inversionAttempts:
+                    'attemptBoth'
+                }
+              );
+
+
+            if (!code) {
+
+              uploadProcessing =
+                false;
+
+
+              showStatus(
+                '❌ QR CODE NOT DETECTED IN IMAGE.<br>' +
+                '<small>' +
+                'Please upload a clear QR image.</small>',
+                'error'
+              );
+
+
+              scanAgainButton.style.display =
+                'block';
+
+
+              return;
+
+            }
+
+
+            const decoded =
+              normalizeSerialValue(
+                code.data
+              );
+
+
+            if (!decoded) {
+
+              uploadProcessing =
+                false;
+
+
+              showStatus(
+                '❌ QR CODE IS EMPTY.',
+                'error'
+              );
+
+
+              scanAgainButton.style.display =
+                'block';
+
+
+              return;
+
+            }
+
+
+            /*
+             * QR CONTENT MUST BE
+             * SERIAL NUMBER ONLY.
+             */
+
+            uploadProcessing =
+              false;
+
+
+            serialInput.value =
+              decoded.toUpperCase();
+
+
+            stopCamera();
+
+
+            submitSerialNumber();
+
+          }
+
+          catch (error) {
+
+            uploadProcessing =
+              false;
+
+
+            showStatus(
+              'UNABLE TO READ QR IMAGE.',
+              'error'
+            );
+
+
+            scanAgainButton.style.display =
+              'block';
+
+          }
+
+        };
+
+
+      image.onerror =
+        function() {
+
+          uploadProcessing =
+            false;
+
+
+          showStatus(
+            'INVALID IMAGE FILE.',
+            'error'
+          );
+
+
+          scanAgainButton.style.display =
+            'block';
+
+        };
+
+
+      image.src =
+        reader.result;
+
+    };
+
+
+  reader.onerror =
+    function() {
+
+      uploadProcessing =
+        false;
+
+
+      showStatus(
+        'UNABLE TO READ UPLOADED IMAGE.',
+        'error'
+      );
+
+
+      scanAgainButton.style.display =
+        'block';
+
+    };
+
+
+  reader.readAsDataURL(
+    file
+  );
+
+}
+
+
+/************************************************************
+ * START CAMERA
+ ************************************************************/
+
+async function startCamera() {
+
+  if (processing) {
+
+    return;
+
+  }
+
+
+  if (
+    cameraScanning
+  ) {
+
+    return;
+
+  }
+
+
+  /*
+   * Browser support.
+   */
+
+  if (
+    !navigator.mediaDevices ||
+    !navigator.mediaDevices.getUserMedia
+  ) {
+
+    showStatus(
+      'CAMERA IS NOT SUPPORTED BY THIS BROWSER.',
+      'error'
+    );
+
+    return;
+
+  }
+
+
+  /*
+   * QR decoder library.
+   */
+
+  if (
+    typeof jsQR !==
+    'function'
+  ) {
+
+    showStatus(
+      'QR SCANNER LIBRARY FAILED TO LOAD. PLEASE REFRESH THE PAGE.',
+      'error'
+    );
+
+    return;
+
+  }
+
+
+  stopCamera();
+
+
+  try {
+
+    cameraStatus.textContent =
+      'Requesting camera permission...';
+
+
+    cameraBox.style.display =
+      'block';
+
+
+    stopCameraButton.style.display =
+      'block';
+
+
+    /*
+     * Prefer rear camera.
+     */
+
+    cameraStream =
+      await navigator.mediaDevices.getUserMedia({
+
+        video: {
+
+          facingMode: {
+            ideal: 'environment'
+          },
+
+          width: {
+            ideal: 1280
+          },
+
+          height: {
+            ideal: 720
+          }
+
+        },
+
+        audio: false
+
+      });
+
+
+    video.srcObject =
+      cameraStream;
+
+
+    await video.play();
+
+
+    cameraScanning =
+      true;
+
+
+    cameraStatus.textContent =
+      '📷 Point the camera at the QR code.';
+
+
+    scanCameraFrame();
+
+
+  }
+
+  catch (error) {
+
+    console.error(
+      error
+    );
+
+
+    stopCamera();
+
+
+    let message =
+      'UNABLE TO ACCESS CAMERA.';
+
+
+    if (
+      error &&
+      error.name ===
+      'NotAllowedError'
+    ) {
+
+      message =
+        'CAMERA PERMISSION WAS DENIED.<br>' +
+        '<small>Allow camera access in your browser and try again.</small>';
+
+    }
+
+    else if (
+      error &&
+      error.name ===
+      'NotFoundError'
+    ) {
+
+      message =
+        'NO CAMERA WAS FOUND ON THIS DEVICE.';
+
+    }
+
+    else if (
+      error &&
+      error.name ===
+      'NotReadableError'
+    ) {
+
+      message =
+        'CAMERA IS CURRENTLY BEING USED BY ANOTHER APPLICATION.';
+
+    }
+
+
+    showStatus(
+      message,
+      'error'
+    );
+
+
+    scanAgainButton.style.display =
+      'block';
+
+  }
+
+}
+
+
+/************************************************************
+ * CAMERA SCAN LOOP
+ ************************************************************/
+
+function scanCameraFrame() {
+
+  if (
+    !cameraScanning
+  ) {
+
+    return;
+
+  }
+
+
+  if (
+    processing
+  ) {
+
+    return;
+
+  }
+
+
+  if (
+    video.readyState <
+    video.HAVE_ENOUGH_DATA
+  ) {
+
+    cameraAnimationFrame =
+      requestAnimationFrame(
+        scanCameraFrame
+      );
+
+    return;
+
+  }
+
+
+  const width =
+    video.videoWidth;
+
+
+  const height =
+    video.videoHeight;
+
+
+  if (
+    !width ||
+    !height
+  ) {
+
+    cameraAnimationFrame =
+      requestAnimationFrame(
+        scanCameraFrame
+      );
+
+    return;
+
+  }
+
+
+  cameraCanvas.width =
+    width;
+
+
+  cameraCanvas.height =
+    height;
+
+
+  const context =
+    cameraCanvas.getContext(
+      '2d',
+      {
+        willReadFrequently:
+          true
+      }
+    );
+
+
+  context.drawImage(
+    video,
+    0,
+    0,
+    width,
+    height
+  );
+
+
+  const imageData =
+    context.getImageData(
+      0,
+      0,
+      width,
+      height
+    );
+
+
+  const code =
+    jsQR(
+      imageData.data,
+      imageData.width,
+      imageData.height,
+      {
+        inversionAttempts:
+          'attemptBoth'
+      }
+    );
+
+
+  if (code) {
+
+    const decoded =
+      normalizeSerialValue(
+        code.data
+      );
+
+
+    if (decoded) {
+
+      /*
+       * Stop camera immediately
+       * before sending to server.
+       */
+
+      stopCamera();
+
+
+      serialInput.value =
+        decoded.toUpperCase();
+
+
+      submitSerialNumber();
+
+
+      return;
+
+    }
+
+  }
+
+
+  cameraAnimationFrame =
+    requestAnimationFrame(
+      scanCameraFrame
+    );
+
+}
+
+
+/************************************************************
+ * STOP CAMERA
+ ************************************************************/
+
+function stopCamera() {
+
+  cameraScanning =
+    false;
+
+
+  if (
+    cameraAnimationFrame
+  ) {
+
+    cancelAnimationFrame(
+      cameraAnimationFrame
+    );
+
+
+    cameraAnimationFrame =
+      null;
+
+  }
+
+
+  if (
+    cameraStream
+  ) {
+
+    cameraStream
+      .getTracks()
+      .forEach(
+        function(track) {
+
+          track.stop();
+
+        }
+      );
+
+
+    cameraStream =
+      null;
+
+  }
+
+
+  if (
+    video
+  ) {
+
+    video.pause();
+
+
+    video.srcObject =
+      null;
+
+  }
+
+
+  cameraBox.style.display =
+    'none';
+
+
+  stopCameraButton.style.display =
+    'none';
+
+}
+
+
+/************************************************************
+ * SUBMIT SERIAL NUMBER
+ *
+ * GITHUB → GOOGLE APPS SCRIPT
+ *
+ * JSONP
  ************************************************************/
 
 function submitSerialNumber() {
 
   if (processing) {
+
     return;
+
   }
+
 
   let serial =
     normalizeSerialValue(
       serialInput.value
     );
 
+
   if (!serial) {
 
     showStatus(
-      'PLEASE ENTER SERIAL NUMBER',
+      'PLEASE ENTER OR SCAN A SERIAL NUMBER',
       'error'
     );
+
 
     serialInput.focus();
 
     return;
+
   }
+
+
+  /*
+   * QR must contain serial only.
+   */
 
   serial =
     serial.toUpperCase();
 
+
   serialInput.value =
     serial;
 
+
+  /*
+   * Verify Apps Script URL.
+   */
+
   if (
     !GAS_WEB_APP_URL ||
-    !GAS_WEB_APP_URL.endsWith('/exec')
+    !GAS_WEB_APP_URL.endsWith(
+      '/exec'
+    )
   ) {
 
     showStatus(
@@ -818,70 +2296,134 @@ function submitSerialNumber() {
     );
 
     return;
+
   }
 
-  processing = true;
+
+  processing =
+    true;
+
 
   scanButton.disabled =
     true;
 
+
   clearButton.disabled =
     true;
+
+
+  document.getElementById(
+    'cameraButton'
+  ).disabled =
+    true;
+
+
+  document.getElementById(
+    'uploadButton'
+  ).disabled =
+    true;
+
 
   scanAgainButton.style.display =
     'none';
 
+
   hideDetails();
+
 
   showStatus(
     'PROCESSING...<br>' +
-    '<small>Serial Number: ' +
-    escapeHtml(serial) +
+    '<small>' +
+    'Serial Number: ' +
+    escapeHtml(
+      serial
+    ) +
     '</small>',
     'processing'
   );
 
+
+  /*
+   * Generate JSONP callback.
+   */
 
   const callbackName =
     'serialScanCallback_' +
     Date.now() +
     '_' +
     Math.floor(
-      Math.random() * 1000000
+      Math.random() *
+      1000000
     );
 
 
   const script =
-    document.createElement('script');
+    document.createElement(
+      'script'
+    );
 
-  script.async = true;
 
-  let finished = false;
+  script.async =
+    true;
 
-  let timeoutId = null;
 
+  let finished =
+    false;
+
+
+  let timeoutId =
+    null;
+
+
+  /*
+   * FINISH REQUEST
+   */
 
   function finishRequest() {
 
     if (finished) {
+
       return;
+
     }
 
-    finished = true;
 
-    processing = false;
+    finished =
+      true;
+
+
+    processing =
+      false;
+
 
     scanButton.disabled =
       false;
 
+
     clearButton.disabled =
       false;
 
+
+    document.getElementById(
+      'cameraButton'
+    ).disabled =
+      false;
+
+
+    document.getElementById(
+      'uploadButton'
+    ).disabled =
+      false;
+
+
     if (timeoutId) {
 
-      clearTimeout(timeoutId);
+      clearTimeout(
+        timeoutId
+      );
 
     }
+
 
     if (
       script &&
@@ -894,15 +2436,20 @@ function submitSerialNumber() {
 
     }
 
+
     try {
 
-      delete window[callbackName];
+      delete window[
+        callbackName
+      ];
 
     }
 
     catch (error) {
 
-      window[callbackName] =
+      window[
+        callbackName
+      ] =
         undefined;
 
     }
@@ -910,47 +2457,75 @@ function submitSerialNumber() {
   }
 
 
+  /*
+   * JSONP CALLBACK
+   */
+
   window[callbackName] =
     function(result) {
 
       if (finished) {
+
         return;
+
       }
+
 
       finishRequest();
 
-      handleScanResult(result);
+
+      handleScanResult(
+        result
+      );
 
     };
 
+
+  /*
+   * BUILD URL
+   */
 
   const url =
     GAS_WEB_APP_URL +
     '?action=processScan' +
     '&qr=' +
-    encodeURIComponent(serial) +
+    encodeURIComponent(
+      serial
+    ) +
     '&callback=' +
-    encodeURIComponent(callbackName) +
+    encodeURIComponent(
+      callbackName
+    ) +
     '&_=' +
     Date.now();
 
+
+  /*
+   * NETWORK ERROR
+   */
 
   script.onerror =
     function() {
 
       if (finished) {
+
         return;
+
       }
 
+
       finishRequest();
+
 
       showStatus(
         'UNABLE TO CONNECT TO GOOGLE APPS SCRIPT',
         'error'
       );
 
+
       scanAgainButton.style.display =
         'block';
+
 
       serialInput.focus();
 
@@ -959,23 +2534,33 @@ function submitSerialNumber() {
     };
 
 
+  /*
+   * TIMEOUT
+   */
+
   timeoutId =
     setTimeout(
       function() {
 
         if (finished) {
+
           return;
+
         }
 
+
         finishRequest();
+
 
         showStatus(
           'REQUEST TIMEOUT. PLEASE TRY AGAIN.',
           'error'
         );
 
+
         scanAgainButton.style.display =
           'block';
+
 
         serialInput.focus();
 
@@ -986,9 +2571,17 @@ function submitSerialNumber() {
     );
 
 
-  script.src = url;
+  /*
+   * SEND REQUEST
+   */
 
-  document.head.appendChild(script);
+  script.src =
+    url;
+
+
+  document.head.appendChild(
+    script
+  );
 
 }
 
@@ -997,14 +2590,31 @@ function submitSerialNumber() {
  * HANDLE RESULT
  ************************************************************/
 
-function handleScanResult(result) {
+function handleScanResult(
+  result
+) {
 
-  processing = false;
+  processing =
+    false;
+
 
   scanButton.disabled =
     false;
 
+
   clearButton.disabled =
+    false;
+
+
+  document.getElementById(
+    'cameraButton'
+  ).disabled =
+    false;
+
+
+  document.getElementById(
+    'uploadButton'
+  ).disabled =
     false;
 
 
@@ -1012,13 +2622,16 @@ function handleScanResult(result) {
 
     hideDetails();
 
+
     showStatus(
       'NO RESPONSE FROM SERVER.',
       'error'
     );
 
+
     scanAgainButton.style.display =
       'block';
+
 
     serialInput.focus();
 
@@ -1027,10 +2640,20 @@ function handleScanResult(result) {
   }
 
 
+  /*
+   * SUCCESS
+   */
+
   if (result.success) {
 
-    showDetails(result);
+    showDetails(
+      result
+    );
 
+
+    /*
+     * TIME IN
+     */
 
     if (
       result.action ===
@@ -1044,6 +2667,11 @@ function handleScanResult(result) {
 
     }
 
+
+    /*
+     * TIME OUT
+     */
+
     else if (
       result.action ===
       'TIME OUT'
@@ -1055,6 +2683,11 @@ function handleScanResult(result) {
       );
 
     }
+
+
+    /*
+     * OTHER SUCCESS
+     */
 
     else {
 
@@ -1072,15 +2705,22 @@ function handleScanResult(result) {
     scanAgainButton.style.display =
       'block';
 
+
     serialInput.focus();
 
     serialInput.select();
 
   }
 
+
+  /*
+   * ERROR
+   */
+
   else {
 
     hideDetails();
+
 
     showStatus(
       escapeHtml(
@@ -1090,8 +2730,10 @@ function handleScanResult(result) {
       'error'
     );
 
+
     scanAgainButton.style.display =
       'block';
+
 
     serialInput.focus();
 
@@ -1103,10 +2745,12 @@ function handleScanResult(result) {
 
 
 /************************************************************
- * DETAILS
+ * SHOW DETAILS
  ************************************************************/
 
-function showDetails(result) {
+function showDetails(
+  result
+) {
 
   detailSerial.textContent =
     valueOrDash(
@@ -1114,36 +2758,43 @@ function showDetails(result) {
       result.personId
     );
 
+
   detailName.textContent =
     valueOrDash(
       result.name ||
       result.rank
     );
 
+
   detailOffice.textContent =
     valueOrDash(
       result.office
     );
+
 
   detailVehicle.textContent =
     valueOrDash(
       result.vehicle
     );
 
+
   detailContact.textContent =
     valueOrDash(
       result.contact
     );
+
 
   detailColor.textContent =
     valueOrDash(
       result.color
     );
 
+
   detailPlate.textContent =
     valueOrDash(
       result.plate
     );
+
 
   detailsBox.style.display =
     'block';
@@ -1152,10 +2803,12 @@ function showDetails(result) {
 
 
 /************************************************************
- * VALUE
+ * VALUE OR DASH
  ************************************************************/
 
-function valueOrDash(value) {
+function valueOrDash(
+  value
+) {
 
   if (
     value === null ||
@@ -1166,6 +2819,7 @@ function valueOrDash(value) {
     return '-';
 
   }
+
 
   return String(value);
 
@@ -1181,23 +2835,30 @@ function hideDetails() {
   detailsBox.style.display =
     'none';
 
+
   detailSerial.textContent =
     '-';
+
 
   detailName.textContent =
     '-';
 
+
   detailOffice.textContent =
     '-';
+
 
   detailVehicle.textContent =
     '-';
 
+
   detailContact.textContent =
     '-';
 
+
   detailColor.textContent =
     '-';
+
 
   detailPlate.textContent =
     '-';
@@ -1206,16 +2867,21 @@ function hideDetails() {
 
 
 /************************************************************
- * STATUS
+ * SHOW STATUS
  ************************************************************/
 
-function showStatus(message, type) {
+function showStatus(
+  message,
+  type
+) {
 
   statusBox.innerHTML =
     message;
 
+
   statusBox.className =
     '';
+
 
   if (type) {
 
@@ -1224,6 +2890,7 @@ function showStatus(message, type) {
     );
 
   }
+
 
   statusBox.style.display =
     'block';
@@ -1238,25 +2905,37 @@ function showStatus(message, type) {
 function clearScanner() {
 
   if (processing) {
+
     return;
+
   }
+
+
+  stopCamera();
+
 
   serialInput.value =
     '';
 
+
   hideDetails();
+
 
   statusBox.innerHTML =
     '';
 
+
   statusBox.className =
     '';
+
 
   statusBox.style.display =
     'none';
 
+
   scanAgainButton.style.display =
     'none';
+
 
   serialInput.focus();
 
@@ -1270,25 +2949,37 @@ function clearScanner() {
 function scanAgain() {
 
   if (processing) {
+
     return;
+
   }
+
+
+  stopCamera();
+
 
   serialInput.value =
     '';
 
+
   hideDetails();
+
 
   statusBox.innerHTML =
     '';
 
+
   statusBox.className =
     '';
+
 
   statusBox.style.display =
     'none';
 
+
   scanAgainButton.style.display =
     'none';
+
 
   serialInput.focus();
 
@@ -1296,7 +2987,7 @@ function scanAgain() {
 
 
 /************************************************************
- * ENTER
+ * ENTER KEY
  ************************************************************/
 
 serialInput.addEventListener(
@@ -1304,10 +2995,12 @@ serialInput.addEventListener(
   function(event) {
 
     if (
-      event.key === 'Enter'
+      event.key ===
+      'Enter'
     ) {
 
       event.preventDefault();
+
 
       submitSerialNumber();
 
@@ -1318,7 +3011,7 @@ serialInput.addEventListener(
 
 
 /************************************************************
- * ESC
+ * ESC KEY
  ************************************************************/
 
 serialInput.addEventListener(
@@ -1326,10 +3019,12 @@ serialInput.addEventListener(
   function(event) {
 
     if (
-      event.key === 'Escape'
+      event.key ===
+      'Escape'
     ) {
 
       event.preventDefault();
+
 
       clearScanner();
 
@@ -1343,7 +3038,9 @@ serialInput.addEventListener(
  * ESCAPE HTML
  ************************************************************/
 
-function escapeHtml(value) {
+function escapeHtml(
+  value
+) {
 
   if (
     value === null ||
@@ -1353,6 +3050,7 @@ function escapeHtml(value) {
     return '';
 
   }
+
 
   return String(value)
 
@@ -1385,7 +3083,7 @@ function escapeHtml(value) {
 
 
 /************************************************************
- * INITIALIZE
+ * PAGE INITIALIZATION
  ************************************************************/
 
 window.addEventListener(
@@ -1397,7 +3095,24 @@ window.addEventListener(
   }
 );
 
+
+/************************************************************
+ * PAGE CLOSE
+ *
+ * Stop camera if user leaves page.
+ ************************************************************/
+
+window.addEventListener(
+  'beforeunload',
+  function() {
+
+    stopCamera();
+
+  }
+);
+
 </script>
+
 
 </body>
 

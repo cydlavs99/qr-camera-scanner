@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
   <meta charset="UTF-8">
 
@@ -10,7 +10,7 @@
 
   <title>QR Time In / Time Out</title>
 
-  <!-- QR READER -->
+  <!-- QR DECODER -->
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
 
   <style>
@@ -22,72 +22,46 @@
     body {
       margin: 0;
       padding: 15px;
-
       background: #f4f6f8;
-
-      font-family:
-        Arial,
-        Helvetica,
-        sans-serif;
+      font-family: Arial, Helvetica, sans-serif;
     }
 
     .container {
       width: 100%;
       max-width: 520px;
-
       margin: auto;
-
       background: #ffffff;
-
       border-radius: 18px;
-
       padding: 20px;
-
-      box-shadow:
-        0 4px 20px rgba(0,0,0,.15);
+      box-shadow: 0 4px 20px rgba(0,0,0,.15);
     }
 
     h1 {
       text-align: center;
-
-      margin:
-        0
-        0
-        6px;
-
+      margin: 0 0 8px;
       font-size: 24px;
     }
 
     .subtitle {
       text-align: center;
-
       color: #666;
-
       margin-bottom: 18px;
     }
 
-    /*
-     * CAMERA
-     */
+    /* CAMERA */
 
     .camera-box {
       position: relative;
-
       width: 100%;
-
       aspect-ratio: 1 / 1;
-
       background: #111;
-
       border-radius: 15px;
-
       overflow: hidden;
     }
 
     #video {
       width: 100%;
       height: 100%;
-
       object-fit: cover;
     }
 
@@ -97,36 +71,22 @@
 
     .scan-frame {
       position: absolute;
-
       width: 68%;
       height: 68%;
-
       left: 16%;
       top: 16%;
-
-      border:
-        3px solid
-        #00ff66;
-
+      border: 3px solid #00ff66;
       border-radius: 16px;
-
       pointer-events: none;
     }
 
     .scan-line {
       position: absolute;
-
       width: 80%;
-
       left: 10%;
-
       height: 2px;
-
       background: #00ff66;
-
-      animation:
-        scan 2s linear infinite;
-
+      animation: scan 2s linear infinite;
       pointer-events: none;
     }
 
@@ -146,107 +106,83 @@
 
     }
 
-    /*
-     * STATUS
-     */
+    /* CAMERA STATUS */
 
     .camera-status {
       margin-top: 10px;
-
       padding: 10px;
-
       text-align: center;
-
       border-radius: 8px;
-
       background: #e9ecef;
-
       font-weight: bold;
     }
 
-    /*
-     * BUTTONS
-     */
+    /* BUTTONS */
 
     .buttons {
       display: flex;
-
       gap: 10px;
-
       margin-top: 15px;
     }
 
     button {
       flex: 1;
-
       border: none;
-
       border-radius: 9px;
-
       padding: 14px 10px;
-
       font-size: 15px;
-
       font-weight: bold;
-
       cursor: pointer;
     }
 
     button:disabled {
       opacity: .5;
-
       cursor: not-allowed;
     }
 
     #startButton {
       background: #198754;
-
       color: white;
     }
 
     #stopButton {
       background: #dc3545;
-
       color: white;
     }
 
     #switchButton {
       width: 100%;
-
       margin-top: 10px;
-
       background: #7952b3;
-
       color: white;
     }
 
-    /*
-     * UPLOAD
-     */
+    /* UPLOAD */
 
     .upload-section {
-      margin-top: 18px;
-
+      margin-top: 15px;
       padding: 15px;
-
       background: #f8f9fa;
-
       border-radius: 12px;
-
+      border: 2px dashed #adb5bd;
       text-align: center;
     }
 
     .upload-title {
       font-weight: bold;
+      font-size: 16px;
+      margin-bottom: 8px;
+    }
 
-      margin-bottom: 10px;
+    .upload-description {
+      color: #666;
+      font-size: 13px;
+      margin-bottom: 12px;
     }
 
     #uploadButton {
       width: 100%;
-
       background: #0d6efd;
-
       color: white;
     }
 
@@ -254,96 +190,56 @@
       display: none;
     }
 
-    .upload-help {
-      margin-top: 8px;
-
-      font-size: 13px;
-
-      color: #666;
-    }
-
-    /*
-     * MESSAGE
-     */
+    /* MESSAGE */
 
     #message {
       display: none;
-
       margin-top: 18px;
-
       padding: 16px;
-
       border-radius: 12px;
-
       text-align: center;
-
       font-weight: bold;
-
-      line-height: 1.5;
+      word-break: break-word;
     }
 
     .info {
       background: #fff3cd;
-
       color: #664d03;
     }
 
     .error {
       background: #f8d7da;
-
       color: #842029;
     }
 
     .success {
       background: #d1e7dd;
-
       color: #0f5132;
     }
 
-    /*
-     * QR VALUE
-     */
+    /* QR VALUE */
 
-    .qr-value {
-      margin-top: 10px;
-
-      padding: 10px;
-
-      background: #ffffff;
-
+    .qr-value-box {
+      margin-top: 12px;
+      padding: 12px;
+      background: #f8f9fa;
       border-radius: 8px;
-
-      word-break: break-all;
-
-      font-family:
-        monospace;
-
+      font-family: monospace;
       font-size: 16px;
+      word-break: break-all;
     }
 
-    /*
-     * HELP
-     */
+    /* HELP */
 
     .help {
       margin-top: 18px;
-
       padding: 14px;
-
       background: #f8f9fa;
-
       border-radius: 10px;
-
       color: #555;
-
       font-size: 14px;
-
       line-height: 1.5;
     }
-
-    /*
-     * MOBILE
-     */
 
     @media (max-width: 450px) {
 
@@ -366,13 +262,13 @@
   </h1>
 
   <div class="subtitle">
-    Camera Scanner + QR Image Upload
+    Camera QR Scanner
   </div>
 
 
-  <!-- =====================================================
+  <!-- ==========================================
        CAMERA
-       ===================================================== -->
+       ========================================== -->
 
   <div class="camera-box">
 
@@ -392,6 +288,8 @@
 
   <canvas id="canvas"></canvas>
 
+
+  <!-- CAMERA STATUS -->
 
   <div
     id="cameraStatus"
@@ -435,26 +333,24 @@
   </button>
 
 
-  <!-- =====================================================
-       UPLOAD QR IMAGE
-       ===================================================== -->
+  <!-- ==========================================
+       UPLOAD IMAGE
+       ========================================== -->
 
   <div class="upload-section">
 
     <div class="upload-title">
 
-      🖼️ SCAN FROM QR IMAGE
+      🖼️ UPLOAD QR IMAGE
 
     </div>
 
+    <div class="upload-description">
 
-    <button
-      id="uploadButton"
-      onclick="openFilePicker()">
+      Pumili ng larawan na may QR Code
+      mula sa cellphone o computer.
 
-      📁 UPLOAD QR IMAGE
-
-    </button>
+    </div>
 
 
     <input
@@ -465,62 +361,76 @@
     >
 
 
-    <div class="upload-help">
+    <button
+      id="uploadButton"
+      onclick="openFilePicker()">
 
-      Select a photo or screenshot
-      containing the QR Code.
+      🖼️ UPLOAD IMAGE
 
-    </div>
+    </button>
 
   </div>
 
 
-  <!-- =====================================================
+  <!-- ==========================================
        MESSAGE
-       ===================================================== -->
+       ========================================== -->
 
   <div id="message"></div>
 
 
-  <!-- =====================================================
+  <!-- ==========================================
        HELP
-       ===================================================== -->
+       ========================================== -->
 
   <div class="help">
 
     <b>How to use:</b>
-
     <br><br>
 
-    <b>Camera:</b><br>
+    <b>Camera:</b>
+    <br>
 
-    1. Press START CAMERA.<br>
+    1. Press START CAMERA.
+    <br>
 
-    2. Allow camera permission.<br>
+    2. Allow camera permission.
+    <br>
 
-    3. Point the camera at the QR Code.<br>
+    3. Itapat ang camera sa QR Code.
+    <br>
 
-    4. The QR value will be sent automatically.
-
+    4. Automatic na babasahin ang QR.
     <br><br>
 
-    <b>Upload:</b><br>
+    <b>Upload Image:</b>
+    <br>
 
-    1. Press UPLOAD QR IMAGE.<br>
+    1. Press UPLOAD IMAGE.
+    <br>
 
-    2. Select a QR photo or screenshot.<br>
+    2. Pumili ng larawan na may QR Code.
+    <br>
 
-    3. The QR value will be read automatically.<br>
+    3. Automatic na babasahin ang QR.
+    <br>
 
-    4. It will be sent to the Google Apps Script.
-
+    4. Ipapadala ang QR value sa Google Apps Script.
     <br><br>
 
-    <b>Supported QR examples:</b><br>
+    <b>Examples ng QR value:</b>
+    <br>
 
-    O-123456<br>
-    023449<br>
-    123456
+    <code>O-123456</code>
+    <br>
+
+    <code>023449</code>
+    <br>
+
+    <code>23449</code>
+    <br>
+
+    <code>123456</code>
 
   </div>
 
@@ -530,36 +440,23 @@
 <script>
 
 
-/*
- * =========================================================
- * GOOGLE APPS SCRIPT WEB APP URL
- * =========================================================
- *
- * Ito ang Web App URL ng iyong Google Apps Script.
- *
- */
+/* =====================================================
+   GOOGLE APPS SCRIPT WEB APP
+   ===================================================== */
 
 const GAS_WEB_APP_URL =
-  "https://script.google.com/macros/s/AKfycbzjC-ywK277zOfkiEPU0G-Un02_e3oEFl4qGU8En9bojfDpsiXayMrHvHT9eNmLuZdxRg/exec";
+  "https://script.google.com/macros/s/AKfycbxKPOKY98yBA9Y-lZOiOa9Wzxx7a2nP6fwIE74yYKZGHjPh9QcpuB7pBcK8UQaOegON9g/exec";
 
 
-/*
- * =========================================================
- * ELEMENTS
- * =========================================================
- */
+/* =====================================================
+   ELEMENTS
+   ===================================================== */
 
 const video =
-  document.getElementById(
-    "video"
-  );
-
+  document.getElementById("video");
 
 const canvas =
-  document.getElementById(
-    "canvas"
-  );
-
+  document.getElementById("canvas");
 
 const ctx =
   canvas.getContext(
@@ -569,30 +466,19 @@ const ctx =
     }
   );
 
-
 const cameraStatus =
-  document.getElementById(
-    "cameraStatus"
-  );
-
+  document.getElementById("cameraStatus");
 
 const messageBox =
-  document.getElementById(
-    "message"
-  );
-
+  document.getElementById("message");
 
 const fileInput =
-  document.getElementById(
-    "fileInput"
-  );
+  document.getElementById("fileInput");
 
 
-/*
- * =========================================================
- * VARIABLES
- * =========================================================
- */
+/* =====================================================
+   VARIABLES
+   ===================================================== */
 
 let stream = null;
 
@@ -600,19 +486,16 @@ let scanning = false;
 
 let processing = false;
 
-let currentFacingMode =
-  "environment";
+let currentFacingMode = "environment";
 
 let lastQR = "";
 
 let lastScanTime = 0;
 
 
-/*
- * =========================================================
- * START CAMERA
- * =========================================================
- */
+/* =====================================================
+   START CAMERA
+   ===================================================== */
 
 async function startCamera() {
 
@@ -645,35 +528,27 @@ async function startCamera() {
   try {
 
     stream =
-      await navigator.mediaDevices
-        .getUserMedia({
+      await navigator.mediaDevices.getUserMedia({
 
-          video: {
+        video: {
 
-            facingMode: {
-
-              ideal:
-                currentFacingMode
-
-            },
-
-            width: {
-
-              ideal: 1280
-
-            },
-
-            height: {
-
-              ideal: 720
-
-            }
-
+          facingMode: {
+            ideal: currentFacingMode
           },
 
-          audio: false
+          width: {
+            ideal: 1280
+          },
 
-        });
+          height: {
+            ideal: 720
+          }
+
+        },
+
+        audio: false
+
+      });
 
 
     video.srcObject =
@@ -704,11 +579,10 @@ async function startCamera() {
 
   }
 
+
   catch (error) {
 
-    console.error(
-      error
-    );
+    console.error(error);
 
 
     cameraStatus.innerHTML =
@@ -744,11 +618,9 @@ async function startCamera() {
 }
 
 
-/*
- * =========================================================
- * STOP CAMERA
- * =========================================================
- */
+/* =====================================================
+   STOP CAMERA
+   ===================================================== */
 
 function stopCamera() {
 
@@ -759,14 +631,11 @@ function stopCamera() {
 
     stream
       .getTracks()
-      .forEach(
-        function(track) {
+      .forEach(function(track) {
 
-          track.stop();
+        track.stop();
 
-        }
-      );
-
+      });
 
     stream = null;
 
@@ -790,11 +659,9 @@ function stopCamera() {
 }
 
 
-/*
- * =========================================================
- * SWITCH CAMERA
- * =========================================================
- */
+/* =====================================================
+   SWITCH CAMERA
+   ===================================================== */
 
 async function switchCamera() {
 
@@ -804,12 +671,8 @@ async function switchCamera() {
 
 
   currentFacingMode =
-
-    currentFacingMode ===
-    "environment"
-
+    currentFacingMode === "environment"
       ? "user"
-
       : "environment";
 
 
@@ -818,11 +681,9 @@ async function switchCamera() {
 }
 
 
-/*
- * =========================================================
- * CAMERA QR SCANNING
- * =========================================================
- */
+/* =====================================================
+   CAMERA SCANNER
+   ===================================================== */
 
 function scanCamera() {
 
@@ -926,7 +787,8 @@ function scanCamera() {
   ) {
 
     handleQR(
-      code.data
+      code.data,
+      "CAMERA"
     );
 
     return;
@@ -941,11 +803,9 @@ function scanCamera() {
 }
 
 
-/*
- * =========================================================
- * OPEN FILE PICKER
- * =========================================================
- */
+/* =====================================================
+   OPEN FILE PICKER
+   ===================================================== */
 
 function openFilePicker() {
 
@@ -962,11 +822,9 @@ function openFilePicker() {
 }
 
 
-/*
- * =========================================================
- * HANDLE UPLOADED IMAGE
- * =========================================================
- */
+/* =====================================================
+   UPLOAD IMAGE
+   ===================================================== */
 
 function handleImageUpload(event) {
 
@@ -976,7 +834,6 @@ function handleImageUpload(event) {
 
 
   const file =
-    event.target.files &&
     event.target.files[0];
 
 
@@ -986,9 +843,8 @@ function handleImageUpload(event) {
 
 
   if (
-    !file.type.startsWith(
-      "image/"
-    )
+    !file.type ||
+    !file.type.startsWith("image/")
   ) {
 
     showMessage(
@@ -1001,20 +857,17 @@ function handleImageUpload(event) {
   }
 
 
-  processing = true;
-
+  /*
+   * Stop camera habang
+   * binabasa ang uploaded image.
+   */
 
   stopCamera();
 
 
   showMessage(
-
-    "🖼️ QR IMAGE SELECTED<br><br>" +
-
-    "READING QR CODE...",
-
+    "🖼️ IMAGE LOADED<br><br>READING QR CODE...",
     "info"
-
   );
 
 
@@ -1025,38 +878,32 @@ function handleImageUpload(event) {
   reader.onload =
     function(e) {
 
-      const image =
+      const img =
         new Image();
 
 
-      image.onload =
+      img.onload =
         function() {
 
-          readQRCodeFromImage(
-            image
+          decodeUploadedImage(
+            img
           );
 
         };
 
 
-      image.onerror =
+      img.onerror =
         function() {
-
-          processing = false;
-
 
           showMessage(
-
             "UNABLE TO READ IMAGE.",
-
             "error"
-
           );
 
         };
 
 
-      image.src =
+      img.src =
         e.target.result;
 
     };
@@ -1065,15 +912,9 @@ function handleImageUpload(event) {
   reader.onerror =
     function() {
 
-      processing = false;
-
-
       showMessage(
-
-        "UNABLE TO OPEN IMAGE.",
-
+        "FAILED TO LOAD IMAGE.",
         "error"
-
       );
 
     };
@@ -1086,72 +927,67 @@ function handleImageUpload(event) {
 }
 
 
-/*
- * =========================================================
- * READ QR FROM IMAGE
- * =========================================================
- */
+/* =====================================================
+   DECODE UPLOADED IMAGE
+   ===================================================== */
 
-function readQRCodeFromImage(
-  image
-) {
+function decodeUploadedImage(img) {
 
   try {
 
+    /*
+     * Limit image size para
+     * hindi sobrang bigat sa browser.
+     */
+
+    const MAX_SIZE = 1600;
+
+
     let width =
-      image.naturalWidth ||
-      image.width;
+      img.naturalWidth ||
+      img.width;
 
 
     let height =
-      image.naturalHeight ||
-      image.height;
+      img.naturalHeight ||
+      img.height;
 
 
     if (
-      !width ||
-      !height
+      width <= 0 ||
+      height <= 0
     ) {
 
-      throw new Error(
-        "INVALID IMAGE"
+      showMessage(
+        "INVALID IMAGE.",
+        "error"
       );
 
-    }
-
-
-    /*
-     * Limit very large images.
-     */
-
-    const maxSize =
-      1600;
-
-
-    if (
-      width > maxSize ||
-      height > maxSize
-    ) {
-
-      const scale =
-        Math.min(
-          maxSize / width,
-          maxSize / height
-        );
-
-
-      width =
-        Math.floor(
-          width * scale
-        );
-
-
-      height =
-        Math.floor(
-          height * scale
-        );
+      return;
 
     }
+
+
+    const scale =
+      Math.min(
+        1,
+        MAX_SIZE / Math.max(
+          width,
+          height
+        )
+      );
+
+
+    width =
+      Math.round(
+        width * scale
+      );
+
+
+    height =
+      Math.round(
+        height * scale
+      );
 
 
     canvas.width =
@@ -1172,7 +1008,7 @@ function readQRCodeFromImage(
 
     ctx.drawImage(
 
-      image,
+      img,
 
       0,
 
@@ -1224,7 +1060,8 @@ function readQRCodeFromImage(
     ) {
 
       handleQR(
-        code.data
+        code.data,
+        "UPLOAD IMAGE"
       );
 
       return;
@@ -1232,20 +1069,122 @@ function readQRCodeFromImage(
     }
 
 
-    processing = false;
+    /*
+     * Try original dimensions
+     * kapag resized image failed.
+     */
+
+    if (
+      scale !== 1
+    ) {
+
+      const originalWidth =
+        img.naturalWidth ||
+        img.width;
+
+
+      const originalHeight =
+        img.naturalHeight ||
+        img.height;
+
+
+      canvas.width =
+        originalWidth;
+
+
+      canvas.height =
+        originalHeight;
+
+
+      ctx.clearRect(
+
+        0,
+
+        0,
+
+        originalWidth,
+
+        originalHeight
+
+      );
+
+
+      ctx.drawImage(
+
+        img,
+
+        0,
+
+        0,
+
+        originalWidth,
+
+        originalHeight
+
+      );
+
+
+      const originalData =
+        ctx.getImageData(
+
+          0,
+
+          0,
+
+          originalWidth,
+
+          originalHeight
+
+        );
+
+
+      const originalCode =
+        jsQR(
+
+          originalData.data,
+
+          originalData.width,
+
+          originalData.height,
+
+          {
+
+            inversionAttempts:
+              "attemptBoth"
+
+          }
+
+        );
+
+
+      if (
+        originalCode &&
+        originalCode.data
+      ) {
+
+        handleQR(
+          originalCode.data,
+          "UPLOAD IMAGE"
+        );
+
+        return;
+
+      }
+
+    }
 
 
     showMessage(
 
-      "QR CODE NOT FOUND IN IMAGE.<br><br>" +
+      "❌ QR CODE NOT FOUND<br><br>" +
 
       "<small>" +
 
-      "Make sure the QR Code is clear, " +
+      "Make sure the uploaded image clearly " +
 
-      "complete, and not too blurry."
+      "shows the complete QR Code." +
 
-      + "</small>",
+      "</small>",
 
       "error"
 
@@ -1253,19 +1192,18 @@ function readQRCodeFromImage(
 
   }
 
+
   catch (error) {
 
     console.error(
+      "QR image decode error:",
       error
     );
 
 
-    processing = false;
-
-
     showMessage(
 
-      "ERROR READING QR IMAGE.<br><br>" +
+      "ERROR READING QR IMAGE<br><br>" +
 
       "<small>" +
 
@@ -1282,30 +1220,37 @@ function readQRCodeFromImage(
 }
 
 
-/*
- * =========================================================
- * HANDLE QR
- * =========================================================
- */
+/* =====================================================
+   HANDLE QR
+   ===================================================== */
 
 function handleQR(
-  qrValue
+  qrValue,
+  source
 ) {
 
   if (!qrValue) {
-
-    processing = false;
-
     return;
-
   }
 
 
   /*
-   * DO NOT MODIFY THE QR VALUE.
+   * IMPORTANT:
    *
-   * Only remove accidental surrounding
-   * spaces/newlines.
+   * Do NOT convert the QR value
+   * to a number.
+   *
+   * This preserves:
+   *
+   * 023449
+   *
+   * as:
+   *
+   * 023449
+   *
+   * and not:
+   *
+   * 23449
    */
 
   qrValue =
@@ -1315,11 +1260,7 @@ function handleQR(
 
 
   if (!qrValue) {
-
-    processing = false;
-
     return;
-
   }
 
 
@@ -1338,8 +1279,6 @@ function handleQR(
     now - lastScanTime < 3000
 
   ) {
-
-    processing = false;
 
     return;
 
@@ -1367,26 +1306,43 @@ function handleQR(
 
     "✅ QR CODE FOUND<br><br>" +
 
-    "<div class='qr-value'>" +
+    "<div class='qr-value-box'>" +
 
-    escapeHTML(
-      qrValue
-    ) +
+    escapeHTML(qrValue) +
 
-    "</div><br>" +
+    "</div>" +
 
-    "SENDING TO SYSTEM...",
+    "<br>" +
+
+    "<small>" +
+
+    source +
+
+    "<br>" +
+
+    "SENDING TO GOOGLE APPS SCRIPT..." +
+
+    "</small>",
 
     "info"
 
   );
 
 
-  /*
-   * =======================================================
-   * CHECK GOOGLE APPS SCRIPT URL
-   * =======================================================
-   */
+  sendQRToGoogleAppsScript(
+    qrValue
+  );
+
+}
+
+
+/* =====================================================
+   SEND QR TO GOOGLE APPS SCRIPT
+   ===================================================== */
+
+function sendQRToGoogleAppsScript(
+  qrValue
+) {
 
   if (
 
@@ -1403,12 +1359,11 @@ function handleQR(
 
     showMessage(
 
-      "WEB APP URL NOT SET",
+      "GOOGLE APPS SCRIPT URL NOT SET.",
 
       "error"
 
     );
-
 
     return;
 
@@ -1416,35 +1371,40 @@ function handleQR(
 
 
   /*
-   * =======================================================
-   * SEND QR TO GOOGLE APPS SCRIPT
-   * =======================================================
-   *
-   * JSONP is used because this page is
-   * hosted externally on GitHub.
-   *
+   * JSONP callback.
    */
-
-  sendQRToGoogleAppsScript(
-    qrValue
-  );
-
-}
-
-
-/*
- * =========================================================
- * SEND QR TO GOOGLE APPS SCRIPT
- * =========================================================
- */
-
-function sendQRToGoogleAppsScript(
-  qrValue
-) {
 
   const callbackName =
     "qrCallback_" +
     Date.now();
+
+
+  window[callbackName] =
+    function(result) {
+
+      try {
+
+        processServerResult(
+          result
+        );
+
+      }
+
+      finally {
+
+        try {
+
+          delete window[
+            callbackName
+          ];
+
+        }
+
+        catch (ignore) {}
+
+      }
+
+    };
 
 
   const script =
@@ -1453,55 +1413,30 @@ function sendQRToGoogleAppsScript(
     );
 
 
-  let finished = false;
-
-
-  /*
-   * Global callback.
-   */
-
-  window[callbackName] =
-    function(result) {
-
-      if (finished) {
-        return;
-      }
-
-
-      finished = true;
-
-
-      cleanup();
-
-
-      processing = false;
-
-
-      handleServerResult(
-        result,
-        qrValue
-      );
-
-    };
-
-
-  /*
-   * Timeout.
-   */
-
   const timeout =
     setTimeout(
       function() {
 
-        if (finished) {
-          return;
+        try {
+
+          delete window[
+            callbackName
+          ];
+
         }
 
+        catch (ignore) {}
 
-        finished = true;
 
+        if (
+          script.parentNode
+        ) {
 
-        cleanup();
+          script.parentNode.removeChild(
+            script
+          );
+
+        }
 
 
         processing = false;
@@ -1509,15 +1444,15 @@ function sendQRToGoogleAppsScript(
 
         showMessage(
 
-          "SERVER TIMEOUT<br><br>" +
+          "❌ SERVER TIMEOUT<br><br>" +
 
           "<small>" +
 
-          "The Google Apps Script did not " +
+          "Hindi nakatanggap ng response " +
 
-          "respond in time."
+          "mula sa Google Apps Script." +
 
-          + "</small>",
+          "</small>",
 
           "error"
 
@@ -1528,40 +1463,83 @@ function sendQRToGoogleAppsScript(
     );
 
 
-  function cleanup() {
+  script.onload =
+    function() {
 
-    clearTimeout(
-      timeout
-    );
+      clearTimeout(
+        timeout
+      );
+
+      /*
+       * Script response should
+       * automatically call callback.
+       */
+
+      setTimeout(
+        function() {
+
+          if (
+            script.parentNode
+          ) {
+
+            script.parentNode.removeChild(
+              script
+            );
+
+          }
+
+        },
+        1000
+      );
+
+    };
 
 
-    try {
+  script.onerror =
+    function() {
 
-      delete window[
-        callbackName
-      ];
-
-    }
-
-    catch (e) {}
+      clearTimeout(
+        timeout
+      );
 
 
-    if (
-      script.parentNode
-    ) {
-
-      script.parentNode
-        .removeChild(
-          script
-        );
-
-    }
-
-  }
+      processing = false;
 
 
-  const url =
+      showMessage(
 
+        "❌ CONNECTION ERROR<br><br>" +
+
+        "<small>" +
+
+        "Hindi makakonekta sa Google Apps Script." +
+
+        "</small>",
+
+        "error"
+
+      );
+
+
+      try {
+
+        delete window[
+          callbackName
+        ];
+
+      }
+
+      catch (ignore) {}
+
+    };
+
+
+  /*
+   * IMPORTANT:
+   * qrValue is sent EXACTLY as string.
+   */
+
+  const targetURL =
     GAS_WEB_APP_URL +
 
     "?action=processScan" +
@@ -1576,49 +1554,11 @@ function sendQRToGoogleAppsScript(
 
     encodeURIComponent(
       callbackName
-    ) +
-
-    "&_=" +
-
-    Date.now();
+    );
 
 
   script.src =
-    url;
-
-
-  script.onerror =
-    function() {
-
-      if (finished) {
-        return;
-      }
-
-
-      finished = true;
-
-
-      cleanup();
-
-
-      processing = false;
-
-
-      showMessage(
-
-        "CONNECTION ERROR<br><br>" +
-
-        "<small>" +
-
-        "Unable to contact Google Apps Script."
-
-        + "</small>",
-
-        "error"
-
-      );
-
-    };
+    targetURL;
 
 
   document.body.appendChild(
@@ -1628,28 +1568,22 @@ function sendQRToGoogleAppsScript(
 }
 
 
-/*
- * =========================================================
- * SERVER RESULT
- * =========================================================
- */
+/* =====================================================
+   SERVER RESULT
+   ===================================================== */
 
-function handleServerResult(
-  result,
-  qrValue
+function processServerResult(
+  result
 ) {
 
-  console.log(
-    "SERVER RESULT:",
-    result
-  );
+  processing = false;
 
 
   if (!result) {
 
     showMessage(
 
-      "NO RESPONSE FROM SERVER",
+      "❌ NO SERVER RESPONSE",
 
       "error"
 
@@ -1664,87 +1598,74 @@ function handleServerResult(
     result.success
   ) {
 
-    const action =
-      result.action ||
-      "";
-
-
-    const name =
-      result.name ||
-      qrValue;
-
-
-    const office =
-      result.office ||
-      "";
-
-
-    const dateTime =
-      result.dateTime ||
-      "";
-
-
     let html =
 
-      "✅ SCAN SUCCESSFUL<br><br>" +
-
-      "<div class='qr-value'>" +
+      "✅ <b>" +
 
       escapeHTML(
-        qrValue
+        result.action ||
+        "SCAN SUCCESSFUL"
       ) +
 
-      "</div><br>";
-
-
-    if (action) {
-
-      html +=
-
-        "<b>" +
-
-        escapeHTML(
-          action
-        ) +
-
-        "</b><br><br>";
-
-    }
+      "</b><br><br>";
 
 
     html +=
 
+      "<div class='qr-value-box'>" +
+
+      "QR: " +
+
       escapeHTML(
-        name
-      );
+        result.personId ||
+        result.serial ||
+        ""
+      ) +
+
+      "</div>";
 
 
-    if (office) {
+    if (
+      result.name
+    ) {
 
       html +=
 
         "<br>" +
 
         escapeHTML(
-          office
+          result.name
         );
 
     }
 
 
-    if (dateTime) {
+    if (
+      result.office
+    ) {
+
+      html +=
+
+        "<br>" +
+
+        escapeHTML(
+          result.office
+        );
+
+    }
+
+
+    if (
+      result.dateTime
+    ) {
 
       html +=
 
         "<br><br>" +
 
-        "<small>" +
-
         escapeHTML(
-          dateTime
-        ) +
-
-        "</small>";
+          result.dateTime
+        );
 
     }
 
@@ -1756,17 +1677,16 @@ function handleServerResult(
 
 
     /*
-     * Allow another scan after success.
+     * Allow another scan after
+     * successful processing.
      */
 
     setTimeout(
       function() {
 
+        lastQR = "";
+
         processing = false;
-
-        hideMessage();
-
-        startCamera();
 
       },
       2500
@@ -1779,49 +1699,32 @@ function handleServerResult(
 
 
   /*
-   * SERVER ERROR
+   * SERVER ERROR / INVALID QR
    */
-
-  const serverMessage =
-
-    result.message ||
-
-    "SYSTEM ERROR";
-
 
   showMessage(
 
     "❌ " +
 
     escapeHTML(
-      serverMessage
-    ) +
 
-    "<br><br>" +
+      result.message ||
 
-    "<div class='qr-value'>" +
+      "QR CODE NOT REGISTERED"
 
-    escapeHTML(
-      qrValue
-    ) +
-
-    "</div>",
+    ),
 
     "error"
 
   );
 
 
-  /*
-   * Allow another scan.
-   */
-
   setTimeout(
     function() {
 
-      processing = false;
+      lastQR = "";
 
-      startCamera();
+      processing = false;
 
     },
     2500
@@ -1830,53 +1733,9 @@ function handleServerResult(
 }
 
 
-/*
- * =========================================================
- * ESCAPE HTML
- * =========================================================
- */
-
-function escapeHTML(
-  value
-) {
-
-  return String(
-    value || ""
-  )
-
-    .replace(
-      /&/g,
-      "&amp;"
-    )
-
-    .replace(
-      /</g,
-      "&lt;"
-    )
-
-    .replace(
-      />/g,
-      "&gt;"
-    )
-
-    .replace(
-      /"/g,
-      "&quot;"
-    )
-
-    .replace(
-      /'/g,
-      "&#039;"
-    );
-
-}
-
-
-/*
- * =========================================================
- * MESSAGE
- * =========================================================
- */
+/* =====================================================
+   MESSAGE
+   ===================================================== */
 
 function showMessage(
   message,
@@ -1918,11 +1777,44 @@ function hideMessage() {
 }
 
 
-/*
- * =========================================================
- * CLEANUP
- * =========================================================
- */
+/* =====================================================
+   HTML ESCAPE
+   ===================================================== */
+
+function escapeHTML(
+  value
+) {
+
+  return String(
+    value || ""
+  )
+  .replace(
+    /&/g,
+    "&amp;"
+  )
+  .replace(
+    /</g,
+    "&lt;"
+  )
+  .replace(
+    />/g,
+    "&gt;"
+  )
+  .replace(
+    /"/g,
+    "&quot;"
+  )
+  .replace(
+    /'/g,
+    "&#039;"
+  );
+
+}
+
+
+/* =====================================================
+   CLEANUP
+   ===================================================== */
 
 window.addEventListener(
   "beforeunload",
@@ -1932,7 +1824,6 @@ window.addEventListener(
 
   }
 );
-
 
 </script>
 

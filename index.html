@@ -1,7 +1,6 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-
   <meta charset="UTF-8">
 
   <meta
@@ -9,7 +8,7 @@
     content="width=device-width, initial-scale=1.0"
   >
 
-  <title>QR Time In / Time Out Scanner</title>
+  <title>QR Time In / Time Out</title>
 
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
 
@@ -30,7 +29,7 @@
       width: 100%;
       max-width: 520px;
       margin: auto;
-      background: white;
+      background: #ffffff;
       border-radius: 18px;
       padding: 20px;
       box-shadow: 0 4px 20px rgba(0,0,0,.15);
@@ -110,6 +109,7 @@
       text-align: center;
       border-radius: 8px;
       background: #e9ecef;
+      color: #212529;
       font-weight: bold;
     }
 
@@ -146,14 +146,6 @@
       color: white;
     }
 
-    #scanAgainButton {
-      width: 100%;
-      margin-top: 10px;
-      background: #0d6efd;
-      color: white;
-      display: none;
-    }
-
     button:disabled {
       opacity: .5;
       cursor: not-allowed;
@@ -185,46 +177,21 @@
     }
 
     .details {
-      margin-top: 15px;
+      margin-top: 12px;
       text-align: left;
-      background: #f8f9fa;
+      background: rgba(255,255,255,.65);
       border-radius: 10px;
-      padding: 14px;
-      line-height: 1.6;
+      padding: 12px;
+      font-weight: normal;
     }
 
-    .details-title {
-      text-align: center;
-      font-size: 18px;
-      font-weight: bold;
-      margin-bottom: 10px;
+    .details div {
+      padding: 4px 0;
     }
 
     .action {
-      text-align: center;
       font-size: 22px;
-      font-weight: bold;
-      padding: 10px;
-      border-radius: 8px;
-      margin-bottom: 12px;
-    }
-
-    .time-in {
-      background: #00ff00;
-      color: #000000;
-    }
-
-    .time-out {
-      background: #ff0000;
-      color: #ffffff;
-    }
-
-    .detail-row {
-      margin-bottom: 5px;
-    }
-
-    .detail-label {
-      font-weight: bold;
+      margin-bottom: 8px;
     }
 
     .help {
@@ -246,7 +213,6 @@
     }
 
   </style>
-
 </head>
 
 <body>
@@ -327,62 +293,36 @@
   </button>
 
 
-  <button
-    id="scanAgainButton"
-    onclick="scanAgain()">
-
-    📷 SCAN AGAIN
-
-  </button>
-
-
   <!-- MESSAGE -->
 
-  <div
-    id="message">
-  </div>
-
-
-  <!-- DETAILS -->
-
-  <div
-    id="details"
-    class="details"
-    style="display:none;">
-
-  </div>
+  <div id="message"></div>
 
 
   <!-- HELP -->
 
   <div class="help">
 
-    <b>How to use:</b>
+    <b>HOW TO USE:</b>
+
     <br>
 
     1. Press <b>START CAMERA</b>.
+
     <br>
 
     2. Allow camera permission.
+
     <br>
 
     3. Point the camera at the QR Code.
+
     <br>
 
-    4. QR can contain:
+    4. The scanner will automatically read the Serial Number.
+
     <br>
 
-    &nbsp;&nbsp;&nbsp;• O-123456
-    <br>
-
-    &nbsp;&nbsp;&nbsp;• 023449
-    <br>
-
-    &nbsp;&nbsp;&nbsp;• 123456
-    <br>
-
-    5. The system will automatically process
-    TIME IN / TIME OUT.
+    5. The system will record TIME IN or TIME OUT.
 
   </div>
 
@@ -393,7 +333,7 @@
 
 
 /************************************************************
- * GOOGLE APPS SCRIPT WEB APP
+ * GOOGLE APPS SCRIPT WEB APP URL
  ************************************************************/
 
 const GAS_WEB_APP_URL =
@@ -405,16 +345,10 @@ const GAS_WEB_APP_URL =
  ************************************************************/
 
 const video =
-  document.getElementById(
-    "video"
-  );
-
+  document.getElementById("video");
 
 const canvas =
-  document.getElementById(
-    "canvas"
-  );
-
+  document.getElementById("canvas");
 
 const ctx =
   canvas.getContext(
@@ -424,29 +358,11 @@ const ctx =
     }
   );
 
-
 const cameraStatus =
-  document.getElementById(
-    "cameraStatus"
-  );
-
+  document.getElementById("cameraStatus");
 
 const messageBox =
-  document.getElementById(
-    "message"
-  );
-
-
-const detailsBox =
-  document.getElementById(
-    "details"
-  );
-
-
-const scanAgainButton =
-  document.getElementById(
-    "scanAgainButton"
-  );
+  document.getElementById("message");
 
 
 /************************************************************
@@ -466,8 +382,6 @@ let lastQR = "";
 
 let lastScanTime = 0;
 
-let jsonpCounter = 0;
-
 
 /************************************************************
  * START CAMERA
@@ -479,17 +393,9 @@ async function startCamera() {
     return;
   }
 
-
   hideMessage();
 
-  hideDetails();
-
-  scanAgainButton.style.display =
-    "none";
-
-
   stopCamera();
-
 
   if (
     !navigator.mediaDevices ||
@@ -502,7 +408,6 @@ async function startCamera() {
     );
 
     return;
-
   }
 
 
@@ -564,6 +469,7 @@ async function startCamera() {
   catch (error) {
 
     console.error(
+      "Camera error:",
       error
     );
 
@@ -582,7 +488,9 @@ async function startCamera() {
 
     showMessage(
 
-      "CAMERA PERMISSION BLOCKED<br>" +
+      "CAMERA PERMISSION BLOCKED" +
+
+      "<br><br>" +
 
       "<small>" +
 
@@ -622,14 +530,12 @@ function stopCamera() {
         }
       );
 
-
     stream = null;
 
   }
 
 
-  video.srcObject =
-    null;
+  video.srcObject = null;
 
 
   cameraStatus.innerHTML =
@@ -672,31 +578,7 @@ async function switchCamera() {
 
 
 /************************************************************
- * SCAN AGAIN
- ************************************************************/
-
-function scanAgain() {
-
-  processing = false;
-
-  lastQR = "";
-
-  lastScanTime = 0;
-
-  hideMessage();
-
-  hideDetails();
-
-  scanAgainButton.style.display =
-    "none";
-
-  startCamera();
-
-}
-
-
-/************************************************************
- * CAMERA SCANNING
+ * SCAN CAMERA
  ************************************************************/
 
 function scanCamera() {
@@ -820,33 +702,15 @@ function scanCamera() {
  * HANDLE QR
  ************************************************************/
 
-function handleQR(
-  qrValue
-) {
+function handleQR(qrValue) {
 
   if (!qrValue) {
     return;
   }
 
 
-  /*
-   * IMPORTANT:
-   *
-   * DO NOT modify the QR.
-   *
-   * The QR may be:
-   *
-   * O-123456
-   * 023449
-   * 123456
-   *
-   * We send exactly what the camera reads.
-   */
-
   qrValue =
-    String(
-      qrValue
-    ).trim();
+    String(qrValue).trim();
 
 
   if (!qrValue) {
@@ -859,7 +723,7 @@ function handleQR(
 
 
   /*
-   * Prevent duplicate scan.
+   * PREVENT DUPLICATE SCANS
    */
 
   if (
@@ -893,21 +757,19 @@ function handleQR(
 
   showMessage(
 
-    "QR CODE FOUND<br><br>" +
-
-    "<small>" +
-
-    "QR: " +
-
-    escapeHtml(
-      qrValue
-    ) +
+    "QR CODE FOUND" +
 
     "<br><br>" +
 
-    "PROCESSING..." +
+    "<b>" +
 
-    "</small>",
+    escapeHtml(qrValue) +
+
+    "</b>" +
+
+    "<br><br>" +
+
+    "PROCESSING...",
 
     "info"
 
@@ -915,7 +777,7 @@ function handleQR(
 
 
   /*
-   * Check Web App URL.
+   * CHECK GAS URL
    */
 
   if (
@@ -933,12 +795,11 @@ function handleQR(
 
     showMessage(
 
-      "WEB APP URL NOT SET",
+      "GOOGLE APPS SCRIPT URL NOT SET",
 
       "error"
 
     );
-
 
     return;
 
@@ -946,7 +807,7 @@ function handleQR(
 
 
   /*
-   * Send QR using JSONP.
+   * SEND TO GOOGLE APPS SCRIPT
    */
 
   sendQRToGoogle(
@@ -959,8 +820,10 @@ function handleQR(
 /************************************************************
  * SEND QR TO GOOGLE APPS SCRIPT
  *
- * JSONP is used because this scanner
- * is hosted on GitHub Pages.
+ * JSONP
+ *
+ * IMPORTANT:
+ * This works from GitHub Pages.
  ************************************************************/
 
 function sendQRToGoogle(
@@ -971,49 +834,64 @@ function sendQRToGoogle(
     "qrCallback_" +
     Date.now() +
     "_" +
-    (++jsonpCounter);
+    Math.floor(
+      Math.random() * 100000
+    );
+
+
+  let finished = false;
 
 
   /*
-   * Create global callback.
+   * GLOBAL CALLBACK
    */
 
   window[callbackName] =
     function(result) {
 
+      if (finished) {
+        return;
+      }
+
+      finished = true;
+
+
       try {
 
-        handleServerResult(
-          result
+        delete window[
+          callbackName
+        ];
+
+      }
+
+      catch (e) {}
+
+
+      if (
+        script &&
+        script.parentNode
+      ) {
+
+        script.parentNode.removeChild(
+          script
         );
 
       }
 
-      finally {
 
-        try {
-
-          delete window[
-            callbackName
-          ];
-
-        }
-
-        catch (ignore) {}
+      processing = false;
 
 
-        try {
-
-          script.remove();
-
-        }
-
-        catch (ignore) {}
-
-      }
+      handleServerResult(
+        result
+      );
 
     };
 
+
+  /*
+   * CREATE SCRIPT
+   */
 
   const script =
     document.createElement(
@@ -1043,16 +921,22 @@ function sendQRToGoogle(
     url;
 
 
-  script.async =
-    true;
+  script.async = true;
 
 
   /*
-   * Handle network/server error.
+   * ERROR
    */
 
   script.onerror =
     function() {
+
+      if (finished) {
+        return;
+      }
+
+      finished = true;
+
 
       try {
 
@@ -1062,10 +946,19 @@ function sendQRToGoogle(
 
       }
 
-      catch (ignore) {}
+      catch (e) {}
 
 
-      script.remove();
+      if (
+        script &&
+        script.parentNode
+      ) {
+
+        script.parentNode.removeChild(
+          script
+        );
+
+      }
 
 
       processing = false;
@@ -1073,11 +966,21 @@ function sendQRToGoogle(
 
       showMessage(
 
-        "SERVER CONNECTION ERROR<br><br>" +
+        "CONNECTION ERROR" +
+
+        "<br><br>" +
 
         "<small>" +
 
-        "Hindi makakonekta sa Google Apps Script." +
+        "Unable to connect to the " +
+
+        "Google Apps Script server." +
+
+        "<br><br>" +
+
+        "Check your Web App deployment."
+
+        +
 
         "</small>",
 
@@ -1085,76 +988,81 @@ function sendQRToGoogle(
 
       );
 
-
-      scanAgainButton.style.display =
-        "block";
-
     };
 
 
-  document.body.appendChild(
-    script
-  );
-
-
   /*
-   * Timeout protection.
+   * TIMEOUT
    */
 
   setTimeout(
     function() {
 
-      if (
-        window[
+      if (finished) {
+        return;
+      }
+
+
+      finished = true;
+
+
+      try {
+
+        delete window[
           callbackName
-        ]
-      ) {
-
-        try {
-
-          delete window[
-            callbackName
-          ];
-
-        }
-
-        catch (ignore) {}
-
-
-        try {
-
-          script.remove();
-
-        }
-
-        catch (ignore) {}
-
-
-        processing = false;
-
-
-        showMessage(
-
-          "SERVER TIMEOUT<br><br>" +
-
-          "<small>" +
-
-          "Walang response mula sa Google Apps Script." +
-
-          "</small>",
-
-          "error"
-
-        );
-
-
-        scanAgainButton.style.display =
-          "block";
+        ];
 
       }
 
+      catch (e) {}
+
+
+      if (
+        script &&
+        script.parentNode
+      ) {
+
+        script.parentNode.removeChild(
+          script
+        );
+
+      }
+
+
+      processing = false;
+
+
+      showMessage(
+
+        "SERVER TIMEOUT" +
+
+        "<br><br>" +
+
+        "<small>" +
+
+        "The server did not respond." +
+
+        "<br>" +
+
+        "Please try scanning again."
+
+        +
+
+        "</small>",
+
+        "error"
+
+      );
+
     },
-    20000
+
+    15000
+
+  );
+
+
+  document.body.appendChild(
+    script
   );
 
 }
@@ -1168,51 +1076,21 @@ function handleServerResult(
   result
 ) {
 
-  processing = false;
+  console.log(
+    "Server result:",
+    result
+  );
 
 
-  if (
-    !result
-  ) {
-
-    showMessage(
-      "INVALID SERVER RESPONSE",
-      "error"
-    );
-
-
-    scanAgainButton.style.display =
-      "block";
-
-
-    return;
-
-  }
-
-
-  /*
-   * ERROR
-   */
-
-  if (
-    result.success !== true
-  ) {
+  if (!result) {
 
     showMessage(
 
-      escapeHtml(
-        result.message ||
-        "SYSTEM ERROR"
-      ),
+      "NO RESPONSE FROM SERVER",
 
       "error"
 
     );
-
-
-    scanAgainButton.style.display =
-      "block";
-
 
     return;
 
@@ -1223,268 +1101,300 @@ function handleServerResult(
    * SUCCESS
    */
 
-  const action =
-    String(
-      result.action || ""
-    ).toUpperCase();
-
-
-  let actionClass =
-    "";
-
-
   if (
-    action ===
-    "TIME IN"
+    result.success === true
   ) {
 
-    actionClass =
-      "time-in";
+    const action =
+      result.action ||
+      "SCAN SUCCESS";
+
+
+    let html = "";
+
+
+    html +=
+      '<div class="action">' +
+
+      "✅ " +
+
+      escapeHtml(
+        action
+      ) +
+
+      "</div>";
+
+
+    html +=
+      "<div>" +
+
+      "<b>SCAN SUCCESSFUL</b>" +
+
+      "</div>";
+
+
+    html +=
+      '<div class="details">';
+
+
+    if (
+      result.serial !== undefined &&
+      result.serial !== null
+    ) {
+
+      html +=
+        "<div>" +
+
+        "<b>Serial Number:</b> " +
+
+        escapeHtml(
+          result.serial
+        ) +
+
+        "</div>";
+
+    }
+
+
+    if (result.name) {
+
+      html +=
+        "<div>" +
+
+        "<b>Name:</b> " +
+
+        escapeHtml(
+          result.name
+        ) +
+
+        "</div>";
+
+    }
+
+
+    if (result.rank) {
+
+      html +=
+        "<div>" +
+
+        "<b>Rank:</b> " +
+
+        escapeHtml(
+          result.rank
+        ) +
+
+        "</div>";
+
+    }
+
+
+    if (result.office) {
+
+      html +=
+        "<div>" +
+
+        "<b>Office:</b> " +
+
+        escapeHtml(
+          result.office
+        ) +
+
+        "</div>";
+
+    }
+
+
+    if (result.contact) {
+
+      html +=
+        "<div>" +
+
+        "<b>Contact:</b> " +
+
+        escapeHtml(
+          result.contact
+        ) +
+
+        "</div>";
+
+    }
+
+
+    if (result.vehicle) {
+
+      html +=
+        "<div>" +
+
+        "<b>Vehicle:</b> " +
+
+        escapeHtml(
+          result.vehicle
+        ) +
+
+        "</div>";
+
+    }
+
+
+    if (result.color) {
+
+      html +=
+        "<div>" +
+
+        "<b>Color:</b> " +
+
+        escapeHtml(
+          result.color
+        ) +
+
+        "</div>";
+
+    }
+
+
+    if (result.plate) {
+
+      html +=
+        "<div>" +
+
+        "<b>Plate Number:</b> " +
+
+        escapeHtml(
+          result.plate
+        ) +
+
+        "</div>";
+
+    }
+
+
+    if (result.purpose) {
+
+      html +=
+        "<div>" +
+
+        "<b>Purpose:</b> " +
+
+        escapeHtml(
+          result.purpose
+        ) +
+
+        "</div>";
+
+    }
+
+
+    if (result.dateTime) {
+
+      html +=
+        "<div>" +
+
+        "<b>Date/Time:</b> " +
+
+        escapeHtml(
+          result.dateTime
+        ) +
+
+        "</div>";
+
+    }
+
+
+    html +=
+      "</div>";
+
+
+    showMessage(
+      html,
+      "success"
+    );
+
+
+    /*
+     * Automatically restart camera
+     * after 3 seconds.
+     */
+
+    setTimeout(
+      function() {
+
+        if (!processing) {
+
+          startCamera();
+
+        }
+
+      },
+
+      3000
+
+    );
+
+
+    return;
 
   }
 
-  else if (
-    action ===
-    "TIME OUT"
-  ) {
 
-    actionClass =
-      "time-out";
+  /*
+   * ERROR FROM SERVER
+   */
 
-  }
+  const errorMessage =
+    result.message ||
+
+    "SCAN FAILED";
 
 
   showMessage(
 
-    "✓ " +
+    "❌ " +
 
     escapeHtml(
-      action
+      errorMessage
     ) +
 
-    "<br><small>" +
+    "<br><br>" +
+
+    "<small>" +
+
+    "QR: " +
 
     escapeHtml(
-      result.dateTime ||
-      ""
+      lastQR
     ) +
 
     "</small>",
 
-    "success"
+    "error"
 
   );
 
 
   /*
-   * SHOW COMPLETE DETAILS
+   * Allow scanning again
    */
 
-  detailsBox.innerHTML =
+  setTimeout(
+    function() {
 
-    '<div class="details-title">' +
+      if (!processing) {
 
-    'PERSON DETAILS' +
+        startCamera();
 
-    '</div>' +
+      }
 
+    },
 
-    '<div class="action ' +
-    actionClass +
-    '">' +
+    2500
 
-    escapeHtml(
-      action
-    ) +
-
-    '</div>' +
-
-
-    '<div class="detail-row">' +
-
-    '<span class="detail-label">' +
-    'QR CODE: ' +
-    '</span>' +
-
-    escapeHtml(
-      result.serial ||
-      result.personId ||
-      ""
-    ) +
-
-    '</div>' +
-
-
-    '<div class="detail-row">' +
-
-    '<span class="detail-label">' +
-    'NAME: ' +
-    '</span>' +
-
-    escapeHtml(
-      result.name ||
-      ""
-    ) +
-
-    '</div>' +
-
-
-    '<div class="detail-row">' +
-
-    '<span class="detail-label">' +
-    'OFFICE/AGENCY: ' +
-    '</span>' +
-
-    escapeHtml(
-      result.office ||
-      ""
-    ) +
-
-    '</div>' +
-
-
-    '<div class="detail-row">' +
-
-    '<span class="detail-label">' +
-    'RANK/POSITION: ' +
-    '</span>' +
-
-    escapeHtml(
-      result.rank ||
-      ""
-    ) +
-
-    '</div>' +
-
-
-    '<div class="detail-row">' +
-
-    '<span class="detail-label">' +
-    'AGE: ' +
-    '</span>' +
-
-    escapeHtml(
-      result.age ||
-      ""
-    ) +
-
-    '</div>' +
-
-
-    '<div class="detail-row">' +
-
-    '<span class="detail-label">' +
-    'CONTACT: ' +
-    '</span>' +
-
-    escapeHtml(
-      result.contact ||
-      ""
-    ) +
-
-    '</div>' +
-
-
-    '<div class="detail-row">' +
-
-    '<span class="detail-label">' +
-    'GENDER: ' +
-    '</span>' +
-
-    escapeHtml(
-      result.gender ||
-      ""
-    ) +
-
-    '</div>' +
-
-
-    '<div class="detail-row">' +
-
-    '<span class="detail-label">' +
-    'VEHICLE: ' +
-    '</span>' +
-
-    escapeHtml(
-      result.vehicle ||
-      ""
-    ) +
-
-    '</div>' +
-
-
-    '<div class="detail-row">' +
-
-    '<span class="detail-label">' +
-    'COLOR: ' +
-    '</span>' +
-
-    escapeHtml(
-      result.color ||
-      ""
-    ) +
-
-    '</div>' +
-
-
-    '<div class="detail-row">' +
-
-    '<span class="detail-label">' +
-    'PLATE: ' +
-    '</span>' +
-
-    escapeHtml(
-      result.plate ||
-      ""
-    ) +
-
-    '</div>' +
-
-
-    '<div class="detail-row">' +
-
-    '<span class="detail-label">' +
-    'PURPOSE: ' +
-    '</span>' +
-
-    escapeHtml(
-      result.purpose ||
-      ""
-    ) +
-
-    '</div>' +
-
-
-    '<div class="detail-row">' +
-
-    '<span class="detail-label">' +
-    'DATE/TIME: ' +
-    '</span>' +
-
-    escapeHtml(
-      result.dateTime ||
-      ""
-    ) +
-
-    '</div>';
-
-
-  detailsBox.style.display =
-    "block";
-
-
-  /*
-   * Show scan again button.
-   */
-
-  scanAgainButton.style.display =
-    "block";
+  );
 
 }
 
 
 /************************************************************
- * MESSAGE
+ * SHOW MESSAGE
  ************************************************************/
 
 function showMessage(
@@ -1532,25 +1442,9 @@ function hideMessage() {
 
 
 /************************************************************
- * HIDE DETAILS
- ************************************************************/
-
-function hideDetails() {
-
-  detailsBox.innerHTML =
-    "";
-
-
-  detailsBox.style.display =
-    "none";
-
-}
-
-
-/************************************************************
- * HTML ESCAPE
+ * ESCAPE HTML
  *
- * Prevent QR/server text from being
+ * Prevents QR/server text from being
  * interpreted as HTML.
  ************************************************************/
 
@@ -1559,7 +1453,8 @@ function escapeHtml(
 ) {
 
   return String(
-    value == null
+    value === undefined ||
+    value === null
       ? ""
       : value
   )
@@ -1604,6 +1499,7 @@ window.addEventListener(
 
   }
 );
+
 
 </script>
 

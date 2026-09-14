@@ -135,12 +135,17 @@
       font-weight: bold;
     }
 
-    /* ==============================
-       RESULT STATUS
-       ============================== */
+    /* ==========================
+       RESULT
+       ========================== */
+
+    #result-card {
+      display: none;
+    }
 
     .status {
       display: block;
+      width: 100%;
       padding: 18px;
       border-radius: 10px;
       color: white;
@@ -162,10 +167,6 @@
       background: #6c757d;
     }
 
-    /* ==============================
-       DETAILS
-       ============================== */
-
     .details {
       display: block;
     }
@@ -186,11 +187,51 @@
     .detail-value {
       word-break: break-word;
       color: #111;
+      font-weight: normal;
     }
 
-    /* ==============================
+    /* ==========================
+       TIME INFORMATION
+       ========================== */
+
+    .time-section {
+      margin-top: 18px;
+      padding: 15px;
+      border-radius: 10px;
+      background: #f8f9fa;
+      border: 1px solid #e3e3e3;
+    }
+
+    .time-section-title {
+      font-weight: bold;
+      color: #17365d;
+      margin-bottom: 8px;
+      font-size: 16px;
+    }
+
+    .time-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 7px 0;
+      border-bottom: 1px solid #e5e5e5;
+    }
+
+    .time-row:last-child {
+      border-bottom: none;
+    }
+
+    .time-label {
+      font-weight: bold;
+    }
+
+    .time-value {
+      text-align: right;
+      word-break: break-word;
+    }
+
+    /* ==========================
        SCAN AGAIN
-       ============================== */
+       ========================== */
 
     .scan-again {
       width: 100%;
@@ -205,10 +246,6 @@
       font-size: 12px;
       padding: 10px;
     }
-
-    /* ==============================
-       MOBILE
-       ============================== */
 
     @media (max-width: 480px) {
 
@@ -234,15 +271,24 @@
       .status {
         font-size: 27px;
       }
+
+      .time-row {
+        flex-direction: column;
+        gap: 3px;
+      }
+
+      .time-value {
+        text-align: left;
+      }
     }
   </style>
 </head>
 
 <body>
 
-  <!-- ==============================
+  <!-- ==========================
        HEADER
-       ============================== -->
+       ========================== -->
 
   <div class="header">
     <h1>CGFLEET QR Monitoring</h1>
@@ -252,9 +298,9 @@
 
   <div class="container">
 
-    <!-- ==============================
+    <!-- ==========================
          SCANNER CARD
-         ============================== -->
+         ========================== -->
 
     <div class="card" id="scanner-card">
 
@@ -299,23 +345,23 @@
     </div>
 
 
-    <!-- ==============================
+    <!-- ==========================
          RESULT CARD
-         ============================== -->
+         ========================== -->
 
-    <div
-      class="card"
-      id="result-card"
-      style="display: none;">
+    <div class="card" id="result-card">
 
       <!-- STATUS -->
       <div
         id="status-box"
-        class="status">
+        class="status unknown">
       </div>
 
 
-      <!-- DETAILS -->
+      <!-- ==========================
+           VISITOR DETAILS
+           ========================== -->
+
       <div class="details">
 
         <div class="detail-row">
@@ -325,6 +371,7 @@
           <div
             class="detail-value"
             id="office">
+            -
           </div>
         </div>
 
@@ -336,6 +383,7 @@
           <div
             class="detail-value"
             id="rank">
+            -
           </div>
         </div>
 
@@ -347,6 +395,7 @@
           <div
             class="detail-value"
             id="firstName">
+            -
           </div>
         </div>
 
@@ -358,6 +407,7 @@
           <div
             class="detail-value"
             id="middleInitial">
+            -
           </div>
         </div>
 
@@ -369,6 +419,7 @@
           <div
             class="detail-value"
             id="lastName">
+            -
           </div>
         </div>
 
@@ -380,6 +431,7 @@
           <div
             class="detail-value"
             id="contact">
+            -
           </div>
         </div>
 
@@ -391,6 +443,7 @@
           <div
             class="detail-value"
             id="vehicle">
+            -
           </div>
         </div>
 
@@ -402,6 +455,7 @@
           <div
             class="detail-value"
             id="vehicleColor">
+            -
           </div>
         </div>
 
@@ -413,6 +467,7 @@
           <div
             class="detail-value"
             id="plate">
+            -
           </div>
         </div>
 
@@ -424,6 +479,7 @@
           <div
             class="detail-value"
             id="dateTime">
+            -
           </div>
         </div>
 
@@ -435,6 +491,7 @@
           <div
             class="detail-value"
             id="timeIn">
+            -
           </div>
         </div>
 
@@ -446,6 +503,7 @@
           <div
             class="detail-value"
             id="timeOut">
+            -
           </div>
         </div>
 
@@ -457,13 +515,58 @@
           <div
             class="detail-value"
             id="purpose">
+            -
           </div>
         </div>
 
       </div>
 
 
-      <!-- SCAN AGAIN -->
+      <!-- ==========================
+           TIME SUMMARY
+           ========================== -->
+
+      <div class="time-section">
+
+        <div class="time-section-title">
+          Visit Time
+        </div>
+
+        <div class="time-row">
+
+          <div class="time-label">
+            Time In
+          </div>
+
+          <div
+            class="time-value"
+            id="summaryTimeIn">
+            -
+          </div>
+
+        </div>
+
+
+        <div class="time-row">
+
+          <div class="time-label">
+            Time Out
+          </div>
+
+          <div
+            class="time-value"
+            id="summaryTimeOut">
+            -
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- ==========================
+           SCAN AGAIN
+           ========================== -->
 
       <button
         class="scan-again"
@@ -485,7 +588,7 @@
 
     /*
      * ==========================================================
-     * GOOGLE APPS SCRIPT WEB APP
+     * GOOGLE APPS SCRIPT WEB APP URL
      * ==========================================================
      */
 
@@ -524,42 +627,59 @@
       try {
 
         if (!html5QrCode) {
+
           html5QrCode =
             new Html5Qrcode("reader");
         }
 
+
         const config = {
+
           fps: 10,
+
           qrbox: {
             width: 250,
             height: 250
           },
+
           aspectRatio: 1.0
+
         };
 
+
         await html5QrCode.start(
+
           {
             facingMode: "environment"
           },
+
           config,
+
           onScanSuccess,
+
           onScanFailure
+
         );
 
+
         scannerRunning = true;
+
 
         document.getElementById(
           "start-camera"
         ).disabled = true;
 
+
         document.getElementById(
           "stop-camera"
         ).disabled = false;
+
 
         showMessage(
           "Camera is ready. Scan the QR code.",
           "success"
         );
+
 
       } catch (error) {
 
@@ -567,6 +687,7 @@
           "Camera error:",
           error
         );
+
 
         showMessage(
           "Unable to start camera. Please allow camera permission.",
@@ -585,9 +706,14 @@
 
     async function stopCamera() {
 
-      if (!html5QrCode || !scannerRunning) {
+      if (
+        !html5QrCode ||
+        !scannerRunning
+      ) {
+
         return;
       }
+
 
       try {
 
@@ -602,11 +728,14 @@
 
       }
 
+
       scannerRunning = false;
+
 
       document.getElementById(
         "start-camera"
       ).disabled = false;
+
 
       document.getElementById(
         "stop-camera"
@@ -629,12 +758,15 @@
         return;
       }
 
+
       scanProcessing = true;
+
 
       console.log(
         "QR detected:",
         decodedText
       );
+
 
       processScannedQR(
         decodedText
@@ -650,7 +782,7 @@
 
     function onScanFailure(error) {
 
-      // Normal while scanner is searching.
+      // Normal while searching for QR.
     }
 
 
@@ -660,31 +792,53 @@
      * ==========================================================
      */
 
-    async function processScannedQR(qrText) {
+    async function processScannedQR(
+      qrText
+    ) {
+
+      if (
+        !qrText ||
+        String(qrText).trim() === ""
+      ) {
+
+        showMessage(
+          "No QR data detected.",
+          "error"
+        );
+
+        scanProcessing = false;
+
+        return;
+      }
+
 
       showMessage(
         "QR detected. Processing...",
         "loading"
       );
 
+
       if (scannerRunning) {
+
         await stopCamera();
       }
 
-      sendQRToServer(qrText);
+
+      sendQRToServer(
+        String(qrText).trim()
+      );
     }
 
 
     /*
      * ==========================================================
-     * SEND QR TO GOOGLE APPS SCRIPT
-     *
-     * JSONP is used because the scanner is hosted on GitHub
-     * Pages and the backend is Google Apps Script.
+     * SEND QR TO APPS SCRIPT
      * ==========================================================
      */
 
-    function sendQRToServer(qrText) {
+    function sendQRToServer(
+      qrText
+    ) {
 
       showMessage(
         "Checking vehicle record...",
@@ -705,7 +859,7 @@
 
 
       /*
-       * CALLBACK
+       * JSONP CALLBACK
        */
 
       window[callbackName] =
@@ -715,12 +869,15 @@
             return;
           }
 
+
           completed = true;
 
+
           console.log(
-            "Server response:",
+            "Apps Script response:",
             response
           );
+
 
           handleServerResponse(
             response
@@ -729,19 +886,23 @@
 
           delete window[callbackName];
 
+
           const oldScript =
             document.getElementById(
               callbackName
             );
 
+
           if (oldScript) {
+
             oldScript.remove();
           }
+
         };
 
 
       /*
-       * SCRIPT REQUEST
+       * CREATE SCRIPT REQUEST
        */
 
       const script =
@@ -749,31 +910,38 @@
           "script"
         );
 
-      script.id = callbackName;
+
+      script.id =
+        callbackName;
 
 
       const url =
         APPS_SCRIPT_URL +
         "?action=scan" +
         "&qr=" +
-        encodeURIComponent(qrText) +
+        encodeURIComponent(
+          qrText
+        ) +
         "&callback=" +
-        encodeURIComponent(callbackName) +
+        encodeURIComponent(
+          callbackName
+        ) +
         "&_=" +
         Date.now();
 
 
       console.log(
-        "Request URL:",
+        "Apps Script request:",
         url
       );
 
 
-      script.src = url;
+      script.src =
+        url;
 
 
       /*
-       * REQUEST ERROR
+       * CONNECTION ERROR
        */
 
       script.onerror =
@@ -783,20 +951,26 @@
             return;
           }
 
+
           completed = true;
 
+
           console.error(
-            "Apps Script request failed."
+            "Apps Script connection failed."
           );
+
 
           showMessage(
             "Unable to connect to the monitoring server.",
             "error"
           );
 
+
           scanProcessing = false;
 
+
           delete window[callbackName];
+
 
           script.remove();
         };
@@ -818,27 +992,35 @@
             return;
           }
 
+
           completed = true;
+
 
           console.error(
             "Apps Script request timed out."
           );
+
 
           showMessage(
             "Server timeout. Please try again.",
             "error"
           );
 
+
           scanProcessing = false;
 
+
           delete window[callbackName];
+
 
           const oldScript =
             document.getElementById(
               callbackName
             );
 
+
           if (oldScript) {
+
             oldScript.remove();
           }
 
@@ -878,10 +1060,12 @@
 
 
       /*
-       * ERROR FROM APPS SCRIPT
+       * SERVER ERROR
        */
 
-      if (response.success !== true) {
+      if (
+        response.success !== true
+      ) {
 
         showMessage(
           response.message ||
@@ -903,6 +1087,7 @@
         response
       );
 
+
       scanProcessing = false;
     }
 
@@ -917,26 +1102,34 @@
       data
     ) {
 
+      console.log(
+        "Displaying result:",
+        data
+      );
+
+
       /*
-       * Hide scanner
+       * HIDE SCANNER
        */
 
       document.getElementById(
         "scanner-card"
-      ).style.display = "none";
+      ).style.display =
+        "none";
 
 
       /*
-       * Show result
+       * SHOW RESULT
        */
 
       document.getElementById(
         "result-card"
-      ).style.display = "block";
+      ).style.display =
+        "block";
 
 
       /*
-       * STATUS
+       * GET STATUS
        */
 
       const statusBox =
@@ -954,7 +1147,7 @@
 
 
       /*
-       * Reset classes
+       * RESET STATUS CLASS
        */
 
       statusBox.className =
@@ -965,7 +1158,9 @@
        * IN
        */
 
-      if (status === "IN") {
+      if (
+        status === "IN"
+      ) {
 
         statusBox.classList.add(
           "in"
@@ -981,7 +1176,9 @@
        * OUT
        */
 
-      else if (status === "OUT") {
+      else if (
+        status === "OUT"
+      ) {
 
         statusBox.classList.add(
           "out"
@@ -1009,12 +1206,15 @@
 
 
       /*
-       * VISITOR DETAILS
+       * ========================================================
+       * VISITOR INFORMATION
+       * ========================================================
        */
 
       setText(
         "office",
-        data.office
+        data.office ||
+        data.officeAgencyAssignment
       );
 
 
@@ -1074,7 +1274,8 @@
 
       setText(
         "dateTime",
-        data.dateTime
+        data.dateTime ||
+        data.scanDateTime
       );
 
 
@@ -1098,10 +1299,32 @@
 
 
       /*
-       * MESSAGE
+       * ========================================================
+       * TIME SUMMARY
+       * ========================================================
        */
 
-      if (status === "IN") {
+      setText(
+        "summaryTimeIn",
+        data.timeIn
+      );
+
+
+      setText(
+        "summaryTimeOut",
+        data.timeOut
+      );
+
+
+      /*
+       * ========================================================
+       * SUCCESS MESSAGE
+       * ========================================================
+       */
+
+      if (
+        status === "IN"
+      ) {
 
         showMessage(
           "Vehicle successfully marked IN.",
@@ -1110,7 +1333,9 @@
 
       }
 
-      else if (status === "OUT") {
+      else if (
+        status === "OUT"
+      ) {
 
         showMessage(
           "Vehicle successfully marked OUT.",
@@ -1129,7 +1354,7 @@
 
 
       /*
-       * Scroll to result
+       * SCROLL TO RESULT
        */
 
       document.getElementById(
@@ -1143,7 +1368,7 @@
 
     /*
      * ==========================================================
-     * SET TEXT
+     * SET TEXT SAFELY
      * ==========================================================
      */
 
@@ -1153,7 +1378,9 @@
     ) {
 
       const element =
-        document.getElementById(id);
+        document.getElementById(
+          id
+        );
 
 
       if (!element) {
@@ -1173,7 +1400,7 @@
       } else {
 
         element.textContent =
-          value;
+          String(value);
       }
     }
 
@@ -1218,7 +1445,7 @@
           try {
 
             /*
-             * Stop camera if running
+             * Stop camera if running.
              */
 
             if (
@@ -1231,7 +1458,7 @@
 
 
             /*
-             * Create scanner if necessary
+             * Create QR scanner if needed.
              */
 
             if (!html5QrCode) {
@@ -1244,7 +1471,7 @@
 
 
             /*
-             * Read QR image
+             * Decode image.
              */
 
             const decodedText =
@@ -1261,12 +1488,13 @@
 
 
             /*
-             * Send result to server
+             * Send decoded QR.
              */
 
             await processScannedQR(
               decodedText
             );
+
 
           } catch (error) {
 
@@ -1275,20 +1503,23 @@
               error
             );
 
+
             showMessage(
               "Could not read the QR image. Please use a clear QR image.",
               "error"
             );
+
 
             scanProcessing = false;
 
           } finally {
 
             /*
-             * Allow same image to be selected again
+             * Allow the same image to be selected again.
              */
 
-            event.target.value = "";
+            event.target.value =
+              "";
           }
 
         }
@@ -1304,25 +1535,27 @@
     function scanAgain() {
 
       /*
-       * Hide result
+       * Hide result.
        */
 
       document.getElementById(
         "result-card"
-      ).style.display = "none";
+      ).style.display =
+        "none";
 
 
       /*
-       * Show scanner
+       * Show scanner.
        */
 
       document.getElementById(
         "scanner-card"
-      ).style.display = "block";
+      ).style.display =
+        "block";
 
 
       /*
-       * Reset status
+       * Reset status.
        */
 
       const statusBox =
@@ -1330,22 +1563,62 @@
           "status-box"
         );
 
+
       statusBox.className =
-        "status";
+        "status unknown";
+
 
       statusBox.textContent =
         "";
 
 
       /*
-       * Reset processing
+       * Reset fields.
        */
 
-      scanProcessing = false;
+      const fields = [
+
+        "office",
+        "rank",
+        "firstName",
+        "middleInitial",
+        "lastName",
+        "contact",
+        "vehicle",
+        "vehicleColor",
+        "plate",
+        "dateTime",
+        "timeIn",
+        "timeOut",
+        "purpose",
+        "summaryTimeIn",
+        "summaryTimeOut"
+
+      ];
+
+
+      fields.forEach(
+        function(id) {
+
+          setText(
+            id,
+            "-"
+          );
+
+        }
+      );
 
 
       /*
-       * Message
+       * Reset scanner state.
+       */
+
+      scanProcessing =
+        false;
+
+
+      /*
+       * Message.
        */
 
       showMessage(
@@ -1355,7 +1628,7 @@
 
 
       /*
-       * Scroll to scanner
+       * Scroll to scanner.
        */
 
       document.getElementById(
@@ -1399,6 +1672,18 @@
         );
       }
     }
+
+
+    /*
+     * ==========================================================
+     * INITIAL MESSAGE
+     * ==========================================================
+     */
+
+    showMessage(
+      "Click START CAMERA or upload a QR image.",
+      ""
+    );
 
   </script>
 

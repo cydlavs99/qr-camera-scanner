@@ -136,6 +136,21 @@
     }
 
     /* ==========================
+       CAMERA READY
+       ========================== */
+
+    .ready-box {
+      margin-top: 15px;
+      padding: 12px;
+      border-radius: 8px;
+      background: #e9f7ef;
+      color: #198754;
+      text-align: center;
+      font-weight: bold;
+      display: none;
+    }
+
+    /* ==========================
        RESULT
        ========================== */
 
@@ -230,18 +245,26 @@
     }
 
     /* ==========================
-       SCAN STATUS
+       NEW SCAN INDICATOR
        ========================== */
 
-    .ready-box {
-      margin-top: 15px;
-      padding: 12px;
-      border-radius: 8px;
-      background: #e9f7ef;
-      color: #198754;
+    .next-scan-box {
+      margin-top: 18px;
+      padding: 15px;
+      border-radius: 10px;
+      background: #17365d;
+      color: white;
       text-align: center;
+      font-size: 16px;
       font-weight: bold;
-      display: none;
+    }
+
+    .next-scan-box small {
+      display: block;
+      margin-top: 5px;
+      font-size: 12px;
+      font-weight: normal;
+      opacity: 0.9;
     }
 
     .footer {
@@ -347,7 +370,7 @@
       </div>
 
       <div id="ready-box" class="ready-box">
-        CAMERA READY — SCAN NEXT QR
+        CAMERA READY — READY FOR NEXT QR
       </div>
 
     </div>
@@ -572,6 +595,18 @@
 
       </div>
 
+
+      <!-- ==========================
+           NEXT SCAN
+           ========================== -->
+
+      <div class="next-scan-box">
+        CAMERA IS STILL ACTIVE
+        <small>
+          Iharap lang ang susunod na QR code
+        </small>
+      </div>
+
     </div>
 
 
@@ -600,13 +635,23 @@
     let scannerRunning = false;
     let scanProcessing = false;
 
-    // Prevent the same QR from being processed repeatedly
-    // immediately after a successful scan.
-    let lastScannedQR = "";
-    let lastScanTime = 0;
+    /*
+      The last QR detected.
+      This prevents the camera from repeatedly reading
+      the same QR while it is still in front of the camera.
+    */
 
-    // 1.5 seconds cooldown before accepting the next scan.
-    const SCAN_COOLDOWN = 1500;
+    let lastScannedQR = "";
+
+    /*
+      Number of frames where the QR is no longer detected.
+      Once the QR disappears, the scanner becomes ready
+      to accept the same QR again.
+    */
+
+    let qrMissingCount = 0;
+
+    const QR_MISSING_RESET_COUNT = 8;
 
 
     /* ==========================================================
@@ -734,6 +779,11 @@
       document.getElementById(
         "ready-box"
       ).style.display = "none";
+
+      showMessage(
+        "Camera stopped.",
+        ""
+      );
     }
 
 
@@ -757,24 +807,27 @@
         return;
       }
 
-      const now = Date.now();
-
       /*
-       * Ignore the exact same QR for a short period.
-       * This prevents multiple camera frames from causing
-       * duplicate transactions.
-       */
+        If the exact same QR is still visible,
+        do not process it again.
+      */
 
       if (
-        qrText === lastScannedQR &&
-        (now - lastScanTime) < SCAN_COOLDOWN
+        qrText === lastScannedQR
       ) {
+
+        qrMissingCount = 0;
 
         return;
       }
 
+      /*
+        New QR detected.
+      */
+
+      qrMissingCount = 0;
+
       lastScannedQR = qrText;
-      lastScanTime = now;
 
       scanProcessing = true;
 
@@ -795,7 +848,35 @@
 
     function onScanFailure(error) {
 
-      // Normal while camera is searching for QR.
+      /*
+        This function is called while the camera
+        is searching for a QR code.
+
+        We use this to know when the previous QR
+        has disappeared from the camera.
+      */
+
+      if (
+        lastScannedQR &&
+        !scanProcessing
+      ) {
+
+        qrMissingCount++;
+
+        if (
+          qrMissingCount >=
+          QR_MISSING_RESET_COUNT
+        ) {
+
+          lastScannedQR = "";
+          qrMissingCount = 0;
+
+          showMessage(
+            "Camera ready. Scan the next QR code.",
+            "success"
+          );
+        }
+      }
     }
 
 
@@ -828,12 +909,14 @@
       );
 
       /*
-       * IMPORTANT:
-       * We DO NOT stop the camera here.
-       *
-       * The camera remains running while the result
-       * is displayed.
-       */
+        IMPORTANT:
+
+        DO NOT STOP THE CAMERA.
+
+        The camera remains active while the server
+        processes the transaction and while the
+        visitor details are displayed.
+      */
 
       sendQRToServer(
         String(qrText).trim()
@@ -864,9 +947,10 @@
 
       let completed = false;
 
+
       /*
-       * JSONP CALLBACK
-       */
+        JSONP CALLBACK
+      */
 
       window[callbackName] =
         function(response) {
@@ -901,8 +985,8 @@
 
 
       /*
-       * CREATE SCRIPT REQUEST
-       */
+        CREATE SCRIPT REQUEST
+      */
 
       const script =
         document.createElement(
@@ -936,8 +1020,8 @@
 
 
       /*
-       * CONNECTION ERROR
-       */
+        CONNECTION ERROR
+      */
 
       script.onerror =
         function() {
@@ -959,6 +1043,13 @@
 
           scanProcessing = false;
 
+          /*
+            Allow the same QR to be tried again
+            if the server connection failed.
+          */
+
+          lastScannedQR = "";
+
           delete window[callbackName];
 
           script.remove();
@@ -972,8 +1063,8 @@
 
 
       /*
-       * TIMEOUT
-       */
+        TIMEOUT
+      */
 
       setTimeout(
         function() {
@@ -994,6 +1085,12 @@
           );
 
           scanProcessing = false;
+
+          /*
+            Allow retry after timeout.
+          */
+
+          lastScannedQR = "";
 
           delete window[callbackName];
 
@@ -1034,13 +1131,15 @@
 
         scanProcessing = false;
 
+        lastScannedQR = "";
+
         return;
       }
 
 
       /*
-       * SERVER ERROR
-       */
+        SERVER ERROR
+      */
 
       if (
         response.success !== true
@@ -1054,37 +1153,37 @@
 
         scanProcessing = false;
 
+        /*
+          Allow retry for an invalid/unregistered QR.
+        */
+
+        lastScannedQR = "";
+
         return;
       }
 
 
       /*
-       * SUCCESS
-       */
+        SUCCESS
+      */
 
       displayResult(
         response
       );
 
+
       /*
-       * Keep the camera running.
-       *
-       * We wait briefly so the same QR cannot immediately
-       * trigger another transaction.
-       */
+        The camera remains running.
 
-      setTimeout(
-        function() {
+        The transaction is finished, but the camera
+        continues looking for the next QR.
+      */
 
-          scanProcessing = false;
+      scanProcessing = false;
 
-          showMessage(
-            "Camera ready. Scan the next QR code.",
-            "success"
-          );
-
-        },
-        SCAN_COOLDOWN
+      showMessage(
+        "Transaction completed. Camera is ready for the next QR.",
+        "success"
       );
     }
 
@@ -1104,11 +1203,11 @@
 
 
       /*
-       * SHOW RESULT
-       *
-       * The scanner is NOT hidden.
-       * Camera remains visible above the details.
-       */
+        SHOW RESULT
+
+        We DO NOT hide the scanner.
+        The camera remains visible and active.
+      */
 
       document.getElementById(
         "result-card"
@@ -1117,8 +1216,8 @@
 
 
       /*
-       * GET STATUS
-       */
+        GET STATUS
+      */
 
       const statusBox =
         document.getElementById(
@@ -1134,16 +1233,16 @@
 
 
       /*
-       * RESET STATUS CLASS
-       */
+        RESET STATUS CLASS
+      */
 
       statusBox.className =
         "status";
 
 
       /*
-       * IN
-       */
+        IN
+      */
 
       if (
         status === "IN"
@@ -1160,8 +1259,8 @@
 
 
       /*
-       * OUT
-       */
+        OUT
+      */
 
       else if (
         status === "OUT"
@@ -1178,8 +1277,8 @@
 
 
       /*
-       * UNKNOWN
-       */
+        UNKNOWN
+      */
 
       else {
 
@@ -1193,8 +1292,8 @@
 
 
       /*
-       * VISITOR INFORMATION
-       */
+        VISITOR INFORMATION
+      */
 
       setText(
         "office",
@@ -1272,8 +1371,8 @@
 
 
       /*
-       * TIME SUMMARY
-       */
+        TIME SUMMARY
+      */
 
       setText(
         "summaryTimeIn",
@@ -1285,51 +1384,6 @@
         data.timeOut
       );
 
-
-      /*
-       * SUCCESS MESSAGE
-       */
-
-      if (
-        status === "IN"
-      ) {
-
-        showMessage(
-          "Vehicle successfully marked IN.",
-          "success"
-        );
-
-      }
-
-      else if (
-        status === "OUT"
-      ) {
-
-        showMessage(
-          "Vehicle successfully marked OUT.",
-          "success"
-        );
-
-      }
-
-      else {
-
-        showMessage(
-          "Transaction completed.",
-          "success"
-        );
-
-      }
-
-
-      /*
-       * IMPORTANT:
-       *
-       * DO NOT scroll the page to the result.
-       *
-       * The camera should remain visible and ready
-       * for the next QR.
-       */
     }
 
 
@@ -1401,11 +1455,26 @@
           try {
 
             /*
-             * If camera is running, leave it running.
-             *
-             * scanFile() can decode the uploaded image
-             * without stopping the live camera.
-             */
+              If camera is running, we temporarily
+              stop it so scanFile() can safely read
+              the uploaded image.
+
+              After processing, the camera will
+              automatically start again.
+            */
+
+            const wasCameraRunning =
+              scannerRunning;
+
+            if (
+              html5QrCode &&
+              scannerRunning
+            ) {
+
+              await stopCamera();
+
+            }
+
 
             if (!html5QrCode) {
 
@@ -1413,12 +1482,13 @@
                 new Html5Qrcode(
                   "reader"
                 );
+
             }
 
 
             /*
-             * Decode image.
-             */
+              Decode uploaded QR image.
+            */
 
             const decodedText =
               await html5QrCode.scanFile(
@@ -1433,12 +1503,44 @@
 
 
             /*
-             * Send decoded QR.
-             */
+              Mark this QR as processed.
+            */
 
-            await processScannedQR(
-              decodedText
+            lastScannedQR =
+              String(
+                decodedText || ""
+              ).trim();
+
+            qrMissingCount = 0;
+
+
+            /*
+              Send decoded QR to server.
+            */
+
+            sendQRToServer(
+              String(
+                decodedText
+              ).trim()
             );
+
+
+            /*
+              Restart camera after a short delay.
+            */
+
+            if (wasCameraRunning) {
+
+              setTimeout(
+                function() {
+
+                  startCamera();
+
+                },
+                800
+              );
+
+            }
 
           } catch (error) {
 
@@ -1454,11 +1556,13 @@
 
             scanProcessing = false;
 
+            lastScannedQR = "";
+
           } finally {
 
             /*
-             * Allow the same image to be selected again.
-             */
+              Allow the same image to be selected again.
+            */
 
             event.target.value = "";
 

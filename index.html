@@ -50,8 +50,6 @@
     }
 
 
-    /* HEADER */
-
     .header {
       background: #4285f4;
       color: white;
@@ -75,8 +73,6 @@
       font-size: 14px;
     }
 
-
-    /* SCANNER CARD */
 
     .scanner-card {
       background: white;
@@ -106,8 +102,6 @@
       max-width: 100%;
     }
 
-
-    /* BUTTONS */
 
     .button-container {
       display: grid;
@@ -157,8 +151,6 @@
     }
 
 
-    /* MESSAGE */
-
     #message {
       display: none;
       margin-top: 14px;
@@ -191,8 +183,6 @@
     }
 
 
-    /* RESULT */
-
     #result {
       display: none;
       margin-top: 14px;
@@ -210,8 +200,6 @@
       margin-bottom: 14px;
     }
 
-
-    /* STATUS */
 
     #attendance-status {
       width: 100%;
@@ -241,8 +229,6 @@
       color: #ffffff;
     }
 
-
-    /* DETAILS */
 
     .details-table {
       width: 100%;
@@ -275,8 +261,6 @@
     }
 
 
-    /* SCAN AGAIN */
-
     .scan-again-button {
       width: 100%;
       margin-top: 15px;
@@ -285,8 +269,6 @@
     }
 
 
-    /* FOOTER */
-
     .footer {
       text-align: center;
       font-size: 12px;
@@ -294,8 +276,6 @@
       padding: 15px 5px;
     }
 
-
-    /* MOBILE */
 
     @media screen and (max-width: 480px) {
 
@@ -341,7 +321,6 @@
 
     }
 
-
   </style>
 
 </head>
@@ -352,8 +331,6 @@
 
   <div class="container">
 
-
-    <!-- HEADER -->
 
     <div class="header">
 
@@ -367,8 +344,6 @@
 
     </div>
 
-
-    <!-- SCANNER -->
 
     <div class="scanner-card">
 
@@ -420,10 +395,7 @@
     </div>
 
 
-    <!-- RESULT -->
-
     <div id="result">
-
 
       <div class="success-title">
         ✅ SCAN SUCCESSFUL
@@ -453,7 +425,6 @@
         📷 SCAN AGAIN
       </button>
 
-
     </div>
 
 
@@ -469,6 +440,16 @@
 
 
     /******************************************************
+     * GOOGLE APPS SCRIPT WEB APP URL
+     *
+     * THIS IS THE BACKEND.
+     ******************************************************/
+
+    const APPS_SCRIPT_URL =
+      "https://script.google.com/macros/s/AKfycbxaLMBNWEhTmn5TPojbtslyUhRDPR2CNGgJaKmJDuAd-KkiIkbYtzBeZ7glzFH80eFu/exec";
+
+
+    /******************************************************
      * VARIABLES
      ******************************************************/
 
@@ -479,6 +460,8 @@
     let processingScan = false;
 
     let lastQRCode = "";
+
+    let jsonpCounter = 0;
 
 
     /******************************************************
@@ -491,14 +474,17 @@
     ) {
 
       const message =
-        document.getElementById("message");
+        document.getElementById(
+          "message"
+        );
 
 
       message.textContent =
         text || "";
 
 
-      message.className = "";
+      message.className =
+        "";
 
 
       if (!text) {
@@ -545,7 +531,6 @@
 
     function startCamera() {
 
-
       if (cameraRunning) {
 
         showMessage(
@@ -558,9 +543,11 @@
       }
 
 
-      processingScan = false;
+      processingScan =
+        false;
 
-      lastQRCode = "";
+      lastQRCode =
+        "";
 
 
       showMessage(
@@ -631,10 +618,8 @@
           function(errorMessage) {
 
             /*
-             * Scanner continuously reports
-             * scanning failures while searching.
-             *
-             * Nothing needs to be displayed.
+             * Scanner keeps checking for QR.
+             * Errors during searching are ignored.
              */
 
           }
@@ -643,7 +628,8 @@
 
         .then(function() {
 
-          cameraRunning = true;
+          cameraRunning =
+            true;
 
 
           showMessage(
@@ -661,7 +647,8 @@
           );
 
 
-          cameraRunning = false;
+          cameraRunning =
+            false;
 
 
           showMessage(
@@ -680,7 +667,6 @@
 
     function stopCamera() {
 
-
       if (
         !qrScanner ||
         !cameraRunning
@@ -696,7 +682,8 @@
 
         .then(function() {
 
-          cameraRunning = false;
+          cameraRunning =
+            false;
 
         })
 
@@ -707,7 +694,9 @@
             error
           );
 
-          cameraRunning = false;
+
+          cameraRunning =
+            false;
 
         });
 
@@ -721,7 +710,6 @@
     function qrDetected(
       decodedText
     ) {
-
 
       if (processingScan) {
 
@@ -740,11 +728,6 @@
       }
 
 
-      /*
-       * Prevent repeated camera detection
-       * of the same QR.
-       */
-
       if (
         String(decodedText) ===
         lastQRCode
@@ -759,7 +742,8 @@
         String(decodedText);
 
 
-      processingScan = true;
+      processingScan =
+        true;
 
 
       showMessage(
@@ -789,26 +773,21 @@
 
 
     /******************************************************
-     * SEND QR TO CODE.GS
+     * SEND QR TO GOOGLE APPS SCRIPT
      *
      * IMPORTANT:
      *
-     * This calls:
+     * This is GitHub code.
      *
-     * processQRScan(qrText)
+     * Therefore:
+     * DO NOT use google.script.run.
      *
-     * in Code.gs.
-     *
-     * Code.gs then searches:
-     *
-     * Registered Column N
-     *
+     * We use JSONP instead.
      ******************************************************/
 
     function sendQRToServer(
       qrText
     ) {
-
 
       showMessage(
         "Checking Registered QR Code...",
@@ -816,47 +795,179 @@
       );
 
 
-      google.script.run
-
-        .withSuccessHandler(
-          function(response) {
-
-            processingScan =
-              false;
+      const callbackName =
+        "cgfleetQRCallback_" +
+        Date.now() +
+        "_" +
+        (++jsonpCounter);
 
 
-            handleServerResponse(
-              response
+      const script =
+        document.createElement(
+          "script"
+        );
+
+
+      let finished =
+        false;
+
+
+      const cleanup =
+        function() {
+
+          try {
+
+            delete window[
+              callbackName
+            ];
+
+          } catch (error) {
+
+            window[
+              callbackName
+            ] =
+              undefined;
+
+          }
+
+
+          if (
+            script.parentNode
+          ) {
+
+            script.parentNode.removeChild(
+              script
             );
 
           }
-        )
 
-        .withFailureHandler(
-          function(error) {
+        };
+
+
+      const timeout =
+        setTimeout(
+          function() {
+
+            if (finished) {
+
+              return;
+
+            }
+
+
+            finished =
+              true;
+
+
+            cleanup();
+
 
             processingScan =
               false;
-
-
-            console.error(
-              "Server error:",
-              error
-            );
 
 
             showMessage(
-              getErrorMessage(
-                error
-              ),
+              "Server connection timed out. Please try again.",
               "error"
             );
 
-          }
-        )
+          },
+          30000
+        );
 
-        .processQRScan(
-          qrText
+
+      window[
+        callbackName
+      ] =
+        function(response) {
+
+          if (finished) {
+
+            return;
+
+          }
+
+
+          finished =
+            true;
+
+
+          clearTimeout(
+            timeout
+          );
+
+
+          cleanup();
+
+
+          processingScan =
+            false;
+
+
+          handleServerResponse(
+            response
+          );
+
+        };
+
+
+      script.onerror =
+        function() {
+
+          if (finished) {
+
+            return;
+
+          }
+
+
+          finished =
+            true;
+
+
+          clearTimeout(
+            timeout
+          );
+
+
+          cleanup();
+
+
+          processingScan =
+            false;
+
+
+          showMessage(
+            "Unable to connect to the CGFLEET server.",
+            "error"
+          );
+
+        };
+
+
+      const url =
+        APPS_SCRIPT_URL +
+        "?action=scan" +
+        "&qr=" +
+        encodeURIComponent(
+          String(qrText)
+        ) +
+        "&callback=" +
+        encodeURIComponent(
+          callbackName
+        ) +
+        "&t=" +
+        Date.now();
+
+
+      script.src =
+        url;
+
+
+      document
+        .head
+        .appendChild(
+          script
         );
 
     }
@@ -870,7 +981,6 @@
       event
     ) {
 
-
       const file =
         event.target.files &&
         event.target.files[0];
@@ -883,7 +993,12 @@
       }
 
 
-      processingScan = true;
+      processingScan =
+        true;
+
+
+      lastQRCode =
+        "";
 
 
       showMessage(
@@ -910,7 +1025,6 @@
 
         .then(function(decodedText) {
 
-
           showMessage(
             "QR detected. Processing...",
             "info"
@@ -921,11 +1035,9 @@
             decodedText
           );
 
-
         })
 
         .catch(function(error) {
-
 
           console.error(
             "Image QR error:",
@@ -946,11 +1058,11 @@
 
 
       /*
-       * Allows user to select
-       * the same image again.
+       * Allows selecting the same image again.
        */
 
-      event.target.value = "";
+      event.target.value =
+        "";
 
     }
 
@@ -962,7 +1074,6 @@
     function handleServerResponse(
       response
     ) {
-
 
       if (!response) {
 
@@ -991,10 +1102,6 @@
       }
 
 
-      /*
-       * SUCCESS
-       */
-
       showMessage(
         response.message ||
         "Scan successful.",
@@ -1016,7 +1123,6 @@
     function displayResult(
       response
     ) {
-
 
       const result =
         document.getElementById(
@@ -1044,10 +1150,6 @@
         "";
 
 
-      /*
-       * STATUS
-       */
-
       const status =
         String(
           response.status ||
@@ -1065,7 +1167,6 @@
         status === "IN"
       ) {
 
-
         statusElement.className =
           "status-in";
 
@@ -1073,13 +1174,11 @@
         statusElement.textContent =
           "✓ IN";
 
-
       }
 
       else if (
         status === "OUT"
       ) {
-
 
         statusElement.className =
           "status-out";
@@ -1088,11 +1187,9 @@
         statusElement.textContent =
           "✓ OUT";
 
-
       }
 
       else {
-
 
         statusElement.className =
           "status-success";
@@ -1104,10 +1201,6 @@
       }
 
 
-      /*
-       * DETAILS
-       */
-
       let details =
         response.details ||
         response.data ||
@@ -1115,15 +1208,9 @@
         {};
 
 
-      /*
-       * If backend returns array,
-       * convert to object.
-       */
-
       if (
         Array.isArray(details)
       ) {
-
 
         const converted =
           {};
@@ -1153,10 +1240,6 @@
 
       }
 
-
-      /*
-       * Preferred display order
-       */
 
       const preferredOrder = [
 
@@ -1199,13 +1282,8 @@
         {};
 
 
-      /*
-       * Display preferred fields.
-       */
-
       preferredOrder.forEach(
         function(header) {
-
 
           const actualKey =
             findMatchingKey(
@@ -1217,7 +1295,6 @@
           if (
             actualKey !== null
           ) {
-
 
             const value =
               details[
@@ -1231,7 +1308,6 @@
               value !== undefined
             ) {
 
-
               addDetailRow(
                 detailsBody,
                 actualKey,
@@ -1243,7 +1319,8 @@
                 normalizeText(
                   actualKey
                 )
-              ] = true;
+              ] =
+                true;
 
             }
 
@@ -1253,14 +1330,9 @@
       );
 
 
-      /*
-       * Display remaining fields.
-       */
-
       Object.keys(details)
         .forEach(
           function(key) {
-
 
             const normalized =
               normalizeText(
@@ -1300,7 +1372,6 @@
               value
             );
 
-
           }
         );
 
@@ -1316,7 +1387,6 @@
       header,
       value
     ) {
-
 
       const row =
         document.createElement(
@@ -1372,7 +1442,6 @@
       requestedHeader
     ) {
 
-
       const wanted =
         normalizeText(
           requestedHeader
@@ -1390,7 +1459,6 @@
         i < keys.length;
         i++
       ) {
-
 
         if (
           normalizeText(
@@ -1418,7 +1486,6 @@
       value
     ) {
 
-
       if (
         value === null ||
         value === undefined
@@ -1445,7 +1512,6 @@
       value
     ) {
 
-
       if (
         value === null ||
         value === undefined
@@ -1464,51 +1530,10 @@
 
 
     /******************************************************
-     * ERROR MESSAGE
-     ******************************************************/
-
-    function getErrorMessage(
-      error
-    ) {
-
-
-      if (!error) {
-
-        return "An unknown error occurred.";
-
-      }
-
-
-      if (
-        typeof error === "string"
-      ) {
-
-        return error;
-
-      }
-
-
-      if (
-        error.message
-      ) {
-
-        return error.message;
-
-      }
-
-
-      return "Unable to process the QR Code.";
-
-    }
-
-
-    /******************************************************
      * SCAN AGAIN
      ******************************************************/
 
-    function scanAgain()
-    {
-
+    function scanAgain() {
 
       document.getElementById(
         "result"

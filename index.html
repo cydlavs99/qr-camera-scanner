@@ -11,7 +11,10 @@
   <title>CGFLEET QR Monitoring</title>
 
   <!-- QR SCANNER LIBRARY -->
-  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+  <script
+    src="https://unpkg.com/html5-qrcode"
+    type="text/javascript">
+  </script>
 
   <style>
     * {
@@ -82,12 +85,17 @@
       margin: 0 auto;
       overflow: hidden;
       border-radius: 12px;
+      background: #111;
     }
 
     #reader video {
       width: 100% !important;
       height: auto !important;
       border-radius: 12px;
+    }
+
+    #reader img {
+      max-width: 100%;
     }
 
     .buttons {
@@ -475,15 +483,17 @@
 
 <script>
 
-  /************************************************************
+  /*
+   * ==========================================================
    * CGFLEET QR MONITORING
    * GITHUB INDEX.HTML
+   * ==========================================================
    *
    * APPS SCRIPT WEB APP
-   ************************************************************/
+   */
 
   const APPS_SCRIPT_URL =
-    "https://script.google.com/macros/s/AKfycbxaLMBNWEhTmn5TPojbtslyUhRDPR2CNGgJaKmJDuAd-KkiIkbYtzBeZ7glzFH80eFu/exec";
+    "https://script.google.com/macros/s/AKfycbzOE1ChdzsWbdZejFPJ6XZnXDZnGN4cJ_jxwwSh_qPsihIbVFYFKK-n_m4oAfg9gbsk/exec";
 
 
   let html5QrCode = null;
@@ -496,10 +506,14 @@
 
   let lastScanTime = 0;
 
+  let requestTimeout = null;
 
-  /************************************************************
+
+  /*
+   * ==========================================================
    * PAGE LOAD
-   ************************************************************/
+   * ==========================================================
+   */
 
   document.addEventListener("DOMContentLoaded", function () {
 
@@ -511,37 +525,58 @@
   });
 
 
-  /************************************************************
+  /*
+   * ==========================================================
    * MESSAGE
-   ************************************************************/
+   * ==========================================================
+   */
 
   function showMessage(text, type) {
 
     const message = document.getElementById("message");
 
+    if (!message) {
+      return;
+    }
+
     message.textContent = text;
 
-    message.className = "message " + (type || "info");
+    message.className =
+      "message " + (type || "info");
 
   }
 
 
   function hideMessage() {
 
-    const message = document.getElementById("message");
+    const message =
+      document.getElementById("message");
 
-    message.style.display = "none";
+    if (!message) {
+      return;
+    }
+
+    message.className = "message";
+
+    message.textContent = "";
 
   }
 
 
-  /************************************************************
+  /*
+   * ==========================================================
    * LOADING
-   ************************************************************/
+   * ==========================================================
+   */
 
   function setLoading(status) {
 
-    const loading = document.getElementById("loading");
+    const loading =
+      document.getElementById("loading");
+
+    if (!loading) {
+      return;
+    }
 
     if (status) {
 
@@ -556,13 +591,19 @@
   }
 
 
-  /************************************************************
+  /*
+   * ==========================================================
    * START CAMERA
-   ************************************************************/
+   * ==========================================================
+   */
 
   async function startCamera() {
 
     if (scannerRunning) {
+      return;
+    }
+
+    if (processingScan) {
       return;
     }
 
@@ -573,16 +614,49 @@
         "info"
       );
 
-      html5QrCode = new Html5Qrcode("reader");
+      /*
+       * If an old scanner object exists,
+       * clear it first.
+       */
+
+      if (html5QrCode) {
+
+        try {
+
+          await html5QrCode.clear();
+
+        } catch (clearError) {
+
+          console.warn(
+            "Previous scanner clear:",
+            clearError
+          );
+
+        }
+
+        html5QrCode = null;
+
+      }
+
+
+      html5QrCode =
+        new Html5Qrcode("reader");
+
 
       const config = {
 
         fps: 10,
 
-        qrbox: function(viewfinderWidth, viewfinderHeight) {
+        qrbox: function (
+          viewfinderWidth,
+          viewfinderHeight
+        ) {
 
           const minEdge =
-            Math.min(viewfinderWidth, viewfinderHeight);
+            Math.min(
+              viewfinderWidth,
+              viewfinderHeight
+            );
 
           const qrSize =
             Math.floor(minEdge * 0.70);
@@ -618,9 +692,14 @@
 
       scannerRunning = true;
 
-      document.getElementById("startButton").disabled = true;
+      document.getElementById(
+        "startButton"
+      ).disabled = true;
 
-      document.getElementById("stopButton").disabled = false;
+      document.getElementById(
+        "stopButton"
+      ).disabled = false;
+
 
       showMessage(
         "Camera is ready. Point the camera at the QR Code.",
@@ -631,13 +710,21 @@
 
     catch (error) {
 
-      console.error("Camera error:", error);
+      console.error(
+        "Camera error:",
+        error
+      );
 
       scannerRunning = false;
 
-      document.getElementById("startButton").disabled = false;
+      document.getElementById(
+        "startButton"
+      ).disabled = false;
 
-      document.getElementById("stopButton").disabled = true;
+      document.getElementById(
+        "stopButton"
+      ).disabled = true;
+
 
       showMessage(
         "Camera could not be opened. Please allow camera permission or use UPLOAD QR IMAGE.",
@@ -649,45 +736,69 @@
   }
 
 
-  /************************************************************
+  /*
+   * ==========================================================
    * STOP CAMERA
-   ************************************************************/
+   * ==========================================================
+   */
 
   async function stopCamera() {
 
-    if (!html5QrCode || !scannerRunning) {
+    if (!html5QrCode) {
+
+      scannerRunning = false;
+
+      document.getElementById(
+        "startButton"
+      ).disabled = false;
+
+      document.getElementById(
+        "stopButton"
+      ).disabled = true;
+
       return;
+
     }
+
 
     try {
 
-      await html5QrCode.stop();
+      if (scannerRunning) {
+
+        await html5QrCode.stop();
+
+      }
 
     }
 
     catch (error) {
 
-      console.warn("Stop camera warning:", error);
+      console.warn(
+        "Stop camera warning:",
+        error
+      );
 
     }
 
+
     scannerRunning = false;
 
-    document.getElementById("startButton").disabled = false;
+    document.getElementById(
+      "startButton"
+    ).disabled = false;
 
-    document.getElementById("stopButton").disabled = true;
-
-    showMessage(
-      "Camera stopped.",
-      "info"
-    );
+    document.getElementById(
+      "stopButton"
+    ).disabled = true;
 
   }
 
 
-  /************************************************************
+  /*
+   * ==========================================================
    * QR SCAN SUCCESS
-   ************************************************************/
+   * ==========================================================
+   */
 
   function onScanSuccess(decodedText) {
 
@@ -695,16 +806,32 @@
       return;
     }
 
-    const now = Date.now();
+    if (processingScan) {
+      return;
+    }
+
+
+    const qrText =
+      String(decodedText).trim();
+
+
+    if (!qrText) {
+      return;
+    }
+
+
+    const now =
+      Date.now();
+
 
     /*
-     * Prevent the same QR from being sent repeatedly
-     * while the camera is still viewing it.
+     * Prevent the same QR from being
+     * sent repeatedly.
      */
 
     if (
-      decodedText === lastScannedText &&
-      now - lastScanTime < 3000
+      qrText === lastScannedText &&
+      now - lastScanTime < 5000
     ) {
 
       return;
@@ -712,33 +839,40 @@
     }
 
 
-    lastScannedText = decodedText;
+    lastScannedText = qrText;
 
     lastScanTime = now;
 
 
-    processScannedQR(decodedText);
+    processScannedQR(qrText);
 
   }
 
 
-  /************************************************************
+  /*
+   * ==========================================================
    * QR SCAN FAILURE
-   ************************************************************/
+   * ==========================================================
+   */
 
   function onScanFailure(error) {
 
     /*
-     * html5-qrcode calls this continuously while searching.
-     * No message is displayed here to prevent screen flicker.
+     * html5-qrcode calls this continuously
+     * while searching for a QR.
+     *
+     * Do not display an error here because
+     * it would cause screen flickering.
      */
 
   }
 
 
-  /************************************************************
+  /*
+   * ==========================================================
    * PROCESS QR
-   ************************************************************/
+   * ==========================================================
+   */
 
   async function processScannedQR(qrText) {
 
@@ -746,9 +880,23 @@
       return;
     }
 
+
+    if (!qrText) {
+
+      showMessage(
+        "Invalid QR Code.",
+        "error"
+      );
+
+      return;
+
+    }
+
+
     processingScan = true;
 
     setLoading(true);
+
 
     showMessage(
       "QR detected. Checking registration...",
@@ -757,8 +905,8 @@
 
 
     /*
-     * Stop camera while processing.
-     * This prevents duplicate IN / OUT scans.
+     * Stop camera before sending the scan.
+     * This prevents duplicate attendance entries.
      */
 
     await stopCamera();
@@ -769,14 +917,16 @@
   }
 
 
-  /************************************************************
+  /*
+   * ==========================================================
    * SEND QR TO APPS SCRIPT
    *
-   * IMPORTANT:
    * GitHub cannot use google.script.run.
    *
-   * We use JSONP with the Apps Script Web App.
-   ************************************************************/
+   * JSONP is used because the GitHub page and
+   * Apps Script Web App are different origins.
+   * ==========================================================
+   */
 
   function sendQRToServer(qrText) {
 
@@ -784,34 +934,68 @@
       "cgfleetCallback_" +
       Date.now() +
       "_" +
-      Math.floor(Math.random() * 100000);
+      Math.floor(
+        Math.random() * 100000
+      );
 
 
     let finished = false;
 
 
-    window[callbackName] = function(response) {
+    /*
+     * JSONP callback
+     */
 
-      if (finished) {
-        return;
-      }
+    window[callbackName] =
+      function (response) {
 
-      finished = true;
+        if (finished) {
+          return;
+        }
 
-      cleanup();
+        finished = true;
 
-      handleServerResponse(response);
+        if (requestTimeout) {
 
-    };
+          clearTimeout(requestTimeout);
+
+          requestTimeout = null;
+
+        }
+
+        cleanup();
+
+        handleServerResponse(response);
+
+      };
 
 
-    const script = document.createElement("script");
+    /*
+     * Create script tag.
+     */
 
-    script.id = callbackName;
+    const script =
+      document.createElement("script");
+
+
+    script.id =
+      callbackName;
+
+
+    /*
+     * Build URL safely.
+     */
+
+    const separator =
+      APPS_SCRIPT_URL.indexOf("?") >= 0
+        ? "&"
+        : "?";
+
 
     script.src =
       APPS_SCRIPT_URL +
-      "?action=scan" +
+      separator +
+      "action=scan" +
       "&qr=" +
       encodeURIComponent(qrText) +
       "&callback=" +
@@ -820,27 +1004,48 @@
       Date.now();
 
 
-    script.onerror = function() {
+    /*
+     * Handle connection errors.
+     */
 
-      if (finished) {
-        return;
-      }
+    script.onerror =
+      function () {
 
-      finished = true;
+        if (finished) {
+          return;
+        }
 
-      cleanup();
+        finished = true;
 
-      processingScan = false;
 
-      setLoading(false);
+        if (requestTimeout) {
 
-      showMessage(
-        "Unable to connect to the CGFLEET server. Please check the Apps Script Web App deployment.",
-        "error"
-      );
+          clearTimeout(requestTimeout);
 
-    };
+          requestTimeout = null;
 
+        }
+
+
+        cleanup();
+
+
+        processingScan = false;
+
+        setLoading(false);
+
+
+        showMessage(
+          "Unable to connect to the CGFLEET server. Please check the Web App deployment.",
+          "error"
+        );
+
+      };
+
+
+    /*
+     * Add JSONP script to page.
+     */
 
     document.body.appendChild(script);
 
@@ -849,37 +1054,65 @@
      * Safety timeout.
      */
 
-    setTimeout(function() {
+    requestTimeout =
+      setTimeout(
+        function () {
 
-      if (finished) {
-        return;
-      }
+          if (finished) {
+            return;
+          }
 
-      finished = true;
+          finished = true;
 
-      cleanup();
 
-      processingScan = false;
+          cleanup();
 
-      setLoading(false);
 
-      showMessage(
-        "Server request timed out. Please try scanning again.",
-        "error"
+          processingScan = false;
+
+          setLoading(false);
+
+
+          showMessage(
+            "Server request timed out. Please try scanning again.",
+            "error"
+          );
+
+        },
+        20000
       );
 
-    }, 20000);
 
+    /*
+     * Cleanup JSONP script.
+     */
 
     function cleanup() {
 
-      delete window[callbackName];
+      try {
+
+        delete window[callbackName];
+
+      } catch (error) {
+
+        console.warn(
+          "Callback cleanup warning:",
+          error
+        );
+
+      }
+
 
       const oldScript =
-        document.getElementById(callbackName);
+        document.getElementById(
+          callbackName
+        );
+
 
       if (oldScript) {
+
         oldScript.remove();
+
       }
 
     }
@@ -887,9 +1120,11 @@
   }
 
 
-  /************************************************************
+  /*
+   * ==========================================================
    * HANDLE SERVER RESPONSE
-   ************************************************************/
+   * ==========================================================
+   */
 
   function handleServerResponse(response) {
 
@@ -910,22 +1145,38 @@
     }
 
 
-    console.log("Server response:", response);
+    console.log(
+      "CGFLEET Server Response:",
+      response
+    );
 
 
-    if (response.success === true) {
+    /*
+     * Successful scan
+     */
+
+    if (
+      response.success === true
+    ) {
 
       displayResult(response);
 
+
       showMessage(
+        response.message ||
         "QR scan successful.",
         "success"
       );
+
 
       return;
 
     }
 
+
+    /*
+     * Failed scan
+     */
 
     showMessage(
       response.message ||
@@ -934,23 +1185,40 @@
     );
 
 
-    document.getElementById("resultCard").style.display =
-      "none";
+    const resultCard =
+      document.getElementById(
+        "resultCard"
+      );
+
+
+    if (resultCard) {
+
+      resultCard.style.display =
+        "none";
+
+    }
 
   }
 
 
-  /************************************************************
+  /*
+   * ==========================================================
    * DISPLAY RESULT
-   ************************************************************/
+   * ==========================================================
+   */
 
   function displayResult(data) {
 
     const resultCard =
-      document.getElementById("resultCard");
+      document.getElementById(
+        "resultCard"
+      );
+
 
     const statusBox =
-      document.getElementById("statusBox");
+      document.getElementById(
+        "statusBox"
+      );
 
 
     /*
@@ -958,40 +1226,52 @@
      */
 
     let status =
-      data.status ||
-      data.Status ||
-      data.attendanceStatus ||
-      "";
+      getValue(
+        data,
+        [
+          "status",
+          "Status",
+          "attendanceStatus",
+          "Attendance Status"
+        ]
+      );
 
 
     status =
-      String(status)
-      .trim()
-      .toUpperCase();
+      String(status || "")
+        .trim()
+        .toUpperCase();
 
 
     statusBox.textContent =
       status || "SUCCESS";
 
 
-    statusBox.className = "status";
+    statusBox.className =
+      "status";
 
 
     if (status === "IN") {
 
-      statusBox.classList.add("in");
+      statusBox.classList.add(
+        "in"
+      );
 
     }
 
     else if (status === "OUT") {
 
-      statusBox.classList.add("out");
+      statusBox.classList.add(
+        "out"
+      );
 
     }
 
     else {
 
-      statusBox.classList.add("success");
+      statusBox.classList.add(
+        "success"
+      );
 
     }
 
@@ -1008,7 +1288,8 @@
           "office",
           "Office",
           "officeAgencyAssignment",
-          "Office/Agency/Assignment"
+          "Office/Agency/Assignment",
+          "Office / Agency / Assignment"
         ]
       )
     );
@@ -1023,7 +1304,8 @@
           "Rank",
           "position",
           "Position",
-          "RANK/Position"
+          "RANK/Position",
+          "RANK / Position"
         ]
       )
     );
@@ -1075,6 +1357,7 @@
         [
           "vehicle",
           "Vehicle/Model",
+          "Vehicle / Model",
           "vehicleModel"
         ]
       )
@@ -1088,6 +1371,7 @@
         [
           "vehicleColor",
           "Color of Vehicle",
+          "Color Of Vehicle",
           "colorOfVehicle",
           "color"
         ]
@@ -1102,7 +1386,8 @@
         [
           "plate",
           "Plate Number",
-          "plateNumber"
+          "plateNumber",
+          "Plate"
         ]
       )
     );
@@ -1115,8 +1400,10 @@
         [
           "dateTime",
           "Date/Time",
+          "Date / Time",
           "timestamp",
-          "date"
+          "date",
+          "DateTime"
         ]
       )
     );
@@ -1128,7 +1415,8 @@
         data,
         [
           "timeIn",
-          "Time In"
+          "Time In",
+          "time_in"
         ]
       )
     );
@@ -1140,7 +1428,8 @@
         data,
         [
           "timeOut",
-          "Time Out"
+          "Time Out",
+          "time_out"
         ]
       )
     );
@@ -1159,39 +1448,58 @@
     );
 
 
-    resultCard.style.display = "block";
+    /*
+     * Show result.
+     */
+
+    resultCard.style.display =
+      "block";
 
 
     /*
      * Scroll to result.
      */
 
-    setTimeout(function() {
+    setTimeout(
+      function () {
 
-      resultCard.scrollIntoView({
-        behavior: "smooth",
-        block: "start"
-      });
+        resultCard.scrollIntoView({
+          behavior: "smooth",
+          block: "start"
+        });
 
-    }, 100);
+      },
+      100
+    );
 
   }
 
 
-  /************************************************************
+  /*
+   * ==========================================================
    * GET VALUE
-   ************************************************************/
+   * ==========================================================
+   */
 
-  function getValue(object, keys) {
+  function getValue(
+    object,
+    keys
+  ) {
 
     if (!object) {
       return "";
     }
 
 
-    for (let i = 0; i < keys.length; i++) {
+    for (
+      let i = 0;
+      i < keys.length;
+      i++
+    ) {
 
-      const key = keys[i];
+      const key =
+        keys[i];
+
 
       if (
         Object.prototype.hasOwnProperty.call(
@@ -1200,7 +1508,9 @@
         )
       ) {
 
-        const value = object[key];
+        const value =
+          object[key];
+
 
         if (
           value !== null &&
@@ -1222,14 +1532,20 @@
   }
 
 
-  /************************************************************
+  /*
+   * ==========================================================
    * SET TEXT
-   ************************************************************/
+   * ==========================================================
+   */
 
-  function setText(id, value) {
+  function setText(
+    id,
+    value
+  ) {
 
     const element =
       document.getElementById(id);
+
 
     if (!element) {
       return;
@@ -1242,27 +1558,39 @@
       String(value).trim() === ""
     ) {
 
-      element.textContent = "-";
+      element.textContent =
+        "-";
 
     }
 
     else {
 
-      element.textContent = String(value);
+      element.textContent =
+        String(value);
 
     }
 
   }
 
 
-  /************************************************************
+  /*
+   * ==========================================================
    * OPEN FILE PICKER
-   ************************************************************/
+   * ==========================================================
+   */
 
   function openFilePicker() {
 
+    if (processingScan) {
+      return;
+    }
+
+
     const input =
-      document.getElementById("qr-input");
+      document.getElementById(
+        "qr-input"
+      );
+
 
     input.value = "";
 
@@ -1271,9 +1599,11 @@
   }
 
 
-  /************************************************************
+  /*
+   * ==========================================================
    * UPLOAD QR IMAGE
-   ************************************************************/
+   * ==========================================================
+   */
 
   async function handleFileUpload(event) {
 
@@ -1287,8 +1617,13 @@
     }
 
 
+    if (processingScan) {
+      return;
+    }
+
+
     /*
-     * Make sure camera is stopped first.
+     * Make sure camera is stopped.
      */
 
     await stopCamera();
@@ -1302,11 +1637,18 @@
 
     setLoading(true);
 
+    processingScan = true;
+
+
+    let scanner = null;
+
 
     try {
 
-      const scanner =
-        new Html5Qrcode("reader");
+      scanner =
+        new Html5Qrcode(
+          "reader"
+        );
 
 
       const decodedText =
@@ -1317,7 +1659,7 @@
 
 
       /*
-       * Destroy temporary scanner.
+       * Clear temporary scanner.
        */
 
       try {
@@ -1336,11 +1678,33 @@
       }
 
 
+      scanner = null;
+
+
       setLoading(false);
 
       processingScan = false;
 
-      processScannedQR(decodedText);
+
+      if (!decodedText) {
+
+        showMessage(
+          "No readable QR Code was found in the image.",
+          "error"
+        );
+
+        return;
+
+      }
+
+
+      /*
+       * Process decoded QR.
+       */
+
+      processScannedQR(
+        String(decodedText).trim()
+      );
 
     }
 
@@ -1350,6 +1714,26 @@
         "QR image scan error:",
         error
       );
+
+
+      if (scanner) {
+
+        try {
+
+          await scanner.clear();
+
+        }
+
+        catch (clearError) {
+
+          console.warn(
+            "Scanner cleanup:",
+            clearError
+          );
+
+        }
+
+      }
 
 
       setLoading(false);
@@ -1367,13 +1751,21 @@
   }
 
 
-  /************************************************************
+  /*
+   * ==========================================================
    * SCAN AGAIN
-   ************************************************************/
+   * ==========================================================
+   */
 
   async function scanAgain() {
 
-    document.getElementById("resultCard").style.display =
+    const resultCard =
+      document.getElementById(
+        "resultCard"
+      );
+
+
+    resultCard.style.display =
       "none";
 
 
@@ -1382,6 +1774,17 @@
     lastScannedText = "";
 
     lastScanTime = 0;
+
+
+    if (requestTimeout) {
+
+      clearTimeout(
+        requestTimeout
+      );
+
+      requestTimeout = null;
+
+    }
 
 
     showMessage(
@@ -1400,28 +1803,29 @@
      * Automatically start camera again.
      */
 
-    setTimeout(function() {
+    setTimeout(
+      function () {
 
-      startCamera();
+        startCamera();
 
-    }, 300);
+      },
+      300
+    );
 
   }
 
 
-  /************************************************************
-   * PREVENT DOUBLE TAP / ENTER SUBMISSION
-   ************************************************************/
+  /*
+   * ==========================================================
+   * PREVENT ENTER SUBMISSION
+   * ==========================================================
+   */
 
   document.addEventListener(
     "keydown",
-    function(event) {
+    function (event) {
 
       if (event.key === "Enter") {
-
-        /*
-         * Prevent accidental form-like submission.
-         */
 
         event.preventDefault();
 
@@ -1431,15 +1835,17 @@
   );
 
 
-  /************************************************************
+  /*
+   * ==========================================================
    * PAGE VISIBILITY
    *
    * Stop camera when leaving the page.
-   ************************************************************/
+   * ==========================================================
+   */
 
   document.addEventListener(
     "visibilitychange",
-    async function() {
+    async function () {
 
       if (
         document.hidden &&

@@ -1,124 +1,92 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
   <meta charset="UTF-8">
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
-  >
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>CGFLEET QR Monitoring</title>
 
-  <script
-    src="https://unpkg.com/html5-qrcode"
-    type="text/javascript">
-  </script>
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 
   <style>
-
     * {
       box-sizing: border-box;
     }
 
-    html,
     body {
       margin: 0;
-      padding: 0;
-      width: 100%;
-      min-height: 100%;
       font-family: Arial, Helvetica, sans-serif;
-      background: #f4f6f8;
+      background: #f3f6f9;
       color: #222;
     }
 
-    body {
-      padding: 15px;
-    }
-
-    .container {
-      width: 100%;
-      max-width: 850px;
-      margin: 0 auto;
-    }
-
     .header {
-      background: #123b63;
+      background: #17365d;
       color: white;
-      border-radius: 14px;
-      padding: 20px;
+      padding: 18px 15px;
       text-align: center;
-      margin-bottom: 15px;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.12);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
     }
 
     .header h1 {
       margin: 0;
-      font-size: 28px;
-      font-weight: 700;
+      font-size: 25px;
     }
 
     .header p {
-      margin: 7px 0 0;
-      font-size: 15px;
-      opacity: 0.95;
+      margin: 6px 0 0;
+      font-size: 13px;
+      opacity: 0.9;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 650px;
+      margin: 20px auto;
+      padding: 0 15px 40px;
     }
 
     .card {
       background: white;
       border-radius: 14px;
-      padding: 18px;
-      margin-bottom: 15px;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+      padding: 20px;
+      margin-bottom: 18px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.08);
     }
 
-    .scanner-title {
+    .card h2 {
+      margin-top: 0;
       text-align: center;
+      color: #17365d;
       font-size: 20px;
-      font-weight: bold;
-      margin-bottom: 15px;
     }
 
     #reader {
       width: 100%;
-      max-width: 650px;
+      max-width: 500px;
       margin: 0 auto;
       overflow: hidden;
-      border-radius: 12px;
-      background: #111;
-    }
-
-    #reader video {
-      width: 100% !important;
-      height: auto !important;
-      border-radius: 12px;
-    }
-
-    #reader img {
-      max-width: 100%;
+      border-radius: 10px;
     }
 
     .buttons {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
+      display: flex;
+      flex-wrap: wrap;
       gap: 10px;
       margin-top: 15px;
     }
 
-    button {
+    button,
+    .upload-label {
+      flex: 1;
+      min-width: 140px;
       border: none;
-      border-radius: 10px;
-      padding: 14px 12px;
-      font-size: 16px;
+      border-radius: 8px;
+      padding: 13px 15px;
+      font-size: 15px;
       font-weight: bold;
       cursor: pointer;
-      touch-action: manipulation;
-    }
-
-    button:disabled {
-      opacity: 0.55;
-      cursor: not-allowed;
+      text-align: center;
     }
 
     .btn-start {
@@ -134,69 +102,33 @@
     .btn-upload {
       background: #0d6efd;
       color: white;
-      grid-column: 1 / -1;
     }
 
-    .btn-again {
-      background: #6f42c1;
-      color: white;
-      width: 100%;
-      margin-top: 12px;
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
     }
 
-    #qr-input {
+    #qr-input-file {
       display: none;
     }
 
-    .message {
-      text-align: center;
-      padding: 12px;
-      border-radius: 10px;
+    #message {
       margin-top: 15px;
-      font-size: 15px;
-      font-weight: bold;
-      display: none;
-      word-break: break-word;
-    }
-
-    .message.info {
-      display: block;
-      background: #e9f3ff;
-      color: #0b5ed7;
-    }
-
-    .message.success {
-      display: block;
-      background: #d1e7dd;
-      color: #0f5132;
-    }
-
-    .message.error {
-      display: block;
-      background: #f8d7da;
-      color: #842029;
-    }
-
-    .result {
-      display: none;
-    }
-
-    .result-title {
       text-align: center;
-      font-size: 21px;
-      font-weight: bold;
-      margin-bottom: 12px;
+      font-size: 14px;
+      min-height: 20px;
     }
 
     .status {
-      width: 100%;
-      padding: 18px;
-      border-radius: 12px;
+      display: none;
+      padding: 16px;
+      border-radius: 10px;
+      color: white;
       text-align: center;
       font-size: 30px;
-      font-weight: 800;
-      margin-bottom: 15px;
-      color: white;
+      font-weight: bold;
+      margin-bottom: 18px;
     }
 
     .status.in {
@@ -207,1747 +139,832 @@
       background: #dc3545;
     }
 
-    .status.success {
-      background: #198754;
-    }
-
     .details {
+      display: none;
+    }
+
+    .detail-row {
+      display: grid;
+      grid-template-columns: 45% 55%;
+      border-bottom: 1px solid #e6e6e6;
+      padding: 10px 0;
+      gap: 8px;
+    }
+
+    .detail-label {
+      font-weight: bold;
+      color: #555;
+    }
+
+    .detail-value {
+      word-break: break-word;
+      color: #111;
+    }
+
+    .scan-again {
       width: 100%;
-      border-collapse: collapse;
-      table-layout: fixed;
+      margin-top: 18px;
+      background: #17365d;
+      color: white;
     }
 
-    .details th,
-    .details td {
-      border: 1px solid #d9dee3;
-      padding: 11px 9px;
-      text-align: left;
-      vertical-align: middle;
-      word-wrap: break-word;
-      overflow-wrap: anywhere;
-    }
-
-    .details th {
-      width: 38%;
-      background: #eef1f4;
+    .error {
+      color: #dc3545;
       font-weight: bold;
     }
 
-    .details td {
-      background: white;
+    .success {
+      color: #198754;
+      font-weight: bold;
     }
 
     .loading {
-      display: none;
-      text-align: center;
-      padding: 15px;
-      font-size: 16px;
+      color: #0d6efd;
       font-weight: bold;
     }
 
-    .loading.active {
-      display: block;
-    }
-
-    .server-status {
+    .footer {
       text-align: center;
-      font-size: 13px;
-      color: #666;
-      margin-top: 12px;
+      color: #777;
+      font-size: 12px;
+      padding: 10px;
     }
 
-    @media (max-width: 600px) {
-
-      body {
-        padding: 8px;
-      }
-
-      .header {
-        padding: 16px 12px;
-      }
-
+    @media (max-width: 480px) {
       .header h1 {
-        font-size: 23px;
-      }
-
-      .header p {
-        font-size: 13px;
+        font-size: 21px;
       }
 
       .card {
-        padding: 12px;
+        padding: 15px;
       }
 
-      .scanner-title {
-        font-size: 18px;
-      }
-
-      .buttons {
+      .detail-row {
         grid-template-columns: 1fr;
+        gap: 3px;
       }
 
-      .btn-upload {
-        grid-column: auto;
-      }
-
-      button {
+      button,
+      .upload-label {
         width: 100%;
-        min-height: 50px;
+        min-width: 100%;
       }
-
-      .status {
-        font-size: 26px;
-      }
-
-      .details th {
-        width: 40%;
-      }
-
-      .details th,
-      .details td {
-        padding: 9px 7px;
-        font-size: 14px;
-      }
-
     }
-
-    @media (min-width: 601px) and (max-width: 1024px) {
-
-      body {
-        padding: 12px;
-      }
-
-      .container {
-        max-width: 760px;
-      }
-
-      button {
-        min-height: 52px;
-      }
-
-    }
-
   </style>
-
 </head>
 
 <body>
 
-<div class="container">
-
   <div class="header">
+    <h1>CGFLEET QR Monitoring</h1>
+    <p>Visitor Vehicle Monitoring System</p>
+  </div>
 
-    <h1>
-      CGFLEET QR Monitoring
-    </h1>
+  <div class="container">
 
-    <p>
-      Vehicle Registration &amp; Time In / Time Out Monitoring
-    </p>
+    <!-- SCANNER -->
+    <div class="card" id="scanner-card">
+
+      <h2>Scan Vehicle QR Code</h2>
+
+      <div id="reader"></div>
+
+      <div class="buttons">
+
+        <button
+          id="start-camera"
+          class="btn-start"
+          onclick="startCamera()">
+          START CAMERA
+        </button>
+
+        <button
+          id="stop-camera"
+          class="btn-stop"
+          onclick="stopCamera()"
+          disabled>
+          STOP CAMERA
+        </button>
+
+        <label
+          for="qr-input-file"
+          class="upload-label btn-upload">
+          UPLOAD QR IMAGE
+        </label>
+
+        <input
+          type="file"
+          id="qr-input-file"
+          accept="image/*">
+
+      </div>
+
+      <div id="message"></div>
+
+    </div>
+
+
+    <!-- RESULT -->
+    <div class="card" id="result-card" style="display:none;">
+
+      <div id="status-box" class="status"></div>
+
+      <div class="details">
+
+        <div class="detail-row">
+          <div class="detail-label">Office / Agency / Assignment</div>
+          <div class="detail-value" id="office"></div>
+        </div>
+
+        <div class="detail-row">
+          <div class="detail-label">RANK / Position</div>
+          <div class="detail-value" id="rank"></div>
+        </div>
+
+        <div class="detail-row">
+          <div class="detail-label">First Name</div>
+          <div class="detail-value" id="firstName"></div>
+        </div>
+
+        <div class="detail-row">
+          <div class="detail-label">M.I</div>
+          <div class="detail-value" id="middleInitial"></div>
+        </div>
+
+        <div class="detail-row">
+          <div class="detail-label">Last Name</div>
+          <div class="detail-value" id="lastName"></div>
+        </div>
+
+        <div class="detail-row">
+          <div class="detail-label">Contact Number</div>
+          <div class="detail-value" id="contact"></div>
+        </div>
+
+        <div class="detail-row">
+          <div class="detail-label">Vehicle / Model</div>
+          <div class="detail-value" id="vehicle"></div>
+        </div>
+
+        <div class="detail-row">
+          <div class="detail-label">Color of Vehicle</div>
+          <div class="detail-value" id="vehicleColor"></div>
+        </div>
+
+        <div class="detail-row">
+          <div class="detail-label">Plate Number</div>
+          <div class="detail-value" id="plate"></div>
+        </div>
+
+        <div class="detail-row">
+          <div class="detail-label">Date / Time</div>
+          <div class="detail-value" id="dateTime"></div>
+        </div>
+
+        <div class="detail-row">
+          <div class="detail-label">Time In</div>
+          <div class="detail-value" id="timeIn"></div>
+        </div>
+
+        <div class="detail-row">
+          <div class="detail-label">Time Out</div>
+          <div class="detail-value" id="timeOut"></div>
+        </div>
+
+        <div class="detail-row">
+          <div class="detail-label">Purpose of Visit</div>
+          <div class="detail-value" id="purpose"></div>
+        </div>
+
+      </div>
+
+      <button
+        class="scan-again"
+        onclick="scanAgain()">
+        SCAN AGAIN
+      </button>
+
+    </div>
+
+    <div class="footer">
+      CGFLEET QR Monitoring System
+    </div>
 
   </div>
 
 
-  <div class="card">
+  <script>
 
-    <div class="scanner-title">
-      Scan QR Code
-    </div>
+    /*
+     * ==========================================================
+     * APPS SCRIPT WEB APP URL
+     * ==========================================================
+     */
 
-    <div id="reader"></div>
+    const APPS_SCRIPT_URL =
+      "https://script.google.com/macros/s/AKfycbygUbFIwIo5p3g0AyJwr1YgWjsubkpg1Zp-ev8hkNx038YSJT2wxP7garS2e4B3lb0v/exec";
 
-    <div class="buttons">
 
-      <button
-        id="startButton"
-        class="btn-start"
-        type="button"
-        onclick="startCamera()"
-      >
-        START CAMERA
-      </button>
+    /*
+     * ==========================================================
+     * GLOBAL VARIABLES
+     * ==========================================================
+     */
 
-      <button
-        id="stopButton"
-        class="btn-stop"
-        type="button"
-        onclick="stopCamera()"
-        disabled
-      >
-        STOP CAMERA
-      </button>
+    let html5QrCode = null;
+    let scannerRunning = false;
+    let scanProcessing = false;
 
-      <button
-        class="btn-upload"
-        type="button"
-        onclick="openFilePicker()"
-      >
-        UPLOAD QR IMAGE
-      </button>
 
-    </div>
+    /*
+     * ==========================================================
+     * START CAMERA
+     * ==========================================================
+     */
 
+    async function startCamera() {
 
-    <input
-      id="qr-input"
-      type="file"
-      accept="image/*"
-      capture="environment"
-      onchange="handleFileUpload(event)"
-    >
+      if (scannerRunning) {
+        return;
+      }
 
-
-    <div
-      id="message"
-      class="message">
-    </div>
-
-
-    <div
-      id="loading"
-      class="loading">
-
-      Processing QR Code...
-
-    </div>
-
-
-    <div class="server-status">
-      CGFLEET Monitoring System
-    </div>
-
-  </div>
-
-
-  <div
-    id="resultCard"
-    class="card result"
-  >
-
-    <div class="result-title">
-      Scan Result
-    </div>
-
-
-    <div
-      id="statusBox"
-      class="status"
-    >
-      SUCCESS
-    </div>
-
-
-    <table class="details">
-
-      <tr>
-        <th>Office / Agency / Assignment</th>
-        <td id="office">-</td>
-      </tr>
-
-      <tr>
-        <th>RANK / Position</th>
-        <td id="rank">-</td>
-      </tr>
-
-      <tr>
-        <th>First Name</th>
-        <td id="firstName">-</td>
-      </tr>
-
-      <tr>
-        <th>M.I</th>
-        <td id="mi">-</td>
-      </tr>
-
-      <tr>
-        <th>Last Name</th>
-        <td id="lastName">-</td>
-      </tr>
-
-      <tr>
-        <th>Contact Number</th>
-        <td id="contact">-</td>
-      </tr>
-
-      <tr>
-        <th>Vehicle / Model</th>
-        <td id="vehicle">-</td>
-      </tr>
-
-      <tr>
-        <th>Color of Vehicle</th>
-        <td id="vehicleColor">-</td>
-      </tr>
-
-      <tr>
-        <th>Plate Number</th>
-        <td id="plate">-</td>
-      </tr>
-
-      <tr>
-        <th>Date / Time</th>
-        <td id="dateTime">-</td>
-      </tr>
-
-      <tr>
-        <th>Time In</th>
-        <td id="timeIn">-</td>
-      </tr>
-
-      <tr>
-        <th>Time Out</th>
-        <td id="timeOut">-</td>
-      </tr>
-
-      <tr>
-        <th>Purpose of Visit</th>
-        <td id="purpose">-</td>
-      </tr>
-
-    </table>
-
-
-    <button
-      class="btn-again"
-      type="button"
-      onclick="scanAgain()"
-    >
-      SCAN AGAIN
-    </button>
-
-  </div>
-
-</div>
-
-
-<script>
-
-/* =========================================================
- * APPS SCRIPT WEB APP
- *
- * IMPORTANT:
- * Replace this with your NEW Apps Script /exec URL.
- * ========================================================= */
-
-const APPS_SCRIPT_URL =
-  "PASTE_YOUR_NEW_APPS_SCRIPT_EXEC_URL_HERE";
-
-
-/* =========================================================
- * STATE
- * ========================================================= */
-
-let html5QrCode = null;
-
-let scannerRunning = false;
-
-let processingScan = false;
-
-let lastScannedText = "";
-
-let lastScanTime = 0;
-
-let requestTimeout = null;
-
-
-/* =========================================================
- * PAGE LOAD
- * ========================================================= */
-
-document.addEventListener(
-  "DOMContentLoaded",
-  function () {
-
-    showMessage(
-      "Ready. Start the camera or upload a QR image.",
-      "info"
-    );
-
-  }
-);
-
-
-/* =========================================================
- * MESSAGE
- * ========================================================= */
-
-function showMessage(
-  text,
-  type
-) {
-
-  const message =
-    document.getElementById(
-      "message"
-    );
-
-  if (!message) {
-    return;
-  }
-
-  message.textContent =
-    text;
-
-  message.className =
-    "message " +
-    (
-      type ||
-      "info"
-    );
-
-}
-
-
-function hideMessage() {
-
-  const message =
-    document.getElementById(
-      "message"
-    );
-
-  if (!message) {
-    return;
-  }
-
-  message.className =
-    "message";
-
-  message.textContent =
-    "";
-
-}
-
-
-/* =========================================================
- * LOADING
- * ========================================================= */
-
-function setLoading(
-  status
-) {
-
-  const loading =
-    document.getElementById(
-      "loading"
-    );
-
-  if (!loading) {
-    return;
-  }
-
-  if (status) {
-
-    loading.classList.add(
-      "active"
-    );
-
-  }
-
-  else {
-
-    loading.classList.remove(
-      "active"
-    );
-
-  }
-
-}
-
-
-/* =========================================================
- * START CAMERA
- * ========================================================= */
-
-async function startCamera() {
-
-  if (scannerRunning) {
-    return;
-  }
-
-  if (processingScan) {
-    return;
-  }
-
-  try {
-
-    showMessage(
-      "Requesting camera permission...",
-      "info"
-    );
-
-    if (html5QrCode) {
+      showMessage("Starting camera...", "loading");
 
       try {
 
-        await html5QrCode.clear();
+        html5QrCode = new Html5Qrcode("reader");
 
-      }
+        const config = {
+          fps: 10,
+          qrbox: {
+            width: 250,
+            height: 250
+          },
+          aspectRatio: 1.0
+        };
 
-      catch (error) {
-
-        console.warn(
-          "Previous scanner clear:",
-          error
+        await html5QrCode.start(
+          {
+            facingMode: "environment"
+          },
+          config,
+          onScanSuccess,
+          onScanFailure
         );
 
-      }
+        scannerRunning = true;
 
-      html5QrCode =
-        null;
+        document.getElementById("start-camera").disabled = true;
+        document.getElementById("stop-camera").disabled = false;
 
-    }
+        showMessage("Camera is ready. Scan the QR code.", "success");
 
-    html5QrCode =
-      new Html5Qrcode(
-        "reader"
-      );
+      } catch (error) {
 
-
-    const config = {
-
-      fps: 10,
-
-      qrbox:
-        function (
-          viewfinderWidth,
-          viewfinderHeight
-        ) {
-
-          const minEdge =
-            Math.min(
-              viewfinderWidth,
-              viewfinderHeight
-            );
-
-          const qrSize =
-            Math.floor(
-              minEdge * 0.70
-            );
-
-          return {
-            width: qrSize,
-            height: qrSize
-          };
-
-        },
-
-      aspectRatio: 1.0,
-
-      rememberLastUsedCamera: true
-
-    };
-
-
-    await html5QrCode.start(
-
-      {
-        facingMode: "environment"
-      },
-
-      config,
-
-      onScanSuccess,
-
-      onScanFailure
-
-    );
-
-
-    scannerRunning =
-      true;
-
-
-    document.getElementById(
-      "startButton"
-    ).disabled = true;
-
-
-    document.getElementById(
-      "stopButton"
-    ).disabled = false;
-
-
-    showMessage(
-      "Camera is ready. Point the camera at the QR Code.",
-      "success"
-    );
-
-  }
-
-  catch (error) {
-
-    console.error(
-      "Camera error:",
-      error
-    );
-
-    scannerRunning =
-      false;
-
-    document.getElementById(
-      "startButton"
-    ).disabled = false;
-
-    document.getElementById(
-      "stopButton"
-    ).disabled = true;
-
-    showMessage(
-      "Camera could not be opened. Please allow camera permission or use UPLOAD QR IMAGE.",
-      "error"
-    );
-
-  }
-
-}
-
-
-/* =========================================================
- * STOP CAMERA
- * ========================================================= */
-
-async function stopCamera() {
-
-  if (!html5QrCode) {
-
-    scannerRunning =
-      false;
-
-    document.getElementById(
-      "startButton"
-    ).disabled = false;
-
-    document.getElementById(
-      "stopButton"
-    ).disabled = true;
-
-    return;
-
-  }
-
-  try {
-
-    if (scannerRunning) {
-
-      await html5QrCode.stop();
-
-    }
-
-  }
-
-  catch (error) {
-
-    console.warn(
-      "Stop camera warning:",
-      error
-    );
-
-  }
-
-  scannerRunning =
-    false;
-
-  document.getElementById(
-    "startButton"
-  ).disabled = false;
-
-  document.getElementById(
-    "stopButton"
-  ).disabled = true;
-
-}
-
-
-/* =========================================================
- * CAMERA QR SUCCESS
- * ========================================================= */
-
-function onScanSuccess(
-  decodedText
-) {
-
-  if (!decodedText) {
-    return;
-  }
-
-  if (processingScan) {
-    return;
-  }
-
-  const qrText =
-    String(
-      decodedText
-    ).trim();
-
-  if (!qrText) {
-    return;
-  }
-
-  const now =
-    Date.now();
-
-
-  if (
-    qrText === lastScannedText &&
-    now - lastScanTime < 5000
-  ) {
-
-    return;
-
-  }
-
-
-  lastScannedText =
-    qrText;
-
-  lastScanTime =
-    now;
-
-
-  processScannedQR(
-    qrText
-  );
-
-}
-
-
-/* =========================================================
- * CAMERA SCAN FAILURE
- * ========================================================= */
-
-function onScanFailure(
-  error
-) {
-
-  /* Normal scanning failures are ignored. */
-
-}
-
-
-/* =========================================================
- * PROCESS QR
- * ========================================================= */
-
-async function processScannedQR(
-  qrText
-) {
-
-  if (processingScan) {
-    return;
-  }
-
-  if (!qrText) {
-
-    showMessage(
-      "Invalid QR Code.",
-      "error"
-    );
-
-    return;
-
-  }
-
-
-  processingScan =
-    true;
-
-  setLoading(
-    true
-  );
-
-  showMessage(
-    "QR detected. Checking registration...",
-    "info"
-  );
-
-
-  await stopCamera();
-
-
-  sendQRToServer(
-    qrText
-  );
-
-}
-
-
-/* =========================================================
- * SEND QR TO APPS SCRIPT
- * ========================================================= */
-
-function sendQRToServer(
-  qrText
-) {
-
-  if (
-    !APPS_SCRIPT_URL ||
-    APPS_SCRIPT_URL.indexOf(
-      "PASTE_YOUR"
-    ) === 0
-  ) {
-
-    processingScan =
-      false;
-
-    setLoading(
-      false
-    );
-
-    showMessage(
-      "Apps Script URL has not been configured yet.",
-      "error"
-    );
-
-    return;
-
-  }
-
-
-  if (requestTimeout) {
-
-    clearTimeout(
-      requestTimeout
-    );
-
-    requestTimeout =
-      null;
-
-  }
-
-
-  const callbackName =
-    "cgfleetCallback_" +
-    Date.now() +
-    "_" +
-    Math.floor(
-      Math.random() * 100000
-    );
-
-
-  let finished =
-    false;
-
-
-  const script =
-    document.createElement(
-      "script"
-    );
-
-
-  script.id =
-    callbackName;
-
-
-  window[callbackName] =
-    function (
-      response
-    ) {
-
-      if (finished) {
-        return;
-      }
-
-      finished =
-        true;
-
-
-      if (requestTimeout) {
-
-        clearTimeout(
-          requestTimeout
-        );
-
-        requestTimeout =
-          null;
-
-      }
-
-
-      cleanup();
-
-
-      handleServerResponse(
-        response
-      );
-
-    };
-
-
-  const separator =
-    APPS_SCRIPT_URL.indexOf("?") >= 0
-      ? "&"
-      : "?";
-
-
-  script.src =
-    APPS_SCRIPT_URL +
-    separator +
-    "action=scan" +
-    "&qr=" +
-    encodeURIComponent(
-      qrText
-    ) +
-    "&callback=" +
-    encodeURIComponent(
-      callbackName
-    ) +
-    "&t=" +
-    Date.now();
-
-
-  script.onerror =
-    function () {
-
-      if (finished) {
-        return;
-      }
-
-      finished =
-        true;
-
-
-      if (requestTimeout) {
-
-        clearTimeout(
-          requestTimeout
-        );
-
-        requestTimeout =
-          null;
-
-      }
-
-
-      cleanup();
-
-
-      processingScan =
-        false;
-
-      setLoading(
-        false
-      );
-
-
-      showMessage(
-        "Unable to connect to the CGFLEET server. Please check the Apps Script Web App deployment.",
-        "error"
-      );
-
-    };
-
-
-  document.body.appendChild(
-    script
-  );
-
-
-  requestTimeout =
-    setTimeout(
-      function () {
-
-        if (finished) {
-          return;
-        }
-
-        finished =
-          true;
-
-        cleanup();
-
-        processingScan =
-          false;
-
-        setLoading(
-          false
-        );
+        console.error(error);
 
         showMessage(
-          "Server request timed out. Please try scanning again.",
+          "Unable to start camera. Please allow camera permission.",
           "error"
         );
 
-      },
-      15000
-    );
-
-
-  function cleanup() {
-
-    try {
-
-      delete window[
-        callbackName
-      ];
-
-    }
-
-    catch (error) {
-
-      console.warn(
-        "Callback cleanup:",
-        error
-      );
-
-    }
-
-
-    const oldScript =
-      document.getElementById(
-        callbackName
-      );
-
-
-    if (oldScript) {
-
-      oldScript.remove();
-
-    }
-
-  }
-
-}
-
-
-/* =========================================================
- * SERVER RESPONSE
- * ========================================================= */
-
-function handleServerResponse(
-  response
-) {
-
-  processingScan =
-    false;
-
-  setLoading(
-    false
-  );
-
-
-  if (!response) {
-
-    showMessage(
-      "No response received from the server.",
-      "error"
-    );
-
-    return;
-
-  }
-
-
-  console.log(
-    "CGFLEET Server Response:",
-    response
-  );
-
-
-  if (
-    response.success === true
-  ) {
-
-    displayResult(
-      response
-    );
-
-
-    showMessage(
-      response.message ||
-      "QR scan successful.",
-      "success"
-    );
-
-
-    return;
-
-  }
-
-
-  showMessage(
-    response.message ||
-    "QR Code was not recognized.",
-    "error"
-  );
-
-
-  const resultCard =
-    document.getElementById(
-      "resultCard"
-    );
-
-
-  if (resultCard) {
-
-    resultCard.style.display =
-      "none";
-
-  }
-
-}
-
-
-/* =========================================================
- * DISPLAY RESULT
- * ========================================================= */
-
-function displayResult(
-  data
-) {
-
-  const resultCard =
-    document.getElementById(
-      "resultCard"
-    );
-
-
-  const statusBox =
-    document.getElementById(
-      "statusBox"
-    );
-
-
-  let status =
-    getValue(
-      data,
-      [
-        "status",
-        "Status",
-        "attendanceStatus",
-        "Attendance Status"
-      ]
-    );
-
-
-  status =
-    String(
-      status || ""
-    )
-      .trim()
-      .toUpperCase();
-
-
-  statusBox.textContent =
-    status ||
-    "SUCCESS";
-
-
-  statusBox.className =
-    "status";
-
-
-  if (
-    status === "IN"
-  ) {
-
-    statusBox.classList.add(
-      "in"
-    );
-
-  }
-
-  else if (
-    status === "OUT"
-  ) {
-
-    statusBox.classList.add(
-      "out"
-    );
-
-  }
-
-  else {
-
-    statusBox.classList.add(
-      "success"
-    );
-
-  }
-
-
-  setText(
-    "office",
-    getValue(
-      data,
-      [
-        "office",
-        "Office",
-        "officeAgencyAssignment",
-        "Office/Agency/Assignment",
-        "Office / Agency / Assignment"
-      ]
-    )
-  );
-
-
-  setText(
-    "rank",
-    getValue(
-      data,
-      [
-        "rank",
-        "Rank",
-        "position",
-        "Position",
-        "RANK/Position",
-        "RANK / Position"
-      ]
-    )
-  );
-
-
-  setText(
-    "firstName",
-    getValue(
-      data,
-      [
-        "firstName",
-        "First Name",
-        "firstname"
-      ]
-    )
-  );
-
-
-  setText(
-    "mi",
-    getValue(
-      data,
-      [
-        "mi",
-        "M.I",
-        "M.I.",
-        "MI"
-      ]
-    )
-  );
-
-
-  setText(
-    "lastName",
-    getValue(
-      data,
-      [
-        "lastName",
-        "Last Name",
-        "lastname"
-      ]
-    )
-  );
-
-
-  setText(
-    "contact",
-    getValue(
-      data,
-      [
-        "contact",
-        "Contact Number",
-        "contactNumber"
-      ]
-    )
-  );
-
-
-  setText(
-    "vehicle",
-    getValue(
-      data,
-      [
-        "vehicle",
-        "Vehicle/Model",
-        "Vehicle / Model",
-        "vehicleModel"
-      ]
-    )
-  );
-
-
-  setText(
-    "vehicleColor",
-    getValue(
-      data,
-      [
-        "vehicleColor",
-        "Color of Vehicle",
-        "Color Of Vehicle",
-        "colorOfVehicle",
-        "color"
-      ]
-    )
-  );
-
-
-  setText(
-    "plate",
-    getValue(
-      data,
-      [
-        "plate",
-        "Plate Number",
-        "plateNumber",
-        "Plate"
-      ]
-    )
-  );
-
-
-  setText(
-    "dateTime",
-    getValue(
-      data,
-      [
-        "dateTime",
-        "Date/Time",
-        "Date / Time",
-        "timestamp",
-        "date",
-        "DateTime"
-      ]
-    )
-  );
-
-
-  setText(
-    "timeIn",
-    getValue(
-      data,
-      [
-        "timeIn",
-        "Time In",
-        "time_in"
-      ]
-    )
-  );
-
-
-  setText(
-    "timeOut",
-    getValue(
-      data,
-      [
-        "timeOut",
-        "Time Out",
-        "time_out"
-      ]
-    )
-  );
-
-
-  setText(
-    "purpose",
-    getValue(
-      data,
-      [
-        "purpose",
-        "Purpose of Visit",
-        "purposeOfVisit"
-      ]
-    )
-  );
-
-
-  resultCard.style.display =
-    "block";
-
-
-  setTimeout(
-    function () {
-
-      resultCard.scrollIntoView({
-        behavior: "smooth",
-        block: "start"
-      });
-
-    },
-    100
-  );
-
-}
-
-
-/* =========================================================
- * GET VALUE
- * ========================================================= */
-
-function getValue(
-  object,
-  keys
-) {
-
-  if (!object) {
-    return "";
-  }
-
-
-  for (
-    let i = 0;
-    i < keys.length;
-    i++
-  ) {
-
-    const key =
-      keys[i];
-
-
-    if (
-      Object.prototype.hasOwnProperty.call(
-        object,
-        key
-      )
-    ) {
-
-      const value =
-        object[key];
-
-
-      if (
-        value !== null &&
-        value !== undefined &&
-        String(value).trim() !== ""
-      ) {
-
-        return value;
-
       }
-
-    }
-
-  }
-
-
-  return "";
-
-}
-
-
-/* =========================================================
- * SET TEXT
- * ========================================================= */
-
-function setText(
-  id,
-  value
-) {
-
-  const element =
-    document.getElementById(
-      id
-    );
-
-
-  if (!element) {
-    return;
-  }
-
-
-  if (
-    value === null ||
-    value === undefined ||
-    String(value).trim() === ""
-  ) {
-
-    element.textContent =
-      "-";
-
-  }
-
-  else {
-
-    element.textContent =
-      String(value);
-
-  }
-
-}
-
-
-/* =========================================================
- * OPEN FILE PICKER
- * ========================================================= */
-
-function openFilePicker() {
-
-  if (processingScan) {
-    return;
-  }
-
-
-  const input =
-    document.getElementById(
-      "qr-input"
-    );
-
-
-  input.value =
-    "";
-
-
-  input.click();
-
-}
-
-
-/* =========================================================
- * UPLOAD QR IMAGE
- * ========================================================= */
-
-async function handleFileUpload(
-  event
-) {
-
-  const file =
-    event.target.files &&
-    event.target.files[0];
-
-
-  if (!file) {
-    return;
-  }
-
-
-  if (processingScan) {
-    return;
-  }
-
-
-  await stopCamera();
-
-
-  showMessage(
-    "Reading QR image...",
-    "info"
-  );
-
-
-  setLoading(
-    true
-  );
-
-
-  processingScan =
-    true;
-
-
-  let scanner =
-    null;
-
-
-  try {
-
-    scanner =
-      new Html5Qrcode(
-        "reader"
-      );
-
-
-    const decodedText =
-      await scanner.scanFile(
-        file,
-        true
-      );
-
-
-    try {
-
-      await scanner.clear();
-
-    }
-
-    catch (clearError) {
-
-      console.warn(
-        "Temporary scanner clear:",
-        clearError
-      );
-
     }
 
 
-    scanner =
-      null;
+    /*
+     * ==========================================================
+     * STOP CAMERA
+     * ==========================================================
+     */
 
+    async function stopCamera() {
 
-    setLoading(
-      false
-    );
-
-
-    processingScan =
-      false;
-
-
-    if (!decodedText) {
-
-      showMessage(
-        "No readable QR Code was found in the image.",
-        "error"
-      );
-
-      return;
-
-    }
-
-
-    processScannedQR(
-      String(
-        decodedText
-      ).trim()
-    );
-
-  }
-
-  catch (error) {
-
-    console.error(
-      "QR image scan error:",
-      error
-    );
-
-
-    if (scanner) {
+      if (!html5QrCode || !scannerRunning) {
+        return;
+      }
 
       try {
 
-        await scanner.clear();
+        await html5QrCode.stop();
+
+        scannerRunning = false;
+
+        document.getElementById("start-camera").disabled = false;
+        document.getElementById("stop-camera").disabled = true;
+
+        showMessage("Camera stopped.", "");
+
+      } catch (error) {
+
+        console.error(error);
 
       }
-
-      catch (clearError) {
-
-        console.warn(
-          "Scanner cleanup:",
-          clearError
-        );
-
-      }
-
     }
 
 
-    setLoading(
-      false
-    );
+    /*
+     * ==========================================================
+     * QR SUCCESS
+     * ==========================================================
+     */
 
+    function onScanSuccess(decodedText, decodedResult) {
 
-    processingScan =
-      false;
+      if (scanProcessing) {
+        return;
+      }
 
+      scanProcessing = true;
 
-    showMessage(
-      "No readable QR Code was found in the image. Please upload a clear QR image.",
-      "error"
-    );
+      console.log("QR detected:", decodedText);
 
-  }
-
-}
-
-
-/* =========================================================
- * SCAN AGAIN
- * ========================================================= */
-
-async function scanAgain() {
-
-  const resultCard =
-    document.getElementById(
-      "resultCard"
-    );
-
-
-  resultCard.style.display =
-    "none";
-
-
-  processingScan =
-    false;
-
-
-  lastScannedText =
-    "";
-
-  lastScanTime =
-    0;
-
-
-  if (requestTimeout) {
-
-    clearTimeout(
-      requestTimeout
-    );
-
-    requestTimeout =
-      null;
-
-  }
-
-
-  showMessage(
-    "Ready for the next scan.",
-    "info"
-  );
-
-
-  window.scrollTo({
-    top: 0,
-    behavior: "smooth"
-  });
-
-
-  setTimeout(
-    function () {
-
-      startCamera();
-
-    },
-    300
-  );
-
-}
-
-
-/* =========================================================
- * PREVENT ENTER SUBMISSION
- * ========================================================= */
-
-document.addEventListener(
-  "keydown",
-  function(event) {
-
-    if (
-      event.key === "Enter"
-    ) {
-
-      event.preventDefault();
-
+      processScannedQR(decodedText);
     }
 
-  }
-);
+
+    /*
+     * ==========================================================
+     * QR FAILURE
+     * ==========================================================
+     */
+
+    function onScanFailure(error) {
+      // Normal while camera is looking for a QR.
+    }
 
 
-/* =========================================================
- * PAGE VISIBILITY
- * ========================================================= */
+    /*
+     * ==========================================================
+     * PROCESS QR
+     * ==========================================================
+     */
 
-document.addEventListener(
-  "visibilitychange",
-  async function() {
+    async function processScannedQR(qrText) {
 
-    if (
-      document.hidden &&
-      scannerRunning
-    ) {
+      showMessage("QR detected. Processing...", "loading");
 
       await stopCamera();
 
+      sendQRToServer(qrText);
     }
 
-  }
-);
 
-</script>
+    /*
+     * ==========================================================
+     * SEND QR TO APPS SCRIPT
+     *
+     * JSONP is used so the GitHub page can communicate
+     * with Google Apps Script.
+     * ==========================================================
+     */
+
+    function sendQRToServer(qrText) {
+
+      showMessage("Checking vehicle record...", "loading");
+
+      const callbackName =
+        "qrCallback_" +
+        Date.now() +
+        "_" +
+        Math.floor(Math.random() * 100000);
+
+
+      window[callbackName] = function(response) {
+
+        try {
+
+          handleServerResponse(response);
+
+        } finally {
+
+          delete window[callbackName];
+
+          const script =
+            document.getElementById(callbackName);
+
+          if (script) {
+            script.remove();
+          }
+
+        }
+
+      };
+
+
+      const script = document.createElement("script");
+
+      script.id = callbackName;
+
+      const url =
+        APPS_SCRIPT_URL +
+        "?action=scan" +
+        "&qr=" +
+        encodeURIComponent(qrText) +
+        "&callback=" +
+        encodeURIComponent(callbackName) +
+        "&_=" +
+        Date.now();
+
+
+      script.src = url;
+
+      script.onerror = function() {
+
+        console.error("Apps Script request failed.");
+
+        showMessage(
+          "Unable to connect to the monitoring server.",
+          "error"
+        );
+
+        scanProcessing = false;
+      };
+
+
+      document.body.appendChild(script);
+
+
+      /*
+       * Timeout protection
+       */
+
+      setTimeout(function() {
+
+        if (window[callbackName]) {
+
+          delete window[callbackName];
+
+          const oldScript =
+            document.getElementById(callbackName);
+
+          if (oldScript) {
+            oldScript.remove();
+          }
+
+          showMessage(
+            "Server timeout. Please try again.",
+            "error"
+          );
+
+          scanProcessing = false;
+        }
+
+      }, 15000);
+    }
+
+
+    /*
+     * ==========================================================
+     * HANDLE SERVER RESPONSE
+     * ==========================================================
+     */
+
+    function handleServerResponse(response) {
+
+      console.log("Server response:", response);
+
+      if (!response) {
+
+        showMessage(
+          "No response received from server.",
+          "error"
+        );
+
+        scanProcessing = false;
+
+        return;
+      }
+
+
+      if (response.success !== true) {
+
+        showMessage(
+          response.message ||
+          "QR code was not recognized.",
+          "error"
+        );
+
+        scanProcessing = false;
+
+        return;
+      }
+
+
+      displayResult(response);
+
+      scanProcessing = false;
+    }
+
+
+    /*
+     * ==========================================================
+     * DISPLAY RESULT
+     * ==========================================================
+     */
+
+    function displayResult(data) {
+
+      document.getElementById("scanner-card").style.display =
+        "none";
+
+      document.getElementById("result-card").style.display =
+        "block";
+
+
+      const statusBox =
+        document.getElementById("status-box");
+
+
+      const status =
+        String(data.status || "").toUpperCase();
+
+
+      statusBox.className = "status";
+
+
+      if (status === "IN") {
+
+        statusBox.classList.add("in");
+
+        statusBox.textContent = "✓ IN";
+
+      } else if (status === "OUT") {
+
+        statusBox.classList.add("out");
+
+        statusBox.textContent = "✓ OUT";
+
+      } else {
+
+        statusBox.textContent =
+          data.status || "UNKNOWN";
+
+      }
+
+
+      /*
+       * Visitor details
+       */
+
+      setText("office",
+        data.office ||
+        data.officeAgencyAssignment ||
+        ""
+      );
+
+      setText("rank",
+        data.rank ||
+        data.position ||
+        ""
+      );
+
+      setText("firstName",
+        data.firstName ||
+        ""
+      );
+
+      setText("middleInitial",
+        data.middleInitial ||
+        data.mi ||
+        ""
+      );
+
+      setText("lastName",
+        data.lastName ||
+        ""
+      );
+
+      setText("contact",
+        data.contact ||
+        data.contactNumber ||
+        ""
+      );
+
+      setText("vehicle",
+        data.vehicle ||
+        data.vehicleModel ||
+        ""
+      );
+
+      setText("vehicleColor",
+        data.vehicleColor ||
+        data.color ||
+        ""
+      );
+
+      setText("plate",
+        data.plate ||
+        data.plateNumber ||
+        ""
+      );
+
+      setText("dateTime",
+        data.dateTime ||
+        ""
+      );
+
+      setText("timeIn",
+        data.timeIn ||
+        ""
+      );
+
+      setText("timeOut",
+        data.timeOut ||
+        ""
+      );
+
+      setText("purpose",
+        data.purpose ||
+        data.purposeOfVisit ||
+        ""
+      );
+
+
+      showMessage(
+        status === "IN"
+          ? "Vehicle successfully marked IN."
+          : "Vehicle successfully marked OUT.",
+        "success"
+      );
+    }
+
+
+    /*
+     * ==========================================================
+     * SET TEXT SAFELY
+     * ==========================================================
+     */
+
+    function setText(id, value) {
+
+      const element =
+        document.getElementById(id);
+
+      if (!element) {
+        return;
+      }
+
+      element.textContent =
+        value === null ||
+        value === undefined ||
+        value === ""
+          ? "-"
+          : value;
+    }
+
+
+    /*
+     * ==========================================================
+     * UPLOAD QR IMAGE
+     * ==========================================================
+     */
+
+    document
+      .getElementById("qr-input-file")
+      .addEventListener("change", async function(event) {
+
+        const file = event.target.files[0];
+
+        if (!file) {
+          return;
+        }
+
+        if (scanProcessing) {
+          return;
+        }
+
+        scanProcessing = true;
+
+        showMessage(
+          "Reading QR image...",
+          "loading"
+        );
+
+
+        try {
+
+          /*
+           * If a camera scanner exists and is active,
+           * stop it first.
+           */
+
+          if (html5QrCode && scannerRunning) {
+            await stopCamera();
+          }
+
+
+          /*
+           * Create scanner if needed.
+           */
+
+          if (!html5QrCode) {
+            html5QrCode =
+              new Html5Qrcode("reader");
+          }
+
+
+          const decodedText =
+            await html5QrCode.scanFile(
+              file,
+              true
+            );
+
+
+          console.log(
+            "Uploaded QR:",
+            decodedText
+          );
+
+
+          processScannedQR(decodedText);
+
+        } catch (error) {
+
+          console.error(error);
+
+          showMessage(
+            "Could not read the QR image. Please use a clear QR image.",
+            "error"
+          );
+
+          scanProcessing = false;
+
+        } finally {
+
+          /*
+           * Allows the same image to be selected again.
+           */
+
+          event.target.value = "";
+
+        }
+
+      });
+
+
+    /*
+     * ==========================================================
+     * SCAN AGAIN
+     * ==========================================================
+     */
+
+    function scanAgain() {
+
+      document.getElementById("result-card").style.display =
+        "none";
+
+      document.getElementById("scanner-card").style.display =
+        "block";
+
+
+      document.getElementById("status-box").className =
+        "status";
+
+
+      scanProcessing = false;
+
+
+      showMessage(
+        "Ready for the next scan.",
+        ""
+      );
+    }
+
+
+    /*
+     * ==========================================================
+     * MESSAGE
+     * ==========================================================
+     */
+
+    function showMessage(text, type) {
+
+      const message =
+        document.getElementById("message");
+
+      message.textContent = text;
+
+      message.className = "";
+
+      if (type) {
+        message.classList.add(type);
+      }
+    }
+
+
+    /*
+     * ==========================================================
+     * INITIAL MESSAGE
+     * ==========================================================
+     */
+
+    showMessage(
+      "Click START CAMERA or upload a QR image.",
+      ""
+    );
+
+  </script>
 
 </body>
 </html>

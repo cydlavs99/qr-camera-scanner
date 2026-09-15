@@ -1249,332 +1249,444 @@
      UPLOAD QR IMAGE
      ============================================================ */
 
-  async function handleImageUpload(
-    event
-  ) {
+  async function handleImageUpload(event) {
 
-    const input =
-      event.target;
+  const input = event.target;
+  const file = input.files && input.files[0];
 
-    const file =
-      input.files &&
-      input.files[0];
+  // Allow selecting the same image again
+  input.value = "";
+
+  if (!file) {
+    return;
+  }
+
+  if (requestInProgress || uploadProcessing) {
+    showError(
+      "A QR transaction is already being processed. Please wait."
+    );
+    return;
+  }
+
+  if (!file.type || !file.type.startsWith("image/")) {
+    showError(
+      "Please select a valid image file."
+    );
+    return;
+  }
+
+  uploadProcessing = true;
+  requestInProgress = true;
+  cameraLocked = true;
+  capturedQR = "";
+
+  setLoading(true);
+
+  setCameraStatus(
+    "Reading uploaded QR image..."
+  );
+
+  try {
+
+    /*
+     * ==========================================================
+     * READ FILE DIRECTLY AS DATA URL
+     * ==========================================================
+     */
+
+    const imageDataURL =
+      await readFileAsDataURL(file);
 
 
     /*
-     * Reset input.
-     *
-     * This allows the same image to be selected again.
+     * ==========================================================
+     * LOAD IMAGE
+     * ==========================================================
      */
 
-    input.value = "";
+    const image =
+      await loadImageFromDataURL(imageDataURL);
 
 
-    if (!file) {
-      return;
-    }
+    /*
+     * ==========================================================
+     * DECODE QR
+     * ==========================================================
+     */
+
+    setCameraStatus(
+      "Decoding uploaded QR..."
+    );
+
+    const decodedQR =
+      decodeUploadedQRRobust(image);
 
 
-    if (
-      requestInProgress ||
-      uploadProcessing
-    ) {
+    if (!decodedQR) {
 
-      showError(
-        "A QR transaction is already being processed. Please wait."
+      throw new Error(
+        "No readable QR code was found in the image."
       );
 
-      return;
     }
 
 
-    if (
-      !file.type ||
-      !file.type.startsWith("image/")
-    ) {
+    /*
+     * ==========================================================
+     * QR SUCCESS
+     * ==========================================================
+     */
 
-      showError(
-        "Please select a valid QR image."
+    capturedQR =
+      String(decodedQR).trim();
+
+
+    if (!capturedQR) {
+
+      throw new Error(
+        "The QR image contains empty data."
       );
 
-      return;
     }
 
 
-    uploadProcessing = true;
+    console.log(
+      "UPLOAD QR DECODED:",
+      capturedQR
+    );
 
-    requestInProgress = true;
 
-    cameraLocked = true;
+    /*
+     * ==========================================================
+     * SEND SAME QR TO APPS SCRIPT
+     * ==========================================================
+     */
 
+    setCameraStatus(
+      "QR decoded — sending to server..."
+    );
+
+
+    processQR(
+      capturedQR,
+      "QR IMAGE UPLOAD"
+    );
+
+
+  } catch (error) {
+
+    console.error(
+      "UPLOAD ERROR:",
+      error
+    );
+
+
+    requestInProgress = false;
+    uploadProcessing = false;
+    cameraLocked = false;
     capturedQR = "";
 
 
-    setLoading(true);
+    setLoading(false);
+
 
     setCameraStatus(
-      "Reading uploaded QR image..."
+      "Camera ready — hold QR steady for about 1 second."
     );
 
 
-    try {
-
-      /*
-       * =======================================================
-       * LOAD IMAGE
-       * =======================================================
-       */
-
-      const image =
-        await loadImageFromFile(
-          file
-        );
-
-
-      /*
-       * =======================================================
-       * DECODE QR WITH jsQR
-       * =======================================================
-       */
-
-      const decodedQR =
-        decodeUploadedQR(
-          image
-        );
-
-
-      if (!decodedQR) {
-
-        throw new Error(
-          "No readable QR code was found in the image."
-        );
-
-      }
-
-
-      /*
-       * =======================================================
-       * QR IS NOW LOCKED IN MEMORY
-       * =======================================================
-       */
-
-      capturedQR =
-        String(
-          decodedQR
-        ).trim();
-
-
-      if (!capturedQR) {
-
-        throw new Error(
-          "The QR image contains empty data."
-        );
-
-      }
-
-
-      console.log(
-        "Uploaded QR decoded:",
-        capturedQR
-      );
-
-
-      setCameraStatus(
-        "QR image decoded — sending to server..."
-      );
-
-
-      /*
-       * Important:
-       *
-       * Do NOT unlock here.
-       *
-       * processQR() will unlock after the Apps Script
-       * transaction is completed.
-       */
-
-      processQR(
-        capturedQR,
-        "QR IMAGE UPLOAD"
-      );
-
-
-    } catch (error) {
-
-      console.error(
-        "Uploaded QR decoding error:",
-        error
-      );
-
-
-      requestInProgress = false;
-
-      uploadProcessing = false;
-
-      cameraLocked = false;
-
-      capturedQR = "";
-
-
-      setLoading(false);
-
-
-      setCameraStatus(
-        "Camera ready — hold QR steady for about 1 second."
-      );
-
-
-      showError(
-        "Could not read the QR image. Please use a clear QR image."
-      );
-
-    }
+    showError(
+      error &&
+      error.message
+        ? error.message
+        : "Could not read the QR image."
+    );
 
   }
 
-
-  /* ============================================================
-     LOAD IMAGE FROM FILE
-     ============================================================ */
-
-  function loadImageFromFile(
-    file
-  ) {
-
-    return new Promise(
-      function(
-        resolve,
-        reject
-      ) {
-
-        const image =
-          new Image();
+}
 
 
-        image.onload =
-          function() {
+/* =============================================================
+   READ FILE AS DATA URL
+   ============================================================= */
 
-            resolve(image);
+function readFileAsDataURL(file) {
 
-          };
+  return new Promise(
+    function(resolve, reject) {
+
+      const reader =
+        new FileReader();
 
 
-        image.onerror =
-          function() {
+      reader.onload =
+        function() {
+
+          if (!reader.result) {
 
             reject(
               new Error(
-                "Could not load the selected image."
+                "The image file could not be read."
               )
             );
 
-          };
+            return;
+          }
 
-
-        image.src =
-          URL.createObjectURL(
-            file
+          resolve(
+            reader.result
           );
 
-      }
+        };
+
+
+      reader.onerror =
+        function() {
+
+          reject(
+            new Error(
+              "The browser could not read the selected image."
+            )
+          );
+
+        };
+
+
+      reader.onabort =
+        function() {
+
+          reject(
+            new Error(
+              "Reading the image was cancelled."
+            )
+          );
+
+        };
+
+
+      reader.readAsDataURL(file);
+
+    }
+  );
+
+}
+
+
+/* =============================================================
+   LOAD IMAGE FROM DATA URL
+   ============================================================= */
+
+function loadImageFromDataURL(dataURL) {
+
+  return new Promise(
+    function(resolve, reject) {
+
+      const image =
+        new Image();
+
+      let finished = false;
+
+
+      /*
+       * Safety timeout.
+       *
+       * This prevents:
+       *
+       * Reading uploaded QR image...
+       *
+       * from staying forever.
+       */
+
+      const timeout =
+        setTimeout(
+          function() {
+
+            if (finished) {
+              return;
+            }
+
+            finished = true;
+
+            reject(
+              new Error(
+                "The uploaded image took too long to load."
+              )
+            );
+
+          },
+          10000
+        );
+
+
+      image.onload =
+        function() {
+
+          if (finished) {
+            return;
+          }
+
+          finished = true;
+
+          clearTimeout(timeout);
+
+
+          if (
+            !image.naturalWidth ||
+            !image.naturalHeight
+          ) {
+
+            reject(
+              new Error(
+                "The uploaded image has no readable dimensions."
+              )
+            );
+
+            return;
+          }
+
+
+          resolve(image);
+
+        };
+
+
+      image.onerror =
+        function() {
+
+          if (finished) {
+            return;
+          }
+
+          finished = true;
+
+          clearTimeout(timeout);
+
+
+          reject(
+            new Error(
+              "The uploaded image could not be loaded."
+            )
+          );
+
+        };
+
+
+      image.src =
+        dataURL;
+
+    }
+  );
+
+}
+
+
+/* =============================================================
+   ROBUST QR DECODER
+   ============================================================= */
+
+function decodeUploadedQRRobust(image) {
+
+  if (
+    typeof jsQR !== "function"
+  ) {
+
+    throw new Error(
+      "QR decoder library was not loaded. Please refresh the page."
     );
 
   }
 
 
-  /* ============================================================
-     DECODE UPLOADED QR
-     ============================================================ */
+  const originalWidth =
+    image.naturalWidth ||
+    image.width;
 
-  function decodeUploadedQR(
-    image
+  const originalHeight =
+    image.naturalHeight ||
+    image.height;
+
+
+  if (
+    !originalWidth ||
+    !originalHeight
   ) {
 
-    if (
-      typeof jsQR === "undefined"
-    ) {
+    throw new Error(
+      "Invalid uploaded image dimensions."
+    );
 
-      throw new Error(
-        "QR image decoder could not be loaded."
-      );
-
-    }
+  }
 
 
-    /*
-     * =========================================================
-     * ATTEMPT 1
-     * Original image dimensions
-     * =========================================================
-     */
+  /*
+   * Try several sizes.
+   */
 
-    let result =
-      decodeImageAtSize(
-        image,
-        image.naturalWidth || image.width,
-        image.naturalHeight || image.height
-      );
+  const targetSizes = [
+    300,
+    500,
+    700,
+    900,
+    1200
+  ];
 
 
-    if (result) {
-      return result;
-    }
+  for (
+    let i = 0;
+    i < targetSizes.length;
+    i++
+  ) {
+
+    const target =
+      targetSizes[i];
 
 
-    /*
-     * =========================================================
-     * ATTEMPT 2
-     * Larger image
-     * =========================================================
-     *
-     * Small QR images sometimes decode better after
-     * being enlarged.
-     */
-
-    const originalWidth =
-      image.naturalWidth ||
-      image.width;
-
-    const originalHeight =
-      image.naturalHeight ||
-      image.height;
-
-
-    const targetSize =
-      800;
-
-
-    let scale =
-      targetSize /
+    const scale =
+      target /
       Math.max(
         originalWidth,
         originalHeight
       );
 
 
-    if (scale < 1) {
-      scale = 1;
-    }
-
-
-    const enlargedWidth =
-      Math.round(
-        originalWidth *
-        scale
-      );
-
-    const enlargedHeight =
-      Math.round(
-        originalHeight *
-        scale
+    const finalScale =
+      Math.max(
+        scale,
+        1
       );
 
 
-    result =
-      decodeImageAtSize(
+    const width =
+      Math.max(
+        1,
+        Math.round(
+          originalWidth *
+          finalScale
+        )
+      );
+
+
+    const height =
+      Math.max(
+        1,
+        Math.round(
+          originalHeight *
+          finalScale
+        )
+      );
+
+
+    /*
+     * Normal image.
+     */
+
+    let result =
+      decodeCanvasQR(
         image,
-        enlargedWidth,
-        enlargedHeight
+        width,
+        height,
+        false
       );
 
 
@@ -1584,166 +1696,193 @@
 
 
     /*
-     * =========================================================
-     * ATTEMPT 3
-     * Several useful sizes
-     * =========================================================
+     * Try grayscale/contrast preprocessing.
      */
 
-    const sizes = [
-      500,
-      700,
-      1000,
-      1200
-    ];
+    result =
+      decodeCanvasQR(
+        image,
+        width,
+        height,
+        true
+      );
 
 
-    for (
-      let i = 0;
-      i < sizes.length;
-      i++
-    ) {
-
-      const maxSize =
-        sizes[i];
-
-
-      const ratio =
-        maxSize /
-        Math.max(
-          originalWidth,
-          originalHeight
-        );
-
-
-      const width =
-        Math.round(
-          originalWidth *
-          Math.max(
-            ratio,
-            1
-          )
-        );
-
-
-      const height =
-        Math.round(
-          originalHeight *
-          Math.max(
-            ratio,
-            1
-          )
-        );
-
-
-      result =
-        decodeImageAtSize(
-          image,
-          width,
-          height
-        );
-
-
-      if (result) {
-        return result;
-      }
-
+    if (result) {
+      return result;
     }
-
-
-    return null;
 
   }
 
 
-  /* ============================================================
-     DECODE IMAGE AT SIZE
-     ============================================================ */
+  return null;
 
-  function decodeImageAtSize(
-    image,
-    width,
-    height
-  ) {
-
-    const canvas =
-      document.createElement(
-        "canvas"
-      );
+}
 
 
-    canvas.width =
-      width;
+/* =============================================================
+   DECODE CANVAS QR
+   ============================================================= */
 
-    canvas.height =
-      height;
+function decodeCanvasQR(
+  image,
+  width,
+  height,
+  preprocess
+) {
 
-
-    const context =
-      canvas.getContext(
-        "2d",
-        {
-          willReadFrequently: true
-        }
-      );
-
-
-    if (!context) {
-      return null;
-    }
-
-
-    context.imageSmoothingEnabled =
-      false;
-
-
-    context.drawImage(
-      image,
-      0,
-      0,
-      width,
-      height
+  const canvas =
+    document.createElement(
+      "canvas"
     );
 
 
-    const imageData =
-      context.getImageData(
+  canvas.width =
+    width;
+
+  canvas.height =
+    height;
+
+
+  const ctx =
+    canvas.getContext(
+      "2d",
+      {
+        willReadFrequently: true
+      }
+    );
+
+
+  if (!ctx) {
+    return null;
+  }
+
+
+  ctx.imageSmoothingEnabled =
+    false;
+
+
+  ctx.drawImage(
+    image,
+    0,
+    0,
+    width,
+    height
+  );
+
+
+  let imageData;
+
+
+  try {
+
+    imageData =
+      ctx.getImageData(
         0,
         0,
         width,
         height
       );
 
+  } catch (error) {
 
-    /*
-     * jsQR scans the actual pixel data.
-     */
-
-    const result =
-      jsQR(
-        imageData.data,
-        imageData.width,
-        imageData.height,
-        {
-          inversionAttempts:
-            "attemptBoth"
-        }
-      );
-
-
-    if (
-      result &&
-      result.data
-    ) {
-
-      return result.data;
-
-    }
-
+    console.error(
+      "Canvas image error:",
+      error
+    );
 
     return null;
 
   }
+
+
+  /*
+   * Optional grayscale / contrast processing.
+   */
+
+  if (preprocess) {
+
+    const data =
+      imageData.data;
+
+
+    for (
+      let i = 0;
+      i < data.length;
+      i += 4
+    ) {
+
+      const r =
+        data[i];
+
+      const g =
+        data[i + 1];
+
+      const b =
+        data[i + 2];
+
+
+      const gray =
+        Math.round(
+          0.299 * r +
+          0.587 * g +
+          0.114 * b
+        );
+
+
+      /*
+       * Strong black/white threshold.
+       */
+
+      const value =
+        gray < 180
+          ? 0
+          : 255;
+
+
+      data[i] =
+        value;
+
+      data[i + 1] =
+        value;
+
+      data[i + 2] =
+        value;
+
+    }
+
+  }
+
+
+  /*
+   * jsQR attempts both normal and inverted QR.
+   */
+
+  const result =
+    jsQR(
+      imageData.data,
+      imageData.width,
+      imageData.height,
+      {
+        inversionAttempts:
+          "attemptBoth"
+      }
+    );
+
+
+  if (
+    result &&
+    result.data
+  ) {
+
+    return result.data;
+
+  }
+
+
+  return null;
+
+}
 
 
   /* ============================================================

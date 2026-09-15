@@ -1,306 +1,690 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>CGFLEET Visitors Parking Registration</title>
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>
+    CGFLEET Visitors Parking Registration
+  </title>
+
+
+  <!-- QR SCANNER LIBRARY -->
 
   <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 
+
   <style>
+
     * {
       box-sizing: border-box;
     }
 
+
     body {
+
       margin: 0;
+
       padding: 20px;
-      font-family: Arial, Helvetica, sans-serif;
-      background: #f3f4f6;
-      color: #111827;
+
+      font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+      background:
+        #f3f4f6;
+
+      color:
+        #111827;
+
     }
+
 
     .container {
+
       width: 100%;
+
       max-width: 700px;
-      margin: 0 auto;
+
+      margin:
+        0 auto;
+
     }
+
 
     .card {
-      background: #ffffff;
-      border-radius: 18px;
-      padding: 22px;
-      margin-bottom: 18px;
-      box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+
+      background:
+        #ffffff;
+
+      border-radius:
+        18px;
+
+      padding:
+        22px;
+
+      margin-bottom:
+        18px;
+
+      box-shadow:
+        0 4px 18px
+        rgba(0,0,0,0.08);
+
     }
+
 
     h1 {
-      margin: 0 0 6px;
-      text-align: center;
-      font-size: 25px;
+
+      margin:
+        0 0 6px;
+
+      text-align:
+        center;
+
+      font-size:
+        25px;
+
     }
+
 
     .subtitle {
-      text-align: center;
-      color: #6b7280;
-      margin-bottom: 20px;
-      font-size: 14px;
+
+      text-align:
+        center;
+
+      color:
+        #6b7280;
+
+      margin-bottom:
+        20px;
+
+      font-size:
+        14px;
+
     }
+
 
     .section-title {
-      font-size: 18px;
-      font-weight: bold;
-      margin-bottom: 12px;
+
+      font-size:
+        18px;
+
+      font-weight:
+        bold;
+
+      margin-bottom:
+        12px;
+
     }
+
 
     #reader {
-      width: 100%;
-      max-width: 500px;
-      margin: 0 auto;
-      overflow: hidden;
-      border-radius: 14px;
+
+      width:
+        100%;
+
+      max-width:
+        500px;
+
+      margin:
+        0 auto;
+
+      overflow:
+        hidden;
+
+      border-radius:
+        14px;
+
     }
+
 
     .camera-status {
-      text-align: center;
-      margin-top: 12px;
-      font-size: 14px;
-      color: #4b5563;
-      min-height: 20px;
+
+      text-align:
+        center;
+
+      margin-top:
+        12px;
+
+      font-size:
+        14px;
+
+      color:
+        #4b5563;
+
+      min-height:
+        20px;
+
     }
+
 
     .upload-area {
-      border: 2px dashed #9ca3af;
-      border-radius: 14px;
-      padding: 25px 15px;
-      text-align: center;
-      cursor: pointer;
-      background: #f9fafb;
-      transition: 0.2s;
+
+      border:
+        2px dashed
+        #9ca3af;
+
+      border-radius:
+        14px;
+
+      padding:
+        25px 15px;
+
+      text-align:
+        center;
+
+      cursor:
+        pointer;
+
+      background:
+        #f9fafb;
+
+      transition:
+        0.2s;
+
     }
+
 
     .upload-area:hover {
-      background: #f3f4f6;
+
+      background:
+        #f3f4f6;
+
     }
+
 
     .upload-icon {
-      font-size: 42px;
-      margin-bottom: 8px;
+
+      font-size:
+        42px;
+
+      margin-bottom:
+        8px;
+
     }
+
 
     .upload-text {
-      font-weight: bold;
-      margin-bottom: 5px;
+
+      font-weight:
+        bold;
+
+      margin-bottom:
+        5px;
+
     }
+
 
     .upload-subtext {
-      color: #6b7280;
-      font-size: 13px;
+
+      color:
+        #6b7280;
+
+      font-size:
+        13px;
+
     }
+
 
     #qr-file {
-      display: none;
+
+      display:
+        none;
+
     }
+
 
     #upload-reader {
-      display: none;
-      width: 100%;
-      margin-top: 15px;
-      border-radius: 14px;
-      overflow: hidden;
+
+      display:
+        none;
+
+      width:
+        100%;
+
+      margin-top:
+        15px;
+
+      border-radius:
+        14px;
+
+      overflow:
+        hidden;
+
     }
+
 
     .result {
-      display: none;
-      border-radius: 16px;
-      padding: 20px;
-      margin-top: 18px;
-      background: #ffffff;
-      border: 1px solid #e5e7eb;
+
+      display:
+        none;
+
+      border-radius:
+        16px;
+
+      padding:
+        20px;
+
+      margin-top:
+        18px;
+
+      background:
+        #ffffff;
+
+      border:
+        1px solid
+        #e5e7eb;
+
     }
+
 
     .result.show {
-      display: block;
+
+      display:
+        block;
+
     }
+
 
     .result-title {
-      text-align: center;
-      font-size: 24px;
-      font-weight: bold;
-      margin-bottom: 15px;
+
+      text-align:
+        center;
+
+      font-size:
+        24px;
+
+      font-weight:
+        bold;
+
+      margin-bottom:
+        15px;
+
     }
+
 
     .status-badge {
-      text-align: center;
-      font-size: 27px;
-      font-weight: bold;
-      padding: 14px;
-      border-radius: 12px;
-      margin-bottom: 18px;
+
+      text-align:
+        center;
+
+      font-size:
+        27px;
+
+      font-weight:
+        bold;
+
+      padding:
+        14px;
+
+      border-radius:
+        12px;
+
+      margin-bottom:
+        18px;
+
     }
+
 
     .time-in {
-      background: #dcfce7;
-      color: #166534;
+
+      background:
+        #dcfce7;
+
+      color:
+        #166534;
+
     }
+
 
     .time-out {
-      background: #fee2e2;
-      color: #991b1b;
+
+      background:
+        #fee2e2;
+
+      color:
+        #991b1b;
+
     }
+
 
     .info-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 15px;
-      padding: 10px 0;
-      border-bottom: 1px solid #e5e7eb;
+
+      display:
+        flex;
+
+      justify-content:
+        space-between;
+
+      align-items:
+        flex-start;
+
+      gap:
+        15px;
+
+      padding:
+        10px 0;
+
+      border-bottom:
+        1px solid
+        #e5e7eb;
+
     }
+
 
     .info-row:last-child {
-      border-bottom: none;
+
+      border-bottom:
+        none;
+
     }
+
 
     .info-label {
-      color: #6b7280;
-      font-weight: bold;
-      flex: 0 0 48%;
+
+      color:
+        #6b7280;
+
+      font-weight:
+        bold;
+
+      min-width:
+        230px;
+
     }
+
 
     .info-value {
-      text-align: right;
-      font-weight: bold;
-      word-break: break-word;
-      flex: 1;
+
+      text-align:
+        right;
+
+      font-weight:
+        bold;
+
+      word-break:
+        break-word;
+
+      flex:
+        1;
+
     }
+
 
     .message {
-      text-align: center;
-      padding: 12px;
-      border-radius: 10px;
-      margin-top: 12px;
-      display: none;
-      font-weight: bold;
+
+      text-align:
+        center;
+
+      padding:
+        12px;
+
+      border-radius:
+        10px;
+
+      margin-top:
+        12px;
+
+      display:
+        none;
+
+      font-weight:
+        bold;
+
     }
+
 
     .message.show {
-      display: block;
+
+      display:
+        block;
+
     }
+
 
     .message.error {
-      background: #fee2e2;
-      color: #991b1b;
+
+      background:
+        #fee2e2;
+
+      color:
+        #991b1b;
+
     }
+
 
     .message.success {
-      background: #dcfce7;
-      color: #166534;
+
+      background:
+        #dcfce7;
+
+      color:
+        #166534;
+
     }
+
 
     .message.info {
-      background: #dbeafe;
-      color: #1e40af;
+
+      background:
+        #dbeafe;
+
+      color:
+        #1e40af;
+
     }
+
 
     .source-badge {
-      display: inline-block;
-      padding: 5px 10px;
-      border-radius: 20px;
-      background: #e5e7eb;
-      color: #374151;
-      font-size: 12px;
-      font-weight: bold;
+
+      display:
+        inline-block;
+
+      padding:
+        5px 10px;
+
+      border-radius:
+        20px;
+
+      background:
+        #e5e7eb;
+
+      color:
+        #374151;
+
+      font-size:
+        12px;
+
+      font-weight:
+        bold;
+
     }
+
 
     .loading {
-      display: none;
-      text-align: center;
-      margin-top: 12px;
-      color: #4b5563;
-      font-size: 14px;
+
+      display:
+        none;
+
+      text-align:
+        center;
+
+      margin-top:
+        12px;
+
+      color:
+        #4b5563;
+
+      font-size:
+        14px;
+
     }
+
 
     .loading.show {
-      display: block;
+
+      display:
+        block;
+
     }
+
 
     .dot-loader::after {
-      content: "...";
-      animation: dots 1.2s infinite;
+
+      content:
+        "...";
+
+      animation:
+        dots 1.2s infinite;
+
     }
+
 
     @keyframes dots {
-      0% { content: "."; }
-      33% { content: ".."; }
-      66% { content: "..."; }
-      100% { content: "."; }
+
+      0% {
+        content: ".";
+      }
+
+      33% {
+        content: "..";
+      }
+
+      66% {
+        content: "...";
+      }
+
+      100% {
+        content: ".";
+      }
+
     }
+
 
     @media (max-width: 600px) {
+
       body {
-        padding: 10px;
+
+        padding:
+          10px;
+
       }
+
 
       .card {
-        padding: 16px;
-        border-radius: 14px;
+
+        padding:
+          16px;
+
+        border-radius:
+          14px;
+
       }
+
 
       h1 {
-        font-size: 21px;
+
+        font-size:
+          21px;
+
       }
+
 
       .status-badge {
-        font-size: 23px;
+
+        font-size:
+          23px;
+
       }
+
 
       .info-row {
-        flex-direction: column;
-        gap: 4px;
+
+        flex-direction:
+          column;
+
+        gap:
+          4px;
+
       }
+
 
       .info-label {
-        flex: none;
+
+        min-width:
+          0;
+
       }
 
+
       .info-value {
-        text-align: left;
-        flex: none;
+
+        text-align:
+          left;
+
       }
+
     }
+
   </style>
+
 </head>
+
 
 <body>
 
+
 <div class="container">
 
+
   <!-- =====================================================
-       CAMERA
+       HEADER
        ===================================================== -->
 
   <div class="card">
 
-    <h1>CGFLEET</h1>
+    <h1>
+      CGFLEET
+    </h1>
 
     <div class="subtitle">
       Visitors Parking Registration & Monitoring
     </div>
 
+
+    <!-- ===================================================
+         CAMERA
+         =================================================== -->
+
     <div class="section-title">
       📷 Camera QR Scanner
     </div>
 
+
     <div id="reader"></div>
 
-    <div id="camera-status" class="camera-status">
+
+    <div
+      id="camera-status"
+      class="camera-status"
+    >
       Starting camera...
     </div>
 
-    <div id="loading" class="loading">
-      Processing QR <span class="dot-loader"></span>
+
+    <div
+      id="loading"
+      class="loading"
+    >
+      Processing QR
+      <span class="dot-loader"></span>
     </div>
 
   </div>
@@ -316,15 +700,21 @@
       🖼️ Upload QR Image
     </div>
 
-    <label for="qr-file" class="upload-area">
+
+    <label
+      for="qr-file"
+      class="upload-area"
+    >
 
       <div class="upload-icon">
         🖼️
       </div>
 
+
       <div class="upload-text">
         Click here to upload QR image
       </div>
+
 
       <div class="upload-subtext">
         Select an image containing the visitor QR code
@@ -332,13 +722,17 @@
 
     </label>
 
+
     <input
       type="file"
       id="qr-file"
       accept="image/*"
     >
 
-    <div id="upload-reader"></div>
+
+    <div
+      id="upload-reader"
+    ></div>
 
   </div>
 
@@ -347,25 +741,39 @@
        MESSAGE
        ===================================================== -->
 
-  <div id="message" class="message"></div>
+  <div
+    id="message"
+    class="message"
+  ></div>
 
 
   <!-- =====================================================
-       ATTENDANCE RESULT
+       RESULT
        ===================================================== -->
 
-  <div id="result" class="result">
+  <div
+    id="result"
+    class="result"
+  >
 
     <div class="result-title">
       ATTENDANCE RESULT
     </div>
 
-    <div id="status-badge" class="status-badge">
-      -
-    </div>
+
+    <!-- STATUS -->
+
+    <div
+      id="status-badge"
+      class="status-badge"
+    ></div>
 
 
-    <!-- RANK / POSITION -->
+    <!-- ===================================================
+         DETAILS
+         EXACT ORDER REQUESTED
+         =================================================== -->
+
 
     <div class="info-row">
 
@@ -383,8 +791,6 @@
     </div>
 
 
-    <!-- FIRST NAME -->
-
     <div class="info-row">
 
       <div class="info-label">
@@ -400,8 +806,6 @@
 
     </div>
 
-
-    <!-- MI -->
 
     <div class="info-row">
 
@@ -419,8 +823,6 @@
     </div>
 
 
-    <!-- LAST NAME -->
-
     <div class="info-row">
 
       <div class="info-label">
@@ -436,8 +838,6 @@
 
     </div>
 
-
-    <!-- OFFICE -->
 
     <div class="info-row">
 
@@ -455,8 +855,6 @@
     </div>
 
 
-    <!-- CONTACT -->
-
     <div class="info-row">
 
       <div class="info-label">
@@ -472,8 +870,6 @@
 
     </div>
 
-
-    <!-- VEHICLE -->
 
     <div class="info-row">
 
@@ -491,8 +887,6 @@
     </div>
 
 
-    <!-- PLATE -->
-
     <div class="info-row">
 
       <div class="info-label">
@@ -508,8 +902,6 @@
 
     </div>
 
-
-    <!-- COLOR -->
 
     <div class="info-row">
 
@@ -527,7 +919,10 @@
     </div>
 
 
-    <!-- TIME IN -->
+    <!-- ===================================================
+         ATTENDANCE INFORMATION
+         =================================================== -->
+
 
     <div class="info-row">
 
@@ -545,8 +940,6 @@
     </div>
 
 
-    <!-- TIME OUT -->
-
     <div class="info-row">
 
       <div class="info-label">
@@ -563,8 +956,6 @@
     </div>
 
 
-    <!-- DATE -->
-
     <div class="info-row">
 
       <div class="info-label">
@@ -580,8 +971,6 @@
 
     </div>
 
-
-    <!-- SOURCE -->
 
     <div class="info-row">
 
@@ -604,13 +993,14 @@
 
   </div>
 
+
 </div>
 
 
 <script>
 
 /* ============================================================
-   GOOGLE APPS SCRIPT WEB APP
+   GOOGLE APPS SCRIPT WEB APP URL
    ============================================================ */
 
 const APPS_SCRIPT_URL =
@@ -622,25 +1012,40 @@ const APPS_SCRIPT_URL =
    ============================================================ */
 
 let cameraScanner = null;
+
 let uploadScanner = null;
 
 let cameraRunning = false;
-let uploadRunning = false;
 
 let cameraLocked = false;
+
 let uploadLocked = false;
-
-let stableQR = null;
-let stableSince = 0;
-
-let resultTimer = null;
-let requestTimer = null;
 
 let requestInProgress = false;
 
-const STABLE_TIME = 1000;
-const RESULT_DISPLAY_TIME = 7000;
-const SERVER_TIMEOUT = 15000;
+let stableQR = "";
+
+let stableSince = 0;
+
+let resultTimer = null;
+
+let requestTimer = null;
+
+
+/* ============================================================
+   SETTINGS
+   ============================================================ */
+
+const STABLE_TIME =
+  1000;
+
+
+const RESULT_DISPLAY_TIME =
+  7000;
+
+
+const SERVER_TIMEOUT =
+  15000;
 
 
 /* ============================================================
@@ -648,25 +1053,45 @@ const SERVER_TIMEOUT = 15000;
    ============================================================ */
 
 const readerElement =
-  document.getElementById("reader");
+  document.getElementById(
+    "reader"
+  );
+
 
 const uploadReaderElement =
-  document.getElementById("upload-reader");
+  document.getElementById(
+    "upload-reader"
+  );
+
 
 const cameraStatus =
-  document.getElementById("camera-status");
+  document.getElementById(
+    "camera-status"
+  );
+
 
 const loading =
-  document.getElementById("loading");
+  document.getElementById(
+    "loading"
+  );
+
 
 const message =
-  document.getElementById("message");
+  document.getElementById(
+    "message"
+  );
+
 
 const result =
-  document.getElementById("result");
+  document.getElementById(
+    "result"
+  );
+
 
 const statusBadge =
-  document.getElementById("status-badge");
+  document.getElementById(
+    "status-badge"
+  );
 
 
 /* ============================================================
@@ -679,8 +1104,11 @@ document.addEventListener(
 
     startCameraScanner();
 
+
     document
-      .getElementById("qr-file")
+      .getElementById(
+        "qr-file"
+      )
       .addEventListener(
         "change",
         handleUpload
@@ -691,18 +1119,25 @@ document.addEventListener(
 
 
 /* ============================================================
-   CAMERA SCANNER
+   CAMERA START
    ============================================================ */
 
 async function startCameraScanner() {
 
   try {
 
-    if (cameraRunning) {
+    if (
+      cameraRunning
+    ) {
+
       return;
+
     }
 
-    if (!cameraScanner) {
+
+    if (
+      !cameraScanner
+    ) {
 
       cameraScanner =
         new Html5Qrcode(
@@ -710,6 +1145,7 @@ async function startCameraScanner() {
         );
 
     }
+
 
     cameraStatus.textContent =
       "Starting camera...";
@@ -723,7 +1159,9 @@ async function startCameraScanner() {
       },
 
       {
-        fps: 10,
+
+        fps:
+          10,
 
         qrbox:
           function (
@@ -737,14 +1175,21 @@ async function startCameraScanner() {
                 viewfinderHeight
               ) * 0.70;
 
+
             return {
-              width: size,
-              height: size
+
+              width:
+                size,
+
+              height:
+                size
+
             };
 
           },
 
-        aspectRatio: 1.0
+        aspectRatio:
+          1.0
 
       },
 
@@ -755,22 +1200,25 @@ async function startCameraScanner() {
     );
 
 
-    cameraRunning = true;
+    cameraRunning =
+      true;
+
 
     cameraStatus.textContent =
       "Point the camera at a QR code";
 
-  }
 
-  catch (error) {
+  } catch (error) {
 
     console.error(
       "Camera start error:",
       error
     );
 
+
     cameraStatus.textContent =
       "Camera could not start. Please allow camera permission.";
+
 
     showMessage(
       "Camera could not start. Please check camera permission.",
@@ -783,28 +1231,52 @@ async function startCameraScanner() {
 
 
 /* ============================================================
-   CAMERA DETECTION
+   CAMERA QR DETECTION
    ============================================================ */
 
 function onCameraDetect(
   decodedText
 ) {
 
-  if (!decodedText) {
+  if (
+    !decodedText
+  ) {
+
     return;
+
   }
 
-  if (cameraLocked) {
+
+  if (
+    cameraLocked
+  ) {
+
     return;
+
   }
+
+
+  if (
+    requestInProgress
+  ) {
+
+    return;
+
+  }
+
 
   decodedText =
     String(
       decodedText
     ).trim();
 
-  if (!decodedText) {
+
+  if (
+    !decodedText
+  ) {
+
     return;
+
   }
 
 
@@ -827,8 +1299,10 @@ function onCameraDetect(
     stableSince =
       now;
 
+
     cameraStatus.textContent =
       "QR detected — hold steady...";
+
 
     return;
 
@@ -838,7 +1312,7 @@ function onCameraDetect(
   /*
      SAME QR
 
-     WAIT 1 SECOND
+     Check stability.
   */
 
   const stableFor =
@@ -852,27 +1326,35 @@ function onCameraDetect(
   ) {
 
     /*
-       LOCK THE QR IN MEMORY.
+       LOCK QR IN MEMORY
 
-       Even if the camera moves away,
-       this transaction continues.
+       Camera can continue running,
+       but this QR cannot trigger again
+       while processing.
     */
 
     cameraLocked =
       true;
 
+
+    const capturedQR =
+      stableQR;
+
+
     stableQR =
-      null;
+      "";
+
 
     stableSince =
       0;
+
 
     cameraStatus.textContent =
       "QR captured — processing...";
 
 
     processQR(
-      decodedText,
+      capturedQR,
       "CAMERA SCANNER"
     );
 
@@ -882,7 +1364,7 @@ function onCameraDetect(
 
 
 /* ============================================================
-   CAMERA ERROR
+   NORMAL CAMERA SCAN ERRORS
    ============================================================ */
 
 function onCameraScanError(
@@ -890,7 +1372,8 @@ function onCameraScanError(
 ) {
 
   /*
-     Ignore normal scanning errors.
+     Ignore normal "no QR found"
+     scanning messages.
   */
 
 }
@@ -920,14 +1403,18 @@ function processQR(
     ).trim();
 
 
-  if (!qrText) {
+  if (
+    !qrText
+  ) {
 
-    unlockCamera();
+    unlockScanners();
+
 
     showMessage(
       "Invalid QR code.",
       "error"
     );
+
 
     return;
 
@@ -955,7 +1442,8 @@ function processQR(
 
 
 /* ============================================================
-   JSONP SERVER REQUEST
+   SEND QR TO GOOGLE APPS SCRIPT
+   JSONP
    ============================================================ */
 
 function sendQRToServer(
@@ -983,21 +1471,33 @@ function sendQRToServer(
     false;
 
 
+  /*
+     CLEANUP
+  */
+
   function cleanup() {
 
-    if (finished) {
+    if (
+      finished
+    ) {
+
       return;
+
     }
+
 
     finished =
       true;
 
 
-    if (requestTimer) {
+    if (
+      requestTimer
+    ) {
 
       clearTimeout(
         requestTimer
       );
+
 
       requestTimer =
         null;
@@ -1011,13 +1511,12 @@ function sendQRToServer(
         callbackName
       ];
 
-    }
-
-    catch (e) {
+    } catch (e) {
 
       window[
         callbackName
-      ] = undefined;
+      ] =
+        undefined;
 
     }
 
@@ -1034,6 +1533,10 @@ function sendQRToServer(
 
   }
 
+
+  /*
+     JSONP CALLBACK
+  */
 
   window[
     callbackName
@@ -1064,9 +1567,7 @@ function sendQRToServer(
           source
         );
 
-      }
-
-      else {
+      } else {
 
         const msg =
           response &&
@@ -1081,12 +1582,16 @@ function sendQRToServer(
         );
 
 
-        unlockCamera();
+        unlockScanners();
 
       }
 
     };
 
+
+  /*
+     SCRIPT ERROR
+  */
 
   script.onerror =
     function () {
@@ -1109,10 +1614,14 @@ function sendQRToServer(
       );
 
 
-      unlockCamera();
+      unlockScanners();
 
     };
 
+
+  /*
+     BUILD REQUEST
+  */
 
   const url =
     APPS_SCRIPT_URL +
@@ -1142,12 +1651,20 @@ function sendQRToServer(
   );
 
 
+  /*
+     TIMEOUT
+  */
+
   requestTimer =
     setTimeout(
       function () {
 
-        if (finished) {
+        if (
+          finished
+        ) {
+
           return;
+
         }
 
 
@@ -1169,7 +1686,7 @@ function sendQRToServer(
         );
 
 
-        unlockCamera();
+        unlockScanners();
 
       },
       SERVER_TIMEOUT
@@ -1195,37 +1712,42 @@ function displayResult(
   );
 
 
-  const status =
-    String(
-      data.status ||
-      data.attendanceStatus ||
-      data.action ||
-      ""
-    ).toUpperCase();
-
-
   /*
      STATUS
   */
 
+  const status =
+    String(
+      data.status ||
+      data.attendanceStatus ||
+      ""
+    )
+      .trim()
+      .toUpperCase();
+
+
   if (
     status === "OUT" ||
-    status.includes("TIME OUT") ||
-    status.includes("OUT")
+    status.includes(
+      "TIME OUT"
+    ) ||
+    status.includes(
+      "OUT"
+    )
   ) {
 
     statusBadge.textContent =
       "TIME OUT";
 
+
     statusBadge.className =
       "status-badge time-out";
 
-  }
-
-  else {
+  } else {
 
     statusBadge.textContent =
       "TIME IN";
+
 
     statusBadge.className =
       "status-badge time-in";
@@ -1234,275 +1756,99 @@ function displayResult(
 
 
   /*
-     RANK / POSITION
+     ========================================================
+     DETAILS
+     ========================================================
   */
+
 
   setText(
     "rank",
-    getValue(
-      data,
-      [
-        "rank",
-        "position",
-        "RANK / Position",
-        "Rank / Position"
-      ]
-    )
+    data.rank
   );
 
-
-  /*
-     FIRST NAME
-  */
 
   setText(
     "first-name",
-    getValue(
-      data,
-      [
-        "firstName",
-        "First Name"
-      ]
-    )
+    data.firstName
   );
 
-
-  /*
-     MI
-  */
 
   setText(
     "mi",
-    getValue(
-      data,
-      [
-        "mi",
-        "MI",
-        "M.I"
-      ]
-    )
+    data.mi
   );
 
-
-  /*
-     LAST NAME
-  */
 
   setText(
     "last-name",
-    getValue(
-      data,
-      [
-        "lastName",
-        "Last Name"
-      ]
-    )
+    data.lastName
   );
 
-
-  /*
-     OFFICE / AGENCY / ASSIGNMENT
-  */
 
   setText(
     "office",
-    getValue(
-      data,
-      [
-        "office",
-        "Office / Agency / Assignment"
-      ]
-    )
+    data.office
   );
 
-
-  /*
-     CONTACT NUMBER
-  */
 
   setText(
     "contact",
-    getValue(
-      data,
-      [
-        "contact",
-        "contactNumber",
-        "Contact Number",
-        "phone"
-      ]
-    )
+    data.contact
   );
 
-
-  /*
-     VEHICLE / MODEL
-  */
 
   setText(
     "vehicle",
-    getValue(
-      data,
-      [
-        "vehicle",
-        "vehicleModel",
-        "Vehicle / Model",
-        "Vehicle Model"
-      ]
-    )
+    data.vehicle
   );
 
-
-  /*
-     PLATE NUMBER
-  */
 
   setText(
     "plate-number",
-    getValue(
-      data,
-      [
-        "plate",
-        "plateNumber",
-        "Plate Number",
-        "qr"
-      ]
-    )
+    data.plate
   );
 
-
-  /*
-     COLOR OF VEHICLE
-  */
 
   setText(
     "vehicle-color",
-    getValue(
-      data,
-      [
-        "vehicleColor",
-        "colorOfVehicle",
-        "Color of Vehicle"
-      ]
-    )
+    data.vehicleColor
   );
 
 
   /*
-     TIME IN
+     ========================================================
+     ATTENDANCE
+     ========================================================
   */
+
 
   setText(
     "time-in",
-    getValue(
-      data,
-      [
-        "timeIn",
-        "Time In"
-      ]
-    )
+    data.timeIn
   );
 
-
-  /*
-     TIME OUT
-  */
 
   setText(
     "time-out",
-    getValue(
-      data,
-      [
-        "timeOut",
-        "Time Out"
-      ]
-    )
+    data.timeOut
   );
-
-
-  /*
-     DATE
-
-     Backend sends dateTime:
-     MM/dd/yyyy HH:mm:ss
-
-     Extract only:
-     MM/dd/yyyy
-  */
-
-  let dateValue =
-    getValue(
-      data,
-      [
-        "date",
-        "scanDate",
-        "Date"
-      ]
-    );
-
-
-  if (!dateValue) {
-
-    const dateTime =
-      getValue(
-        data,
-        [
-          "dateTime"
-        ]
-      );
-
-
-    if (dateTime) {
-
-      dateValue =
-        String(
-          dateTime
-        ).substring(
-          0,
-          10
-        );
-
-    }
-
-  }
 
 
   setText(
     "scan-date",
-    dateValue
+    data.date
   );
 
 
   /*
-     SCAN SOURCE
+     SOURCE
   */
 
-  let serverSource =
-    getValue(
-      data,
-      [
-        "source",
-        "scanSource",
-        "Scan Source"
-      ]
-    );
-
-
-  if (!serverSource) {
-
-    serverSource =
-      source;
-
-  }
-
-
-  /*
-     FORCE CORRECT DISPLAY
-  */
-
-  serverSource =
-    normalizeDisplaySource(
-      serverSource
-    );
+  const serverSource =
+    data.source ||
+    source ||
+    "";
 
 
   setText(
@@ -1512,10 +1858,12 @@ function displayResult(
 
 
   /*
-     AUTO CLEAR AFTER 7 SECONDS
+     AUTO CLEAR RESULT
   */
 
-  if (resultTimer) {
+  if (
+    resultTimer
+  ) {
 
     clearTimeout(
       resultTimer
@@ -1536,65 +1884,11 @@ function displayResult(
         clearResultFields();
 
 
-        unlockCamera();
+        unlockScanners();
 
       },
       RESULT_DISPLAY_TIME
     );
-
-}
-
-
-/* ============================================================
-   NORMALIZE DISPLAY SOURCE
-   ============================================================ */
-
-function normalizeDisplaySource(
-  source
-) {
-
-  const value =
-    String(
-      source || ""
-    )
-      .trim()
-      .toUpperCase();
-
-
-  if (
-    value ===
-      "CAMERA" ||
-    value ===
-      "SCANNER" ||
-    value ===
-      "SCAN" ||
-    value ===
-      "CAMERA SCANNER"
-  ) {
-
-    return "CAMERA SCANNER";
-
-  }
-
-
-  if (
-    value ===
-      "UPLOAD" ||
-    value ===
-      "IMAGE" ||
-    value ===
-      "FILE" ||
-    value ===
-      "QR IMAGE UPLOAD"
-  ) {
-
-    return "QR IMAGE UPLOAD";
-
-  }
-
-
-  return value ||
-    "UNKNOWN";
 
 }
 
@@ -1612,25 +1906,23 @@ async function handleUpload(
     event.target.files[0];
 
 
-  if (!file) {
-    return;
-  }
-
-
-  if (uploadLocked) {
-
-    event.target.value =
-      "";
+  if (
+    !file
+  ) {
 
     return;
 
   }
 
 
-  if (requestInProgress) {
+  if (
+    uploadLocked ||
+    requestInProgress
+  ) {
 
     event.target.value =
       "";
+
 
     return;
 
@@ -1652,7 +1944,13 @@ async function handleUpload(
 
   try {
 
-    if (!uploadScanner) {
+    /*
+       Create upload scanner.
+    */
+
+    if (
+      !uploadScanner
+    ) {
 
       uploadScanner =
         new Html5Qrcode(
@@ -1666,6 +1964,10 @@ async function handleUpload(
       "block";
 
 
+    /*
+       Read QR directly from image.
+    */
+
     const qrText =
       await uploadScanner.scanFile(
         file,
@@ -1673,7 +1975,9 @@ async function handleUpload(
       );
 
 
-    if (!qrText) {
+    if (
+      !qrText
+    ) {
 
       throw new Error(
         "No QR code found."
@@ -1686,13 +1990,17 @@ async function handleUpload(
       "none";
 
 
+    /*
+       Lock captured QR before
+       sending it to server.
+    */
+
     processUploadQR(
       qrText
     );
 
-  }
 
-  catch (error) {
+  } catch (error) {
 
     console.error(
       "Upload QR error:",
@@ -1716,6 +2024,10 @@ async function handleUpload(
   }
 
 
+  /*
+     Allow same file to be selected again later.
+  */
+
   event.target.value =
     "";
 
@@ -1723,7 +2035,7 @@ async function handleUpload(
 
 
 /* ============================================================
-   PROCESS UPLOADED QR
+   PROCESS UPLOAD
    ============================================================ */
 
 function processUploadQR(
@@ -1736,6 +2048,7 @@ function processUploadQR(
 
     uploadLocked =
       false;
+
 
     return;
 
@@ -1751,33 +2064,35 @@ function processUploadQR(
 
 
 /* ============================================================
-   UNLOCK SCANNERS
+   UNLOCK
    ============================================================ */
 
-function unlockCamera() {
+function unlockScanners() {
 
   cameraLocked =
     false;
 
 
+  uploadLocked =
+    false;
+
+
   stableQR =
-    null;
+    "";
 
 
   stableSince =
     0;
 
 
-  if (cameraRunning) {
+  if (
+    cameraRunning
+  ) {
 
     cameraStatus.textContent =
       "Point the camera at a QR code";
 
   }
-
-
-  uploadLocked =
-    false;
 
 }
 
@@ -1818,7 +2133,7 @@ function clearMessage() {
 
 
 /* ============================================================
-   RESULT HELPERS
+   SET TEXT
    ============================================================ */
 
 function setText(
@@ -1832,8 +2147,12 @@ function setText(
     );
 
 
-  if (!element) {
+  if (
+    !element
+  ) {
+
     return;
+
   }
 
 
@@ -1846,60 +2165,14 @@ function setText(
   ) {
 
     element.textContent =
-      String(value);
+      value;
 
-  }
-
-  else {
+  } else {
 
     element.textContent =
       "-";
 
   }
-
-}
-
-
-/* ============================================================
-   GET VALUE
-   ============================================================ */
-
-function getValue(
-  obj,
-  keys
-) {
-
-  if (!obj) {
-    return "";
-  }
-
-
-  for (
-    let i = 0;
-    i < keys.length;
-    i++
-  ) {
-
-    const key =
-      keys[i];
-
-
-    if (
-      obj[key] !== undefined &&
-      obj[key] !== null &&
-      String(
-        obj[key]
-      ).trim() !== ""
-    ) {
-
-      return obj[key];
-
-    }
-
-  }
-
-
-  return "";
 
 }
 
@@ -1991,7 +2264,7 @@ function clearResultFields() {
 
 
 /* ============================================================
-   SAFETY
+   BEFORE PAGE CLOSE
    ============================================================ */
 
 window.addEventListener(
@@ -2009,14 +2282,13 @@ window.addEventListener(
 
       }
 
-    }
-
-    catch (e) {}
+    } catch (e) {}
 
   }
 );
 
 </script>
+
 
 </body>
 </html>

@@ -11,6 +11,7 @@
   <title>CGFLEET QR Monitoring</title>
 
   <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
 
   <style>
     * {
@@ -1276,6 +1277,146 @@
 
 
     /* ==========================================================
+       DECODE UPLOADED QR IMAGE
+       Uses jsQR directly on the uploaded image.  This avoids
+       scanFile() hanging on some browsers/images.
+       ========================================================== */
+
+    function decodeUploadedQRImage(file) {
+
+      return new Promise(function(resolve, reject) {
+
+        if (!file) {
+          reject(new Error("No image file selected."));
+          return;
+        }
+
+        if (typeof jsQR !== "function") {
+          reject(new Error("QR decoder library failed to load."));
+          return;
+        }
+
+        const image = new Image();
+        const objectUrl = URL.createObjectURL(file);
+        let finished = false;
+
+        function cleanup() {
+          URL.revokeObjectURL(objectUrl);
+        }
+
+        function fail(message) {
+          if (finished) return;
+          finished = true;
+          cleanup();
+          reject(new Error(message));
+        }
+
+        function succeed(value) {
+          if (finished) return;
+          finished = true;
+          cleanup();
+          resolve(value);
+        }
+
+        image.onload = function() {
+
+          try {
+
+            const originalW = image.naturalWidth || image.width;
+            const originalH = image.naturalHeight || image.height;
+
+            if (!originalW || !originalH) {
+              fail("Image has no readable dimensions.");
+              return;
+            }
+
+            /*
+             * Try several render sizes.  A larger canvas can help
+             * when the QR occupies only a small portion of the image.
+             */
+            const maxDimension = Math.max(originalW, originalH);
+            const targetSizes = [
+              maxDimension,
+              Math.min(Math.max(maxDimension * 1.5, 800), 2400),
+              Math.min(Math.max(maxDimension * 2, 1200), 3200)
+            ];
+
+            const tried = new Set();
+
+            for (const targetMax of targetSizes) {
+
+              const roundedMax = Math.round(targetMax);
+              if (tried.has(roundedMax)) continue;
+              tried.add(roundedMax);
+
+              const scale = Math.min(
+                1,
+                roundedMax / maxDimension
+              ) < 1
+                ? 1
+                : roundedMax / maxDimension;
+
+              const canvas = document.createElement("canvas");
+              canvas.width = Math.max(1, Math.round(originalW * scale));
+              canvas.height = Math.max(1, Math.round(originalH * scale));
+
+              const ctx = canvas.getContext("2d", {
+                willReadFrequently: true
+              });
+
+              if (!ctx) continue;
+
+              ctx.imageSmoothingEnabled = true;
+              ctx.imageSmoothingQuality = "high";
+              ctx.drawImage(
+                image,
+                0,
+                0,
+                canvas.width,
+                canvas.height
+              );
+
+              const imageData = ctx.getImageData(
+                0,
+                0,
+                canvas.width,
+                canvas.height
+              );
+
+              let result = jsQR(
+                imageData.data,
+                imageData.width,
+                imageData.height,
+                {
+                  inversionAttempts: "attemptBoth"
+                }
+              );
+
+              if (result && result.data) {
+                succeed(result.data);
+                return;
+              }
+            }
+
+            fail("No QR code was detected in the image.");
+
+          } catch (error) {
+            fail(error && error.message
+              ? error.message
+              : "QR decoding failed.");
+          }
+        };
+
+        image.onerror = function() {
+          fail("The selected image could not be loaded.");
+        };
+
+        image.src = objectUrl;
+      });
+    }
+
+
+    /* ==========================================================
        UPLOAD QR IMAGE
        
        IMPORTANT:
@@ -1395,10 +1536,7 @@
              */
 
             const decodedText =
-              await html5QrCode.scanFile(
-                file,
-                false
-              );
+              await decodeUploadedQRImage(file);
 
             const cleanQR =
               String(

@@ -368,7 +368,7 @@
         id="loadingBox"
         class="loading"
       >
-        Saving attendance...
+        Saving attendance in background...
       </div>
 
     </div>
@@ -455,132 +455,95 @@
 
     <div class="details">
 
-
       <div class="detail-row">
-
         <div class="detail-label">
           RANK / Position
         </div>
-
         <div
           id="resultRank"
           class="detail-value"
         ></div>
-
       </div>
 
-
       <div class="detail-row">
-
         <div class="detail-label">
           First Name
         </div>
-
         <div
           id="resultFirstName"
           class="detail-value"
         ></div>
-
       </div>
 
-
       <div class="detail-row">
-
         <div class="detail-label">
           MI
         </div>
-
         <div
           id="resultMI"
           class="detail-value"
         ></div>
-
       </div>
 
-
       <div class="detail-row">
-
         <div class="detail-label">
           Last Name
         </div>
-
         <div
           id="resultLastName"
           class="detail-value"
         ></div>
-
       </div>
 
-
       <div class="detail-row">
-
         <div class="detail-label">
           Office / Agency / Assignment
         </div>
-
         <div
           id="resultOffice"
           class="detail-value"
         ></div>
-
       </div>
 
-
       <div class="detail-row">
-
         <div class="detail-label">
           Contact Number
         </div>
-
         <div
           id="resultContact"
           class="detail-value"
         ></div>
-
       </div>
 
-
       <div class="detail-row">
-
         <div class="detail-label">
           Vehicle / Model
         </div>
-
         <div
           id="resultVehicle"
           class="detail-value"
         ></div>
-
       </div>
 
-
       <div class="detail-row">
-
         <div class="detail-label">
           Plate Number
         </div>
-
         <div
           id="resultPlate"
           class="detail-value"
         ></div>
-
       </div>
 
-
       <div class="detail-row">
-
         <div class="detail-label">
           Color of Vehicle
         </div>
-
         <div
           id="resultVehicleColor"
           class="detail-value"
         ></div>
-
       </div>
-
 
     </div>
 
@@ -592,62 +555,45 @@
 
     <div class="transaction-details">
 
-
       <div class="detail-row">
-
         <div class="detail-label">
           Time In
         </div>
-
         <div
           id="resultTimeIn"
           class="detail-value"
         ></div>
-
       </div>
 
-
       <div class="detail-row">
-
         <div class="detail-label">
           Time Out
         </div>
-
         <div
           id="resultTimeOut"
           class="detail-value"
         ></div>
-
       </div>
 
-
       <div class="detail-row">
-
         <div class="detail-label">
           Date
         </div>
-
         <div
           id="resultDate"
           class="detail-value"
         ></div>
-
       </div>
 
-
       <div class="detail-row">
-
         <div class="detail-label">
           Scan Source
         </div>
-
         <div
           id="resultSource"
           class="detail-value"
         ></div>
-
       </div>
-
 
     </div>
 
@@ -671,7 +617,7 @@
    ============================================================ */
 
 const APPS_SCRIPT_URL =
-  "https://script.google.com/macros/s/AKfycbygUbFIwIo5p3g0AyJwr1YgWjsubkpg1Zp-ev8hkNx038YSJT2wxP7garS2e4B3lb0v/exec";
+  "https://script.google.com/macros/s/AKfycbygUbFIwIo5p3g0AyJwr1YgWsubkpg1Zp-ev8hkNx038YSJT2wxP7garS2e4B3lb0v/exec";
 
 
 /* ============================================================
@@ -680,9 +626,11 @@ const APPS_SCRIPT_URL =
 
 let cameraScanner = null;
 
-let requestInProgress = false;
-
-let cameraLocked = false;
+/*
+  IMPORTANT:
+  WALA NANG GLOBAL requestInProgress NA NAG-BLOCK
+  NG NEXT SCAN / UPLOAD.
+*/
 
 let uploadProcessing = false;
 
@@ -694,9 +642,34 @@ let resultTimer = null;
 
 let jsonpCounter = 0;
 
-let capturedQR = "";
-
 let bootstrapDate = "";
+
+/*
+  Camera duplicate protection only.
+  Hindi nito hinaharangan ang background server saves.
+*/
+let lastCameraQR = "";
+
+let lastCameraQRTime = 0;
+
+const CAMERA_REPEAT_COOLDOWN_MS = 900;
+
+
+/*
+  Per-plate local operation sequence.
+
+  Purpose:
+  Kapag mabilis na:
+      IN
+      OUT
+      IN
+
+  at hindi pareho ang dating ng server responses,
+  hindi pahihintulutan ang lumang response na
+  mag-overwrite sa mas bagong operation sa browser.
+*/
+const plateOperationSequence = {};
+
 
 
 /* ============================================================
@@ -718,6 +691,7 @@ window.addEventListener(
 
   }
 );
+
 
 
 /* ============================================================
@@ -831,6 +805,7 @@ function loadBootstrap() {
 }
 
 
+
 /* ============================================================
    CAMERA INITIALIZATION
    ============================================================ */
@@ -881,7 +856,7 @@ function initializeCamera() {
 
   const config = {
 
-    fps: 10,
+    fps: 15,
 
     qrbox:
       function(
@@ -962,31 +937,14 @@ function initializeCamera() {
 }
 
 
+
 /* ============================================================
    CAMERA SUCCESS
-   ------------------------------------------------------------
-   NO 1-SECOND HOLD.
-   FIRST SUCCESSFULLY DECODED QR = IMMEDIATE CAPTURE.
    ============================================================ */
 
 function onCameraScanSuccess(
   decodedText
 ) {
-
-  /*
-     Prevent duplicate callbacks while
-     current transaction is processing.
-  */
-
-  if (
-    requestInProgress ||
-    cameraLocked
-  ) {
-
-    return;
-
-  }
-
 
   const qr =
     String(
@@ -999,19 +957,43 @@ function onCameraScanSuccess(
   }
 
 
+  const now =
+    Date.now();
+
+
   /*
-     IMMEDIATE LOCK
+    Prevent html5-qrcode from firing the SAME visible QR
+    on every camera frame.
+
+    IMPORTANT:
+    This is only duplicate-camera-frame protection.
+
+    It does NOT wait for the Google Sheets save.
   */
 
-  capturedQR =
+  if (
+    qr === lastCameraQR &&
+    (
+      now -
+      lastCameraQRTime
+    ) <
+      CAMERA_REPEAT_COOLDOWN_MS
+  ) {
+
+    return;
+
+  }
+
+
+  lastCameraQR =
     qr;
 
-  cameraLocked =
-    true;
+  lastCameraQRTime =
+    now;
 
 
   /*
-     INSTANT LOCAL RESULT
+    INSTANT LOCAL RESULT
   */
 
   const localResult =
@@ -1031,7 +1013,8 @@ function onCameraScanSuccess(
 
 
   /*
-     BACKGROUND SERVER SAVE
+    BACKGROUND SAVE.
+    Hindi hinihintay bago tumanggap ng next QR.
   */
 
   saveTransaction(
@@ -1043,6 +1026,7 @@ function onCameraScanSuccess(
 }
 
 
+
 /* ============================================================
    CAMERA FAILURE
    ============================================================ */
@@ -1052,12 +1036,14 @@ function onCameraScanFailure(
 ) {
 
   /*
-     No error is shown here.
-     html5-qrcode continuously calls this
-     when no QR is currently decoded.
+    Intentionally blank.
+
+    html5-qrcode continuously calls this
+    whenever a QR is not currently detected.
   */
 
 }
+
 
 
 /* ============================================================
@@ -1069,16 +1055,14 @@ function buildLocalResult(
   source
 ) {
 
-  /*
-     Make sure local date is current.
-
-     This prevents yesterday's cached state from being
-     used after midnight.
-  */
-
   const currentDate =
     getLocalDate();
 
+
+  /*
+    Automatically reset browser-side daily state
+    when Philippine calendar date changes.
+  */
 
   if (
     bootstrapDate &&
@@ -1105,13 +1089,19 @@ function buildLocalResult(
     );
 
 
+  if (!key) {
+    return null;
+  }
+
+
   const visitor =
     visitorsByPlate[key];
 
 
   /*
-     If visitor is not in preloaded memory,
-     return null. The server will still process it.
+    Visitor may not exist in the local preload.
+
+    Server will still process the transaction.
   */
 
   if (!visitor) {
@@ -1140,10 +1130,6 @@ function buildLocalResult(
       ? "OUT"
       : "IN";
 
-
-  /*
-     Browser current Philippine time.
-  */
 
   const now =
     new Date();
@@ -1255,6 +1241,108 @@ function buildLocalResult(
 }
 
 
+
+/* ============================================================
+   APPLY LOCAL PREDICTED STATE IMMEDIATELY
+   ============================================================ */
+
+function applyLocalOptimisticState(
+  data
+) {
+
+  if (
+    !data ||
+    !data.plate
+  ) {
+
+    return;
+
+  }
+
+
+  const key =
+    normalizePlate(
+      data.plate
+    );
+
+
+  if (!key) {
+    return;
+  }
+
+
+  const existing =
+    visitorsByPlate[key] ||
+    {};
+
+
+  visitorsByPlate[key] = {
+
+    ...existing,
+
+    rank:
+      data.rank ||
+      existing.rank ||
+      "",
+
+    firstName:
+      data.firstName ||
+      existing.firstName ||
+      "",
+
+    mi:
+      data.mi ||
+      existing.mi ||
+      "",
+
+    lastName:
+      data.lastName ||
+      existing.lastName ||
+      "",
+
+    office:
+      data.office ||
+      existing.office ||
+      "",
+
+    contact:
+      data.contact ||
+      existing.contact ||
+      "",
+
+    vehicle:
+      data.vehicle ||
+      existing.vehicle ||
+      "",
+
+    plate:
+      data.plate ||
+      existing.plate ||
+      "",
+
+    vehicleColor:
+      data.vehicleColor ||
+      existing.vehicleColor ||
+      "",
+
+    status:
+      data.status ||
+      "",
+
+    timeIn:
+      data.timeIn ||
+      "",
+
+    timeOut:
+      data.timeOut ||
+      ""
+
+  };
+
+}
+
+
+
 /* ============================================================
    RESET LOCAL DAILY STATE
    ============================================================ */
@@ -1291,6 +1379,7 @@ function resetLocalDailyStates() {
 }
 
 
+
 /* ============================================================
    SHOW INSTANT RESULT
    ============================================================ */
@@ -1301,6 +1390,18 @@ function showOptimisticResult(
 
   clearTimeout(
     resultTimer
+  );
+
+
+  /*
+    IMPORTANT:
+
+    Update the local browser state immediately.
+    This allows rapid consecutive operations.
+  */
+
+  applyLocalOptimisticState(
+    data
   );
 
 
@@ -1342,6 +1443,11 @@ function showOptimisticResult(
   );
 
 
+  /*
+    This is only a background-save indicator.
+    It does NOT block scanning.
+  */
+
   document
     .getElementById(
       "loadingBox"
@@ -1352,7 +1458,7 @@ function showOptimisticResult(
 
 
   setCameraStatus(
-    "Attendance shown — saving..."
+    "Result shown instantly — ready for next QR."
   );
 
 
@@ -1364,7 +1470,11 @@ function showOptimisticResult(
       "show"
     );
 
+
+  scheduleResultClear();
+
 }
+
 
 
 /* ============================================================
@@ -1385,7 +1495,7 @@ async function handleImageUpload(
 
 
   /*
-     Allow same image to be selected again.
+    Allow same file to be selected again.
   */
 
   input.value =
@@ -1397,13 +1507,29 @@ async function handleImageUpload(
   }
 
 
+  /*
+    IMPORTANT:
+
+    HINDI NA TUMITINGIN SA REQUEST-IN-PROGRESS.
+
+    Puwede nang mag-upload kahit may ibang
+    background save pa.
+  */
+
   if (
-    requestInProgress ||
     uploadProcessing
   ) {
 
+    /*
+      Only stop another simultaneous IMAGE DECODE
+      operation.
+
+      This is a very short local operation,
+      not a server-save lock.
+    */
+
     showError(
-      "A QR transaction is already being processed. Please wait."
+      "Please wait a moment while the uploaded image is being decoded."
     );
 
     return;
@@ -1429,12 +1555,6 @@ async function handleImageUpload(
 
   uploadProcessing =
     true;
-
-  cameraLocked =
-    true;
-
-  capturedQR =
-    "";
 
 
   setCameraStatus(
@@ -1476,19 +1596,31 @@ async function handleImageUpload(
     }
 
 
-    capturedQR =
+    const cleanQR =
       String(
         qr
       ).trim();
 
 
     /*
-       INSTANT LOCAL RESULT
+      IMPORTANT:
+      Decode phase is now complete.
+
+      Puwede nang mag-upload ulit habang
+      nasa background save ang current request.
+    */
+
+    uploadProcessing =
+      false;
+
+
+    /*
+      INSTANT LOCAL RESULT
     */
 
     const localResult =
       buildLocalResult(
-        capturedQR,
+        cleanQR,
         "QR IMAGE UPLOAD"
       );
 
@@ -1499,15 +1631,23 @@ async function handleImageUpload(
         localResult
       );
 
+    } else {
+
+      setCameraStatus(
+        "QR decoded — saving in background..."
+      );
+
     }
 
 
     /*
-       SAVE TO SERVER
+      BACKGROUND SERVER SAVE.
+
+      Hindi naghihintay dito ang UI.
     */
 
     saveTransaction(
-      capturedQR,
+      cleanQR,
       "QR IMAGE UPLOAD",
       localResult
     );
@@ -1523,12 +1663,6 @@ async function handleImageUpload(
 
     uploadProcessing =
       false;
-
-    cameraLocked =
-      false;
-
-    capturedQR =
-      "";
 
 
     setLoading(
@@ -1551,6 +1685,7 @@ async function handleImageUpload(
   }
 
 }
+
 
 
 /* ============================================================
@@ -1628,6 +1763,7 @@ function readFileAsDataURL(
 }
 
 
+
 /* ============================================================
    LOAD IMAGE
    ============================================================ */
@@ -1693,6 +1829,7 @@ function loadImageFromDataURL(
 }
 
 
+
 /* ============================================================
    UPLOAD QR DECODER
    ============================================================ */
@@ -1720,8 +1857,26 @@ function decodeUploadedQR(
     image.naturalHeight;
 
 
+  /*
+    Try native image size first.
+    This is usually the fastest path.
+  */
+
+  const nativeResult =
+    decodeCanvas(
+      image,
+      originalWidth,
+      originalHeight,
+      false
+    );
+
+
+  if (nativeResult) {
+    return nativeResult;
+  }
+
+
   const sizes = [
-    300,
     500,
     700,
     900,
@@ -1791,6 +1946,7 @@ function decodeUploadedQR(
   return null;
 
 }
+
 
 
 /* ============================================================
@@ -1936,8 +2092,14 @@ function decodeCanvas(
 }
 
 
+
 /* ============================================================
    SAVE TRANSACTION
+   ------------------------------------------------------------
+   NON-BLOCKING
+   ------------------------------------------------------------
+   This function starts the request and returns immediately.
+   Multiple scans can therefore be in flight at once.
    ============================================================ */
 
 function saveTransaction(
@@ -1946,16 +2108,41 @@ function saveTransaction(
   localResult
 ) {
 
-  requestInProgress =
-    true;
+  const plate =
+    localResult &&
+    localResult.plate
+      ? localResult.plate
+      : extractPlateLocal(qr);
 
 
-  capturedQR =
-    qr;
+  const plateKey =
+    normalizePlate(
+      plate
+    );
+
+
+  /*
+    Assign sequence number for this plate.
+  */
+
+  const sequence =
+    nextPlateOperationSequence(
+      plateKey
+    );
 
 
   const callbackName =
     createCallbackName();
+
+
+  /*
+    Show background-save indicator,
+    but do NOT block scanning.
+  */
+
+  setLoading(
+    true
+  );
 
 
   jsonpRequest(
@@ -1976,95 +2163,91 @@ function saveTransaction(
 
     function(serverResponse) {
 
-      requestInProgress =
-        false;
+      /*
+        IMPORTANT:
 
-      uploadProcessing =
-        false;
+        Do not block next scan.
+        This request has finished only itself.
+      */
 
-      cameraLocked =
-        false;
-
-      capturedQR =
-        "";
-
-
-      setLoading(
-        false
+      handleServerTransactionResponse(
+        serverResponse,
+        localResult,
+        plateKey,
+        sequence
       );
 
+    },
 
-      /*
-         SERVER IS THE FINAL AUTHORITY.
-      */
+    function(errorMessage) {
 
-      if (
-        serverResponse &&
-        serverResponse.success
-      ) {
+      handleServerTransactionError(
+        errorMessage,
+        localResult,
+        plateKey,
+        sequence
+      );
 
-        updateLocalStateFromServer(
-          serverResponse
-        );
+    }
 
+  );
 
-        fillResult(
-          serverResponse
-        );
+}
 
 
-        const badge =
-          document.getElementById(
-            "statusBadge"
-          );
+
+/* ============================================================
+   SERVER SUCCESS
+   ============================================================ */
+
+function handleServerTransactionResponse(
+  serverResponse,
+  localResult,
+  plateKey,
+  sequence
+) {
+
+  /*
+    Only hide background indicator when there are
+    no newer pending operations.
+
+    Since each operation is independent,
+    we can safely check whether this sequence is
+    still the latest browser operation for the plate.
+  */
+
+  if (
+    isLatestPlateOperation(
+      plateKey,
+      sequence
+    )
+  ) {
+
+    setLoading(
+      false
+    );
+
+  }
 
 
-        if (
-          String(
-            serverResponse.status || ""
-          ).toUpperCase() ===
-          "IN"
-        ) {
+  if (
+    !serverResponse ||
+    !serverResponse.success
+  ) {
 
-          badge.className =
-            "status-badge status-in";
+    /*
+      Server rejected the operation.
 
-          badge.textContent =
-            "TIME IN";
+      If this was the latest operation,
+      show the error.
+    */
 
-        } else {
-
-          badge.className =
-            "status-badge status-out";
-
-          badge.textContent =
-            "TIME OUT";
-
-        }
-
-
-        setText(
-          "messageBox",
-          serverResponse.message
-        );
-
-
-        setCameraStatus(
-          "Transaction saved — ready for next QR."
-        );
-
-
-        scheduleResultClear();
-
-
-        return;
-
-      }
-
-
-      /*
-         SERVER REJECTED THE TRANSACTION.
-      */
+    if (
+      isLatestPlateOperation(
+        plateKey,
+        sequence
+      )
+    ) {
 
       showError(
         serverResponse &&
@@ -2073,42 +2256,196 @@ function saveTransaction(
           : "The server could not save the attendance transaction."
       );
 
-    },
+    }
 
-    function(errorMessage) {
+    return;
 
-      requestInProgress =
-        false;
-
-      uploadProcessing =
-        false;
-
-      cameraLocked =
-        false;
-
-      capturedQR =
-        "";
+  }
 
 
-      setLoading(
-        false
+  /*
+    SERVER IS FINAL AUTHORITY.
+
+    Update browser state with the server-confirmed
+    state only for the latest operation.
+  */
+
+  if (
+    isLatestPlateOperation(
+      plateKey,
+      sequence
+    )
+  ) {
+
+    updateLocalStateFromServer(
+      serverResponse
+    );
+
+
+    fillResult(
+      serverResponse
+    );
+
+
+    const badge =
+      document.getElementById(
+        "statusBadge"
       );
 
 
-      /*
-         Do NOT pretend the server saved it.
-      */
+    if (
+      String(
+        serverResponse.status || ""
+      ).toUpperCase() ===
+      "IN"
+    ) {
 
-      showError(
-        "The QR was read, but the server did not confirm the attendance save: " +
-        errorMessage
-      );
+      badge.className =
+        "status-badge status-in";
+
+      badge.textContent =
+        "TIME IN";
+
+    } else {
+
+      badge.className =
+        "status-badge status-out";
+
+      badge.textContent =
+        "TIME OUT";
 
     }
 
+
+    setText(
+      "messageBox",
+      serverResponse.message
+    );
+
+
+    setCameraStatus(
+      "Saved — ready for next QR."
+    );
+
+
+    scheduleResultClear();
+
+  } else {
+
+    /*
+      Older response.
+
+      Do not overwrite the newest screen state.
+    */
+
+    console.log(
+      "Ignored older server response for plate:",
+      plateKey
+    );
+
+  }
+
+}
+
+
+
+/* ============================================================
+   SERVER ERROR
+   ============================================================ */
+
+function handleServerTransactionError(
+  errorMessage,
+  localResult,
+  plateKey,
+  sequence
+) {
+
+  /*
+    Only show server failure on screen when this is
+    the newest transaction for the plate.
+
+    This prevents old failures from overwriting a
+    newer successful scan.
+  */
+
+  if (
+    isLatestPlateOperation(
+      plateKey,
+      sequence
+    )
+  ) {
+
+    setLoading(
+      false
+    );
+
+
+    showError(
+      "The QR was read, but the server did not confirm the attendance save: " +
+      errorMessage
+    );
+
+  }
+
+}
+
+
+
+/* ============================================================
+   PER-PLATE OPERATION SEQUENCE
+   ============================================================ */
+
+function nextPlateOperationSequence(
+  plateKey
+) {
+
+  if (!plateKey) {
+
+    return Date.now();
+
+  }
+
+
+  const current =
+    plateOperationSequence[plateKey] ||
+    0;
+
+
+  const next =
+    current + 1;
+
+
+  plateOperationSequence[plateKey] =
+    next;
+
+
+  return next;
+
+}
+
+
+
+/* ============================================================
+   CHECK LATEST PLATE OPERATION
+   ============================================================ */
+
+function isLatestPlateOperation(
+  plateKey,
+  sequence
+) {
+
+  if (!plateKey) {
+    return true;
+  }
+
+
+  return (
+    plateOperationSequence[plateKey] ===
+    sequence
   );
 
 }
+
 
 
 /* ============================================================
@@ -2211,6 +2548,7 @@ function updateLocalStateFromServer(
 }
 
 
+
 /* ============================================================
    JSONP REQUEST
    ============================================================ */
@@ -2275,12 +2613,6 @@ function jsonpRequest(
     APPS_SCRIPT_URL +
     "?" +
     query.toString();
-
-
-  console.log(
-    "Apps Script request:",
-    url
-  );
 
 
   const timeoutID =
@@ -2410,6 +2742,7 @@ function jsonpRequest(
 }
 
 
+
 /* ============================================================
    CALLBACK NAME
    ============================================================ */
@@ -2427,6 +2760,7 @@ function createCallbackName() {
   );
 
 }
+
 
 
 /* ============================================================
@@ -2565,6 +2899,7 @@ function fillResult(
 }
 
 
+
 /* ============================================================
    ERROR
    ============================================================ */
@@ -2648,6 +2983,7 @@ function showError(
 }
 
 
+
 /* ============================================================
    RESULT AUTO CLEAR
    ============================================================ */
@@ -2678,6 +3014,7 @@ function scheduleResultClear() {
 }
 
 
+
 /* ============================================================
    LOADING
    ============================================================ */
@@ -2690,6 +3027,11 @@ function setLoading(
     document.getElementById(
       "loadingBox"
     );
+
+
+  if (!box) {
+    return;
+  }
 
 
   if (show) {
@@ -2707,6 +3049,7 @@ function setLoading(
   }
 
 }
+
 
 
 /* ============================================================
@@ -2733,6 +3076,7 @@ function setCameraStatus(
 }
 
 
+
 /* ============================================================
    NORMALIZE PLATE
    ============================================================ */
@@ -2752,6 +3096,7 @@ function normalizePlate(
     );
 
 }
+
 
 
 /* ============================================================
@@ -2836,6 +3181,7 @@ function extractPlateLocal(
 }
 
 
+
 /* ============================================================
    CURRENT LOCAL DATE
    ============================================================ */
@@ -2879,6 +3225,7 @@ function getLocalDate() {
 }
 
 
+
 /* ============================================================
    LOCAL DATE
    ============================================================ */
@@ -2918,6 +3265,7 @@ function formatLocalDate(
   );
 
 }
+
 
 
 /* ============================================================
@@ -2974,6 +3322,7 @@ function formatLocalDateTime(
 }
 
 
+
 /* ============================================================
    SAFE TEXT
    ============================================================ */
@@ -3000,6 +3349,7 @@ function setText(
       : String(value);
 
 }
+
 
 
 /* ============================================================

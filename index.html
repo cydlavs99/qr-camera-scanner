@@ -186,6 +186,7 @@
 
       const query = [];
       query.push("action=" + encodeURIComponent(action));
+      query.push("callback=" + encodeURIComponent(callbackName));
       query.push("prefix=" + encodeURIComponent(callbackName));
       query.push("_=" + Date.now());
 
@@ -666,6 +667,10 @@
      ========================================================== */
 
   async function checkServer(){
+    /*
+     * Do not block the scanner on the optional health check.
+     * The real proof of connection is the actual scan request.
+     */
     try{
       const response = await apiRequest("ping", {});
 
@@ -673,12 +678,16 @@
         setServerStatus("● MONITORING SYSTEM ONLINE", "online");
         showMessage("Monitoring system is ready.", "success");
       }else{
-        setServerStatus("● SERVER RESPONSE ERROR", "offline");
-        showMessage("Monitoring server returned an error.", "error");
+        setServerStatus("● READY — SERVER WILL CONFIRM ON SCAN", "offline");
+        showMessage("Ready to scan. Server confirmation happens on each transaction.", "success");
       }
     }catch(error){
-      setServerStatus("● SERVER CONNECTION FAILED", "offline");
-      showMessage("Camera and upload can still be opened, but server connection must be restored to save attendance.", "error");
+      /*
+       * JSONP health checks can fail independently of the real
+       * transaction path. Do not show a false hard failure.
+       */
+      setServerStatus("● READY TO SCAN", "offline");
+      showMessage("Ready to scan. Attendance will be confirmed by the server.", "success");
     }
   }
 
@@ -686,6 +695,8 @@
      STARTUP
      ========================================================== */
 
+  setServerStatus("● READY TO SCAN", "offline");
+  showMessage("Ready. Start camera or upload a QR image.", "success");
   checkServer();
 
   window.addEventListener("beforeunload", function(){

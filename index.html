@@ -357,12 +357,14 @@
 
     </div>
 
+
     <div class="card" id="result-card">
 
       <div
         id="status-box"
         class="status unknown"
       ></div>
+
 
       <div class="details">
 
@@ -459,6 +461,7 @@
 
       </div>
 
+
       <div class="time-section">
 
         <div class="time-section-title">
@@ -477,17 +480,17 @@
 
       </div>
 
-      <div class="next-scan-box">
 
+      <div class="next-scan-box">
         READY FOR NEXT QR
 
         <small>
           Camera at Upload ay gumagamit ng iisang global attendance state.
         </small>
-
       </div>
 
     </div>
+
 
     <div class="footer">
       CGFLEET QR Monitoring System
@@ -495,10 +498,11 @@
 
   </div>
 
+
   <script>
 
     /* ==========================================================
-       GOOGLE APPS SCRIPT WEB APP URL
+       GOOGLE APPS SCRIPT WEB APP
        ========================================================== */
 
     const APPS_SCRIPT_URL =
@@ -514,15 +518,16 @@
     let scannerRunning = false;
 
     /*
-     * TRUE habang may isang transaction na hinihintay.
-     * Hindi ito ang IN/OUT state.
+     * TRUE habang may active server transaction.
+     *
+     * HINDI ito ang IN/OUT state.
      */
     let scanProcessing = false;
 
     /*
      * Camera-only duplicate protection.
      *
-     * HINDI ito ginagamit para malaman kung IN o OUT.
+     * HINDI ginagamit para malaman ang IN/OUT.
      */
     let lastCameraQR = "";
 
@@ -530,6 +535,10 @@
 
     const QR_MISSING_RESET_COUNT = 8;
 
+    /*
+     * Mahabang timeout para hindi mag-false timeout
+     * kung pansamantalang mabagal ang Apps Script.
+     */
     const SERVER_TIMEOUT = 20000;
 
 
@@ -551,8 +560,7 @@
       try {
 
         if (!html5QrCode) {
-          html5QrCode =
-            new Html5Qrcode("reader");
+          html5QrCode = new Html5Qrcode("reader");
         }
 
         const config = {
@@ -574,6 +582,13 @@
         );
 
         scannerRunning = true;
+
+        /*
+         * New camera session = allow same QR
+         * to be detected again.
+         */
+        lastCameraQR = "";
+        qrMissingCount = 0;
 
         document.getElementById(
           "start-camera"
@@ -598,6 +613,16 @@
           "Camera start error:",
           error
         );
+
+        scannerRunning = false;
+
+        document.getElementById(
+          "start-camera"
+        ).disabled = false;
+
+        document.getElementById(
+          "stop-camera"
+        ).disabled = true;
 
         showMessage(
           "Unable to start camera. Please allow camera permission.",
@@ -634,6 +659,15 @@
 
       scannerRunning = false;
 
+      /*
+       * Clear camera duplicate memory.
+       *
+       * This is important because when camera restarts,
+       * the same QR must be allowed again.
+       */
+      lastCameraQR = "";
+      qrMissingCount = 0;
+
       document.getElementById(
         "start-camera"
       ).disabled = false;
@@ -662,14 +696,17 @@
       decodedResult
     ) {
 
+      /*
+       * May active request?
+       *
+       * Huwag mag-submit ng another transaction.
+       */
       if (scanProcessing) {
         return;
       }
 
       const qrText =
-        String(
-          decodedText || ""
-        ).trim();
+        String(decodedText || "").trim();
 
       if (!qrText) {
         return;
@@ -677,18 +714,14 @@
 
 
       /*
-       * CAMERA DUPLICATE PROTECTION ONLY.
+       * CAMERA-ONLY DUPLICATE PROTECTION
        *
-       * Kapag parehong QR pa rin ang nasa camera,
-       * huwag mag-send ng panibagong request.
+       * Kapag parehong QR pa rin ang nasa frame,
+       * huwag ulit ipadala.
        *
-       * IMPORTANT:
-       * Hindi ito ginagamit bilang IN/OUT state.
+       * Hindi ito IN/OUT state.
        */
-
-      if (
-        qrText === lastCameraQR
-      ) {
+      if (qrText === lastCameraQR) {
 
         qrMissingCount = 0;
 
@@ -696,6 +729,9 @@
       }
 
 
+      /*
+       * New camera QR.
+       */
       lastCameraQR = qrText;
       qrMissingCount = 0;
 
@@ -713,7 +749,7 @@
     function onScanFailure(error) {
 
       /*
-       * Normal ito habang naghahanap ng QR.
+       * Normal lang ito habang naghahanap ng QR.
        */
 
       if (
@@ -723,9 +759,12 @@
 
         qrMissingCount++;
 
+        /*
+         * Kapag nawala na ang QR sa camera,
+         * puwede nang tanggapin ulit ang same QR.
+         */
         if (
-          qrMissingCount >=
-          QR_MISSING_RESET_COUNT
+          qrMissingCount >= QR_MISSING_RESET_COUNT
         ) {
 
           lastCameraQR = "";
@@ -744,15 +783,18 @@
        COMMON QR TRANSACTION
        
        CAMERA + UPLOAD
-       parehong pumupunta dito.
        
-       WALANG LOCAL IN/OUT LOGIC DITO.
+       Parehong function.
        
-       Code.gs ang magdedesisyon ng:
+       WALANG LOCAL IN/OUT COMPUTATION.
        
-       no action today -> IN
-       last IN          -> OUT
-       last OUT         -> IN
+       CODE.GS ANG NAGDE-DECIDE:
+       
+       no action today = IN
+       last IN          = OUT
+       last OUT         = IN
+       
+       New Philippine day = IN
        ========================================================== */
 
     function processQRTransaction(
@@ -773,14 +815,20 @@
         return;
       }
 
-      /*
-       * Prevent another transaction habang
-       * naghihintay sa current server response.
-       */
 
+      /*
+       * One active server transaction only.
+       */
       if (scanProcessing) {
+
+        showMessage(
+          "Please wait for the current transaction to finish.",
+          "loading"
+        );
+
         return;
       }
+
 
       scanProcessing = true;
 
@@ -788,7 +836,7 @@
         String(qrText).trim();
 
       console.log(
-        "QR TRANSACTION",
+        "QR TRANSACTION:",
         {
           source: source,
           qr: cleanQR
@@ -796,7 +844,7 @@
       );
 
       showMessage(
-        "QR detected. Checking global attendance status...",
+        "QR detected. Checking attendance...",
         "loading"
       );
 
@@ -809,6 +857,9 @@
 
     /* ==========================================================
        SEND QR TO GOOGLE APPS SCRIPT
+       
+       JSONP is used because the GitHub page and Apps Script
+       are different domains.
        ========================================================== */
 
     function sendQRToServer(
@@ -821,6 +872,10 @@
         "loading"
       );
 
+
+      /*
+       * Unique JSONP callback.
+       */
       const callbackName =
         "qrCallback_" +
         Date.now() +
@@ -829,20 +884,20 @@
           Math.random() * 1000000
         );
 
+
       let completed = false;
 
+      let timeoutId = null;
+
       const script =
-        document.createElement(
-          "script"
-        );
+        document.createElement("script");
 
-      script.id =
-        callbackName;
+      script.id = callbackName;
 
 
-      /*
-       * JSONP CALLBACK
-       */
+      /* ========================================================
+         JSONP CALLBACK
+         ======================================================== */
 
       window[callbackName] =
         function(response) {
@@ -853,15 +908,22 @@
 
           completed = true;
 
+          if (timeoutId) {
+            clearTimeout(timeoutId);
+            timeoutId = null;
+          }
+
           console.log(
             "Apps Script response:",
             response
           );
 
+
           handleServerResponse(
             response,
             source
           );
+
 
           cleanupRequest(
             callbackName,
@@ -870,12 +932,9 @@
         };
 
 
-      /*
-       * UNIQUE REQUEST URL
-       *
-       * The timestamp + random number prevents
-       * browser/proxy caching.
-       */
+      /* ========================================================
+         UNIQUE REQUEST
+         ======================================================== */
 
       const requestId =
         Date.now() +
@@ -883,6 +942,7 @@
         Math.floor(
           Math.random() * 1000000
         );
+
 
       const url =
         APPS_SCRIPT_URL +
@@ -904,12 +964,13 @@
         url
       );
 
+
       script.src = url;
 
 
-      /*
-       * CONNECTION ERROR
-       */
+      /* ========================================================
+         CONNECTION ERROR
+         ======================================================== */
 
       script.onerror =
         function() {
@@ -920,16 +981,21 @@
 
           completed = true;
 
+          if (timeoutId) {
+            clearTimeout(timeoutId);
+            timeoutId = null;
+          }
+
           console.error(
             "Apps Script connection failed."
           );
+
+          scanProcessing = false;
 
           showMessage(
             "Unable to connect to the monitoring server.",
             "error"
           );
-
-          scanProcessing = false;
 
           cleanupRequest(
             callbackName,
@@ -943,43 +1009,44 @@
       );
 
 
-      /*
-       * SERVER TIMEOUT
-       */
+      /* ========================================================
+         TIMEOUT
+         ======================================================== */
 
-      setTimeout(
-        function() {
+      timeoutId =
+        setTimeout(
+          function() {
 
-          if (completed) {
-            return;
-          }
+            if (completed) {
+              return;
+            }
 
-          completed = true;
+            completed = true;
 
-          console.error(
-            "Apps Script request timed out."
-          );
+            console.error(
+              "Apps Script request timed out."
+            );
 
-          showMessage(
-            "Server timeout. Please try again.",
-            "error"
-          );
+            scanProcessing = false;
 
-          scanProcessing = false;
+            showMessage(
+              "Server timeout. Please try again.",
+              "error"
+            );
 
-          cleanupRequest(
-            callbackName,
-            script
-          );
+            cleanupRequest(
+              callbackName,
+              script
+            );
 
-        },
-        SERVER_TIMEOUT
-      );
+          },
+          SERVER_TIMEOUT
+        );
     }
 
 
     /* ==========================================================
-       CLEANUP JSONP REQUEST
+       CLEANUP JSONP
        ========================================================== */
 
     function cleanupRequest(
@@ -988,16 +1055,33 @@
     ) {
 
       try {
+
         delete window[
           callbackName
         ];
-      } catch (error) {}
+
+      } catch (error) {
+
+        console.error(
+          "Callback cleanup error:",
+          error
+        );
+      }
+
 
       try {
+
         if (script) {
           script.remove();
         }
-      } catch (error) {}
+
+      } catch (error) {
+
+        console.error(
+          "Script cleanup error:",
+          error
+        );
+      }
     }
 
 
@@ -1021,32 +1105,31 @@
 
       if (!response) {
 
+        scanProcessing = false;
+
         showMessage(
           "No response received from server.",
           "error"
         );
-
-        scanProcessing = false;
 
         return;
       }
 
 
       /*
-       * SERVER ERROR
+       * Backend error.
        */
-
       if (
         response.success !== true
       ) {
+
+        scanProcessing = false;
 
         showMessage(
           response.message ||
           "QR code is not registered.",
           "error"
         );
-
-        scanProcessing = false;
 
         return;
       }
@@ -1055,12 +1138,10 @@
       /*
        * SUCCESS
        *
-       * IMPORTANT:
-       * data.status comes DIRECTLY from Code.gs.
+       * status comes DIRECTLY from Code.gs.
        *
-       * Hindi tayo nagko-compute ng IN/OUT dito.
+       * Hindi tayo nagco-compute ng IN/OUT sa browser.
        */
-
       displayResult(
         response
       );
@@ -1076,18 +1157,21 @@
         .trim()
         .toUpperCase();
 
-      const actionText =
-        status === "IN"
-          ? "TIME IN"
-          : status === "OUT"
-            ? "TIME OUT"
-            : status;
+
+      let actionText = status;
+
+      if (status === "IN") {
+        actionText = "TIME IN";
+      }
+
+      if (status === "OUT") {
+        actionText = "TIME OUT";
+      }
 
 
       showMessage(
         actionText +
-        " recorded successfully. " +
-        "Ready for the next QR.",
+        " recorded successfully. Ready for the next QR.",
         "success"
       );
     }
@@ -1111,6 +1195,7 @@
           "status-box"
         );
 
+
       const status =
         String(
           data.status || ""
@@ -1118,37 +1203,28 @@
         .trim()
         .toUpperCase();
 
+
       statusBox.className =
         "status";
 
 
-      if (
-        status === "IN"
-      ) {
+      if (status === "IN") {
 
-        statusBox.classList.add(
-          "in"
-        );
+        statusBox.classList.add("in");
 
         statusBox.textContent =
           "✓ TIME IN";
 
-      } else if (
-        status === "OUT"
-      ) {
+      } else if (status === "OUT") {
 
-        statusBox.classList.add(
-          "out"
-        );
+        statusBox.classList.add("out");
 
         statusBox.textContent =
           "✓ TIME OUT";
 
       } else {
 
-        statusBox.classList.add(
-          "unknown"
-        );
+        statusBox.classList.add("unknown");
 
         statusBox.textContent =
           status || "UNKNOWN";
@@ -1238,6 +1314,17 @@
         "summaryTimeOut",
         data.timeOut
       );
+
+
+      /*
+       * Automatically bring result into view.
+       */
+      document.getElementById(
+        "result-card"
+      ).scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
     }
 
 
@@ -1251,13 +1338,12 @@
     ) {
 
       const element =
-        document.getElementById(
-          id
-        );
+        document.getElementById(id);
 
       if (!element) {
         return;
       }
+
 
       if (
         value === null ||
@@ -1279,24 +1365,23 @@
        UPLOAD QR IMAGE
        
        IMPORTANT:
-       WALANG lastCameraQR CHECK DITO.
        
-       Kahit parehong QR na huling ginamit sa Camera,
-       ipapadala pa rin ito sa Code.gs.
+       WALANG lastCameraQR CHECK.
        
-       Kaya:
+       Upload always goes to the SAME backend.
        
-       CAMERA IN
-       UPLOAD OUT
-       CAMERA IN
-       UPLOAD OUT
+       Example:
        
+       CAMERA  -> IN
+       UPLOAD  -> OUT
+       CAMERA  -> IN
+       UPLOAD  -> OUT
+       
+       Code.gs ang nagde-decide ng state.
        ========================================================== */
 
     document
-      .getElementById(
-        "qr-input-file"
-      )
+      .getElementById("qr-input-file")
       .addEventListener(
         "change",
         async function(event) {
@@ -1310,10 +1395,9 @@
 
 
           /*
-           * Kung may ibang transaction na kasalukuyang
-           * hinihintay, huwag mag-double submit.
+           * Huwag payagan ang dalawang upload/request
+           * sabay.
            */
-
           if (scanProcessing) {
 
             showMessage(
@@ -1328,10 +1412,10 @@
 
 
           /*
-           * Transaction starts here.
+           * Tandaan kung active ang camera.
            */
-
-          scanProcessing = true;
+          const wasCameraRunning =
+            scannerRunning;
 
 
           showMessage(
@@ -1340,20 +1424,11 @@
           );
 
 
-          /*
-           * Tandaan kung active ang camera.
-           */
-
-          const wasCameraRunning =
-            scannerRunning;
-
-
           try {
 
             /*
-             * Stop camera temporarily.
+             * Stop camera temporarily only if it is running.
              */
-
             if (
               html5QrCode &&
               scannerRunning
@@ -1378,27 +1453,24 @@
 
 
             /*
-             * Create QR scanner object if necessary.
+             * Create scanner if needed.
              */
-
             if (!html5QrCode) {
 
               html5QrCode =
-                new Html5Qrcode(
-                  "reader"
-                );
+                new Html5Qrcode("reader");
             }
 
 
             /*
-             * Decode uploaded QR.
+             * Decode image.
              */
-
             const decodedText =
               await html5QrCode.scanFile(
                 file,
                 true
               );
+
 
             const cleanQR =
               String(
@@ -1423,43 +1495,33 @@
             /*
              * IMPORTANT:
              *
-             * DO NOT change lastCameraQR here.
+             * Do NOT set scanProcessing = true here.
              *
-             * Upload has no local attendance state.
+             * processQRTransaction() owns the transaction lock.
              *
-             * Send directly to the SAME transaction
-             * function used by Camera.
+             * This fixes the previous upload bug.
              */
-
-            await processQRTransaction(
+            processQRTransaction(
               cleanQR,
               "upload"
             );
 
 
             /*
-             * processQRTransaction sends the request
-             * asynchronously.
+             * Restart camera immediately after QR image
+             * has been decoded.
              *
-             * Camera restart can happen immediately,
-             * but camera scans are blocked by
-             * scanProcessing until server response.
+             * Server request is still protected by
+             * scanProcessing.
+             *
+             * Therefore camera can already be ready while
+             * Apps Script is processing.
              */
-
             if (wasCameraRunning) {
 
-              setTimeout(
-                function() {
+              startCamera();
 
-                  if (!scannerRunning) {
-                    startCamera();
-                  }
-
-                },
-                700
-              );
             }
-
 
           } catch (error) {
 
@@ -1468,39 +1530,30 @@
               error
             );
 
+
+            scanProcessing = false;
+
+
             showMessage(
               "Could not read the QR image. Please use a clear QR image.",
               "error"
             );
 
-            scanProcessing = false;
-
 
             /*
-             * Restore camera.
+             * Restore camera if it was running before upload.
              */
-
             if (wasCameraRunning) {
 
-              setTimeout(
-                function() {
+              startCamera();
 
-                  if (!scannerRunning) {
-                    startCamera();
-                  }
-
-                },
-                700
-              );
             }
 
           } finally {
 
             /*
-             * Allow the exact same image
-             * to be selected again.
+             * Allow same image to be selected again.
              */
-
             event.target.value = "";
           }
 
@@ -1522,10 +1575,13 @@
           "message"
         );
 
+
       message.textContent =
         text;
 
+
       message.className = "";
+
 
       if (type) {
 

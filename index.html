@@ -12,15 +12,7 @@
 
   <title>CGFLEET Visitors Parking</title>
 
-  <!-- =========================================================
-       CAMERA QR SCANNER
-       ========================================================= -->
-
   <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
-
-  <!-- =========================================================
-       QR IMAGE DECODER
-       ========================================================= -->
 
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
 
@@ -31,198 +23,108 @@
       box-sizing: border-box;
     }
 
-    html,
     body {
       margin: 0;
       padding: 0;
-      width: 100%;
-      min-height: 100%;
-    }
-
-    body {
       font-family:
         Arial,
         Helvetica,
         sans-serif;
-
       background: #f3f5f7;
-
       color: #1f2937;
     }
-
-    /* =========================================================
-       MAIN CONTAINER
-       ========================================================= */
 
     .page {
       width: 100%;
       max-width: 1100px;
-
       margin: 0 auto;
-
       padding: 20px;
     }
 
-
-    /* =========================================================
-       HEADER
-       ========================================================= */
-
     .header {
-      background: #ffffff;
-
+      background: #fff;
       border-radius: 16px;
-
       padding: 22px;
-
       margin-bottom: 20px;
-
       box-shadow:
-        0 4px 18px rgba(0, 0, 0, 0.08);
-
+        0 4px 18px rgba(0,0,0,.08);
       text-align: center;
     }
 
     .header h1 {
       margin: 0;
-
       font-size: 28px;
-
       font-weight: 800;
-
       color: #123b63;
     }
 
     .header p {
       margin: 8px 0 0;
-
       font-size: 14px;
-
       color: #667085;
     }
 
-
-    /* =========================================================
-       CAMERA + UPLOAD GRID
-       ========================================================= */
-
     .main-grid {
       display: grid;
-
       grid-template-columns:
-        repeat(2, minmax(0, 1fr));
-
+        repeat(2, minmax(0,1fr));
       gap: 20px;
-
-      align-items: start;
     }
 
-
-    /* =========================================================
-       CARD
-       ========================================================= */
-
     .card {
-      background: #ffffff;
-
+      background: #fff;
       border-radius: 16px;
-
       padding: 20px;
-
       box-shadow:
-        0 4px 18px rgba(0, 0, 0, 0.08);
+        0 4px 18px rgba(0,0,0,.08);
     }
 
     .card-title {
       margin: 0 0 15px;
-
       font-size: 19px;
-
       font-weight: 800;
-
       color: #123b63;
     }
 
-
-    /* =========================================================
-       CAMERA
-       ========================================================= */
-
     #reader {
       width: 100%;
-
       min-height: 280px;
-
       border: 2px solid #d9e0e7;
-
       border-radius: 14px;
-
       overflow: hidden;
-
       background: #111827;
     }
 
     #reader video {
       width: 100% !important;
-
       height: auto !important;
-
       border-radius: 12px;
-    }
-
-    #reader__scan_region {
-      min-height: 240px;
     }
 
     #reader__dashboard {
       display: none !important;
     }
 
-
-    /* =========================================================
-       CAMERA STATUS
-       ========================================================= */
-
     .camera-status {
       margin-top: 12px;
-
       padding: 11px 13px;
-
       border-radius: 10px;
-
       background: #eef4f9;
-
       color: #31556f;
-
       font-size: 13px;
-
       text-align: center;
-
       font-weight: 700;
     }
 
-
-    /* =========================================================
-       LOADING
-       ========================================================= */
-
     .loading {
       display: none;
-
       margin-top: 12px;
-
-      padding: 11px;
-
+      padding: 10px;
       border-radius: 10px;
-
       background: #eff6ff;
-
       color: #1d4ed8;
-
       text-align: center;
-
-      font-size: 13px;
-
+      font-size: 12px;
       font-weight: 700;
     }
 
@@ -230,41 +132,21 @@
       display: block;
     }
 
-
-    /* =========================================================
-       UPLOAD
-       ========================================================= */
-
     .upload-box {
       min-height: 280px;
-
-      border:
-        2px dashed #b9c6d3;
-
+      border: 2px dashed #b9c6d3;
       border-radius: 14px;
-
       display: flex;
-
       align-items: center;
-
       justify-content: center;
-
       text-align: center;
-
       padding: 25px;
-
       cursor: pointer;
-
       background: #fafcfd;
-
-      transition:
-        border-color 0.2s,
-        background 0.2s;
     }
 
     .upload-box:hover {
       border-color: #3b82f6;
-
       background: #f5f9ff;
     }
 
@@ -274,23 +156,18 @@
 
     .upload-icon {
       font-size: 50px;
-
       margin-bottom: 10px;
     }
 
     .upload-title {
       font-size: 18px;
-
       font-weight: 800;
-
       color: #123b63;
     }
 
     .upload-text {
       margin-top: 8px;
-
       font-size: 13px;
-
       color: #667085;
     }
 
@@ -298,14 +175,8 @@
       display: none;
     }
 
-
-    /* =========================================================
-       RESULT
-       ========================================================= */
-
     .result-card {
       margin-top: 20px;
-
       display: none;
     }
 
@@ -313,116 +184,70 @@
       display: block;
     }
 
-
     .result-header {
       display: flex;
-
       justify-content: space-between;
-
       align-items: center;
-
       gap: 12px;
-
       margin-bottom: 18px;
-
       flex-wrap: wrap;
     }
 
     .result-title {
       font-size: 20px;
-
       font-weight: 800;
-
       color: #123b63;
     }
 
-
-    /* =========================================================
-       STATUS BADGE
-       ========================================================= */
-
     .status-badge {
       display: inline-block;
-
       padding: 7px 15px;
-
       border-radius: 999px;
-
       font-size: 13px;
-
       font-weight: 800;
-
-      letter-spacing: 0.3px;
     }
 
     .status-in {
       background: #dcfce7;
-
       color: #166534;
     }
 
     .status-out {
       background: #fee2e2;
-
       color: #991b1b;
+    }
+
+    .status-saving {
+      background: #dbeafe;
+      color: #1d4ed8;
     }
 
     .status-error {
       background: #fef3c7;
-
       color: #92400e;
     }
 
-
-    /* =========================================================
-       MESSAGE
-       ========================================================= */
-
     .message-box {
       margin-bottom: 15px;
-
       padding: 12px 14px;
-
       border-radius: 10px;
-
       background: #f4f7fa;
-
       font-size: 14px;
-
       font-weight: 700;
     }
 
-
-    /* =========================================================
-       SECTION TITLE
-       ========================================================= */
-
     .section-title {
       margin: 18px 0 8px;
-
       font-size: 14px;
-
       font-weight: 800;
-
       color: #667085;
-
       text-transform: uppercase;
-
-      letter-spacing: 0.5px;
     }
-
-
-    /* =========================================================
-       DETAILS
-       ========================================================= */
 
     .details,
     .transaction-details {
-      border:
-        1px solid #e4e7ec;
-
+      border: 1px solid #e4e7ec;
       border-radius: 12px;
-
       overflow: hidden;
     }
 
@@ -432,13 +257,9 @@
 
     .detail-row {
       display: grid;
-
       grid-template-columns:
-        240px minmax(0, 1fr);
-
-      border-bottom:
-        1px solid #e4e7ec;
-
+        240px minmax(0,1fr);
+      border-bottom: 1px solid #e4e7ec;
       min-height: 43px;
     }
 
@@ -448,47 +269,26 @@
 
     .detail-label {
       background: #f8fafc;
-
       padding: 11px 13px;
-
       font-weight: 700;
-
       font-size: 13px;
-
       color: #475467;
     }
 
     .detail-value {
       padding: 11px 13px;
-
       font-size: 14px;
-
       color: #101828;
-
       word-break: break-word;
     }
 
-
-    /* =========================================================
-       FOOTER
-       ========================================================= */
-
     .footer {
       text-align: center;
-
       color: #98a2b3;
-
       font-size: 12px;
-
       margin-top: 20px;
-
       padding-bottom: 20px;
     }
-
-
-    /* =========================================================
-       MOBILE
-       ========================================================= */
 
     @media (max-width: 800px) {
 
@@ -506,7 +306,6 @@
 
     }
 
-
     @media (max-width: 550px) {
 
       .detail-row {
@@ -516,14 +315,6 @@
       .detail-label {
         border-bottom:
           1px solid #e4e7ec;
-      }
-
-      #reader {
-        min-height: 240px;
-      }
-
-      .upload-box {
-        min-height: 240px;
       }
 
     }
@@ -539,10 +330,6 @@
 <div class="page">
 
 
-  <!-- =========================================================
-       HEADER
-       ========================================================= -->
-
   <div class="header">
 
     <h1>
@@ -556,16 +343,8 @@
   </div>
 
 
-  <!-- =========================================================
-       CAMERA + UPLOAD
-       ========================================================= -->
-
   <div class="main-grid">
 
-
-    <!-- =======================================================
-         CAMERA SCANNER
-         ======================================================= -->
 
     <div class="card">
 
@@ -579,22 +358,18 @@
         id="cameraStatus"
         class="camera-status"
       >
-        Initializing camera scanner...
+        Loading visitor database...
       </div>
 
       <div
         id="loadingBox"
         class="loading"
       >
-        Processing QR code...
+        Saving attendance...
       </div>
 
     </div>
 
-
-    <!-- =======================================================
-         QR IMAGE UPLOAD
-         ======================================================= -->
 
     <div class="card">
 
@@ -618,7 +393,7 @@
           </div>
 
           <div class="upload-text">
-            Click here and select a QR code image.
+            Click here and select a QR image.
           </div>
 
           <div class="upload-text">
@@ -641,15 +416,10 @@
   </div>
 
 
-  <!-- =========================================================
-       RESULT
-       ========================================================= -->
-
   <div
     id="resultCard"
     class="card result-card"
   >
-
 
     <div class="result-header">
 
@@ -660,8 +430,7 @@
       <div
         id="statusBadge"
         class="status-badge"
-      >
-      </div>
+      ></div>
 
     </div>
 
@@ -669,13 +438,8 @@
     <div
       id="messageBox"
       class="message-box"
-    >
-    </div>
+    ></div>
 
-
-    <!-- =======================================================
-         DETAILS
-         ======================================================= -->
 
     <div class="section-title">
       Details
@@ -684,148 +448,106 @@
 
     <div class="details">
 
-
       <div class="detail-row">
-
         <div class="detail-label">
           RANK / Position
         </div>
-
         <div
           id="resultRank"
           class="detail-value"
-        >
-        </div>
-
+        ></div>
       </div>
 
 
       <div class="detail-row">
-
         <div class="detail-label">
           First Name
         </div>
-
         <div
           id="resultFirstName"
           class="detail-value"
-        >
-        </div>
-
+        ></div>
       </div>
 
 
       <div class="detail-row">
-
         <div class="detail-label">
           MI
         </div>
-
         <div
           id="resultMI"
           class="detail-value"
-        >
-        </div>
-
+        ></div>
       </div>
 
 
       <div class="detail-row">
-
         <div class="detail-label">
           Last Name
         </div>
-
         <div
           id="resultLastName"
           class="detail-value"
-        >
-        </div>
-
+        ></div>
       </div>
 
 
       <div class="detail-row">
-
         <div class="detail-label">
           Office / Agency / Assignment
         </div>
-
         <div
           id="resultOffice"
           class="detail-value"
-        >
-        </div>
-
+        ></div>
       </div>
 
 
       <div class="detail-row">
-
         <div class="detail-label">
           Contact Number
         </div>
-
         <div
           id="resultContact"
           class="detail-value"
-        >
-        </div>
-
+        ></div>
       </div>
 
 
       <div class="detail-row">
-
         <div class="detail-label">
           Vehicle / Model
         </div>
-
         <div
           id="resultVehicle"
           class="detail-value"
-        >
-        </div>
-
+        ></div>
       </div>
 
 
       <div class="detail-row">
-
         <div class="detail-label">
           Plate Number
         </div>
-
         <div
           id="resultPlate"
           class="detail-value"
-        >
-        </div>
-
+        ></div>
       </div>
 
 
       <div class="detail-row">
-
         <div class="detail-label">
           Color of Vehicle
         </div>
-
         <div
           id="resultVehicleColor"
           class="detail-value"
-        >
-        </div>
-
+        ></div>
       </div>
-
 
     </div>
 
-
-    <!-- =======================================================
-         TRANSACTION DETAILS
-         ======================================================= -->
 
     <div class="section-title">
       Attendance Transaction
@@ -834,69 +556,50 @@
 
     <div class="transaction-details">
 
-
       <div class="detail-row">
-
         <div class="detail-label">
           Time In
         </div>
-
         <div
           id="resultTimeIn"
           class="detail-value"
-        >
-        </div>
-
+        ></div>
       </div>
 
 
       <div class="detail-row">
-
         <div class="detail-label">
           Time Out
         </div>
-
         <div
           id="resultTimeOut"
           class="detail-value"
-        >
-        </div>
-
+        ></div>
       </div>
 
 
       <div class="detail-row">
-
         <div class="detail-label">
           Date
         </div>
-
         <div
           id="resultDate"
           class="detail-value"
-        >
-        </div>
-
+        ></div>
       </div>
 
 
       <div class="detail-row">
-
         <div class="detail-label">
           Scan Source
         </div>
-
         <div
           id="resultSource"
           class="detail-value"
-        >
-        </div>
-
+        ></div>
       </div>
 
-
     </div>
-
 
   </div>
 
@@ -913,416 +616,763 @@
 <script>
 
 
-  /* ============================================================
-     APPS SCRIPT URL
-     ============================================================ */
+/* ============================================================
+   CONFIG
+   ============================================================ */
 
-  const APPS_SCRIPT_URL =
-    "https://script.google.com/macros/s/AKfycbygUbFIwIo5p3g0AyJwr1YgWjsubkpg1Zp-ev8hkNx038YSJT2wxP7garS2e4B3lb0v/exec";
-
-
-  /* ============================================================
-     GLOBAL VARIABLES
-     ============================================================ */
-
-  let cameraScanner = null;
-
-  let cameraStarted = false;
-
-  let requestInProgress = false;
-
-  let cameraLocked = false;
-
-  let capturedQR = "";
-
-  let stableQR = "";
-
-  let stableSince = 0;
-
-  let resultTimer = null;
-
-  let jsonpCounter = 0;
-
-  let uploadProcessing = false;
+const APPS_SCRIPT_URL =
+  "https://script.google.com/macros/s/AKfycbygUbFIwIo5p3g0AyJwr1YgWjsubkpg1Zp-ev8hkNx038YSJT2wxP7garS2e4B3lb0v/exec";
 
 
-  /*
-   * QR must be detected continuously for approximately
-   * one second before capture.
-   */
+/* ============================================================
+   GLOBAL STATE
+   ============================================================ */
 
-  const REQUIRED_STABLE_MS = 1000;
+let cameraScanner = null;
+
+let requestInProgress = false;
+
+let cameraLocked = false;
+
+let uploadProcessing = false;
+
+let bootstrapReady = false;
+
+let visitorsByPlate = {};
+
+let resultTimer = null;
+
+let jsonpCounter = 0;
+
+let stableQR = "";
+
+let stableSince = 0;
+
+let capturedQR = "";
+
+let requiredStableMs = 1000;
 
 
-  /* ============================================================
-     PAGE LOAD
-     ============================================================ */
+/* ============================================================
+   PAGE START
+   ============================================================ */
 
-  window.addEventListener(
-    "load",
-    function() {
+window.addEventListener(
+  "load",
+  function() {
 
-      initializeCamera();
+    loadBootstrap();
 
-      const qrInput =
-        document.getElementById("qrInput");
-
-      qrInput.addEventListener(
+    document
+      .getElementById("qrInput")
+      .addEventListener(
         "change",
         handleImageUpload
       );
 
-    }
+  }
+);
+
+
+/* ============================================================
+   BOOTSTRAP
+   ============================================================ */
+
+function loadBootstrap() {
+
+  setCameraStatus(
+    "Loading visitor database..."
   );
 
 
-  /* ============================================================
-     INITIALIZE CAMERA
-     ============================================================ */
-
-  function initializeCamera() {
-
-    if (
-      typeof Html5Qrcode === "undefined"
-    ) {
-
-      setCameraStatus(
-        "QR scanner library could not be loaded."
-      );
-
-      return;
-    }
+  const callbackName =
+    createCallbackName();
 
 
-    try {
+  jsonpRequest(
+    "bootstrap",
+    {},
+    callbackName,
+    15000,
+    function(response) {
 
-      cameraScanner =
-        new Html5Qrcode("reader");
+      if (
+        response &&
+        response.success
+      ) {
 
-    } catch (error) {
+        visitorsByPlate = {};
 
-      console.error(
-        "Scanner initialization error:",
-        error
-      );
-
-      setCameraStatus(
-        "Could not initialize camera scanner."
-      );
-
-      return;
-    }
+        const list =
+          response.visitors || [];
 
 
-    const config = {
-
-      fps: 10,
-
-      qrbox:
-        function(
-          viewfinderWidth,
-          viewfinderHeight
+        for (
+          const visitor of list
         ) {
 
-          const minEdge =
-            Math.min(
-              viewfinderWidth,
-              viewfinderHeight
+          const key =
+            normalizePlate(
+              visitor.plate
             );
 
-          const boxSize =
-            Math.floor(
-              Math.min(
-                minEdge * 0.72,
-                300
-              )
-            );
 
-          return {
-            width: boxSize,
-            height: boxSize
-          };
+          if (key) {
 
-        },
+            visitorsByPlate[key] =
+              visitor;
 
-      aspectRatio: 1.0,
-
-      disableFlip: false
-
-    };
-
-
-    cameraScanner
-      .start(
-
-        {
-          facingMode: "environment"
-        },
-
-        config,
-
-        onCameraScanSuccess,
-
-        onCameraScanFailure
-
-      )
-
-      .then(
-        function() {
-
-          cameraStarted = true;
-
-          setCameraStatus(
-            "Camera ready — hold QR steady for about 1 second."
-          );
+          }
 
         }
-      )
 
-      .catch(
-        function(error) {
 
-          console.error(
-            "Camera start error:",
-            error
-          );
+        bootstrapReady = true;
 
-          setCameraStatus(
-            "Camera could not start. Please allow camera permission."
-          );
 
-        }
+        setCameraStatus(
+          "Camera ready — hold QR steady for about 1 second."
+        );
+
+
+        initializeCamera();
+
+      } else {
+
+        setCameraStatus(
+          "Could not load visitor database."
+        );
+
+        /*
+           Still start camera.
+           Server remains the final fallback.
+        */
+
+        bootstrapReady = false;
+
+        initializeCamera();
+
+      }
+
+    },
+    function(errorMessage) {
+
+      console.error(
+        "Bootstrap error:",
+        errorMessage
       );
 
-  }
 
+      /*
+         Do not block camera just because
+         preload failed.
+      */
 
-  /* ============================================================
-     CAMERA QR SUCCESS
-     ============================================================ */
-
-  function onCameraScanSuccess(
-    decodedText
-  ) {
-
-    if (!decodedText) {
-      return;
-    }
-
-
-    /*
-     * Do nothing while another transaction
-     * is being processed.
-     */
-
-    if (
-      requestInProgress ||
-      cameraLocked
-    ) {
-
-      return;
-    }
-
-
-    const qr =
-      String(
-        decodedText
-      ).trim();
-
-
-    if (!qr) {
-      return;
-    }
-
-
-    const currentTime =
-      Date.now();
-
-
-    /*
-     * New QR detected.
-     */
-
-    if (
-      stableQR !== qr
-    ) {
-
-      stableQR = qr;
-
-      stableSince =
-        currentTime;
+      bootstrapReady = false;
 
       setCameraStatus(
-        "QR detected — keep it steady..."
+        "Camera ready — hold QR steady for about 1 second."
       );
 
-      return;
+
+      initializeCamera();
+
     }
+  );
+
+}
 
 
-    /*
-     * QR is still the same.
-     *
-     * Check one-second requirement.
-     */
+/* ============================================================
+   CAMERA
+   ============================================================ */
 
-    if (
-      currentTime -
-      stableSince <
-      REQUIRED_STABLE_MS
-    ) {
+function initializeCamera() {
 
-      return;
-    }
-
-
-    /*
-     * =========================================================
-     * LOCK QR INTO MEMORY
-     * =========================================================
-     *
-     * From this point forward, the transaction does NOT depend
-     * on whether the QR remains visible in the camera.
-     */
-
-    capturedQR = qr;
-
-    cameraLocked = true;
-
-    stableQR = "";
-
-    stableSince = 0;
-
+  if (
+    typeof Html5Qrcode ===
+    "undefined"
+  ) {
 
     setCameraStatus(
-      "QR captured — processing..."
+      "QR scanner library could not be loaded."
     );
 
-
-    processQR(
-      capturedQR,
-      "CAMERA SCANNER"
-    );
+    return;
 
   }
 
 
-  /* ============================================================
-     CAMERA QR FAILURE
-     ============================================================ */
+  if (cameraScanner) {
+    return;
+  }
 
-  function onCameraScanFailure(
-    errorMessage
-  ) {
 
-    /*
-     * This callback fires continuously when no QR
-     * is currently detected.
-     *
-     * No error message is displayed because that is
-     * normal behavior for continuous scanning.
-     */
+  try {
 
-    if (
-      !requestInProgress &&
-      !cameraLocked
-    ) {
+    cameraScanner =
+      new Html5Qrcode(
+        "reader"
+      );
 
-      if (stableQR) {
+  } catch (error) {
 
-        stableQR = "";
+    console.error(error);
 
-        stableSince = 0;
+    setCameraStatus(
+      "Could not initialize camera scanner."
+    );
+
+    return;
+
+  }
+
+
+  const config = {
+
+    fps: 10,
+
+    qrbox:
+      function(
+        viewfinderWidth,
+        viewfinderHeight
+      ) {
+
+        const minEdge =
+          Math.min(
+            viewfinderWidth,
+            viewfinderHeight
+          );
+
+
+        const size =
+          Math.floor(
+            Math.min(
+              minEdge * 0.72,
+              300
+            )
+          );
+
+
+        return {
+          width: size,
+          height: size
+        };
+
+      },
+
+    aspectRatio: 1.0,
+
+    disableFlip: false
+
+  };
+
+
+  cameraScanner
+    .start(
+      {
+        facingMode: "environment"
+      },
+      config,
+      onCameraScanSuccess,
+      onCameraScanFailure
+    )
+    .then(
+      function() {
 
         setCameraStatus(
           "Camera ready — hold QR steady for about 1 second."
         );
 
       }
+    )
+    .catch(
+      function(error) {
 
-    }
+        console.error(
+          "Camera start error:",
+          error
+        );
+
+        setCameraStatus(
+          "Camera could not start. Please allow camera permission."
+        );
+
+      }
+    );
+
+}
+
+
+/* ============================================================
+   CAMERA SUCCESS
+   ============================================================ */
+
+function onCameraScanSuccess(
+  decodedText
+) {
+
+  if (
+    requestInProgress ||
+    cameraLocked
+  ) {
+    return;
+  }
+
+
+  const qr =
+    String(
+      decodedText || ""
+    ).trim();
+
+
+  if (!qr) {
+    return;
+  }
+
+
+  const now =
+    Date.now();
+
+
+  if (
+    stableQR !== qr
+  ) {
+
+    stableQR = qr;
+
+    stableSince = now;
+
+
+    setCameraStatus(
+      "QR detected — keep it steady..."
+    );
+
+
+    return;
 
   }
 
 
-  /* ============================================================
-     UPLOAD QR IMAGE
-     ============================================================ */
+  if (
+    now -
+    stableSince <
+    requiredStableMs
+  ) {
 
-  async function handleImageUpload(event) {
+    return;
 
-  const input = event.target;
-  const file = input.files && input.files[0];
+  }
 
-  // Allow selecting the same image again
+
+  capturedQR =
+    qr;
+
+
+  stableQR = "";
+
+  stableSince = 0;
+
+  cameraLocked = true;
+
+
+  /*
+     INSTANT LOCAL RESULT
+  */
+
+  const localResult =
+    buildLocalResult(
+      qr,
+      "CAMERA SCANNER"
+    );
+
+
+  if (localResult) {
+
+    showOptimisticResult(
+      localResult
+    );
+
+  }
+
+
+  /*
+     BACKGROUND SERVER SAVE
+  */
+
+  saveTransaction(
+    qr,
+    "CAMERA SCANNER",
+    localResult
+  );
+
+}
+
+
+/* ============================================================
+   CAMERA FAILURE
+   ============================================================ */
+
+function onCameraScanFailure(
+  message
+) {
+
+  if (
+    requestInProgress ||
+    cameraLocked
+  ) {
+    return;
+  }
+
+  /*
+     Normal no-QR condition.
+  */
+
+}
+
+
+/* ============================================================
+   LOCAL RESULT
+   ============================================================ */
+
+function buildLocalResult(
+  qr,
+  source
+) {
+
+  const plate =
+    extractPlateLocal(
+      qr
+    );
+
+
+  const key =
+    normalizePlate(
+      plate
+    );
+
+
+  const visitor =
+    visitorsByPlate[key];
+
+
+  if (!visitor) {
+
+    return null;
+
+  }
+
+
+  let status =
+    String(
+      visitor.status || ""
+    )
+      .trim()
+      .toUpperCase();
+
+
+  /*
+     Toggle locally.
+  */
+
+  const nextStatus =
+    status === "IN"
+      ? "OUT"
+      : "IN";
+
+
+  /*
+     This is the current browser-side
+     predicted timestamp.
+  */
+
+  const now =
+    new Date();
+
+
+  const nowText =
+    formatLocalDateTime(
+      now
+    );
+
+
+  let timeIn =
+    visitor.timeIn || "";
+
+
+  let timeOut =
+    visitor.timeOut || "";
+
+
+  if (
+    nextStatus === "IN"
+  ) {
+
+    timeIn =
+      nowText;
+
+    timeOut =
+      "";
+
+  } else {
+
+    timeOut =
+      nowText;
+
+  }
+
+
+  return {
+
+    success: true,
+
+    status:
+      nextStatus,
+
+    attendanceStatus:
+      nextStatus,
+
+    message:
+      (
+        visitor.firstName +
+        " " +
+        visitor.lastName
+      ).trim() +
+      " - " +
+      (
+        nextStatus === "IN"
+          ? "TIME IN"
+          : "TIME OUT"
+      ) +
+      " recorded.",
+
+    rank:
+      visitor.rank || "",
+
+    firstName:
+      visitor.firstName || "",
+
+    mi:
+      visitor.mi || "",
+
+    lastName:
+      visitor.lastName || "",
+
+    office:
+      visitor.office || "",
+
+    contact:
+      visitor.contact || "",
+
+    vehicle:
+      visitor.vehicle || "",
+
+    plate:
+      visitor.plate || plate,
+
+    vehicleColor:
+      visitor.vehicleColor || "",
+
+    date:
+      formatLocalDate(
+        now
+      ),
+
+    dateTime:
+      nowText,
+
+    timeIn:
+      timeIn,
+
+    timeOut:
+      timeOut,
+
+    source:
+      source,
+
+    optimistic:
+      true
+
+  };
+
+}
+
+
+/* ============================================================
+   SHOW INSTANT RESULT
+   ============================================================ */
+
+function showOptimisticResult(
+  data
+) {
+
+  clearTimeout(
+    resultTimer
+  );
+
+
+  fillResult(
+    data
+  );
+
+
+  const badge =
+    document.getElementById(
+      "statusBadge"
+    );
+
+
+  if (
+    data.status === "IN"
+  ) {
+
+    badge.className =
+      "status-badge status-in";
+
+    badge.textContent =
+      "TIME IN";
+
+  } else {
+
+    badge.className =
+      "status-badge status-out";
+
+    badge.textContent =
+      "TIME OUT";
+
+  }
+
+
+  /*
+     Small "saving" message.
+     The visitor details are already visible.
+  */
+
+  setText(
+    "messageBox",
+    data.message +
+    " • Saving..."
+  );
+
+
+  setCameraStatus(
+    "Attendance shown — saving to server..."
+  );
+
+
+  document
+    .getElementById(
+      "loadingBox"
+    )
+    .classList.add(
+      "show"
+    );
+
+
+  document
+    .getElementById(
+      "resultCard"
+    )
+    .classList.add(
+      "show"
+    );
+
+}
+
+
+/* ============================================================
+   UPLOAD
+   ============================================================ */
+
+async function handleImageUpload(
+  event
+) {
+
+  const input =
+    event.target;
+
+
+  const file =
+    input.files &&
+    input.files[0];
+
+
   input.value = "";
+
 
   if (!file) {
     return;
   }
 
-  if (requestInProgress || uploadProcessing) {
+
+  if (
+    requestInProgress ||
+    uploadProcessing
+  ) {
+
     showError(
-      "A QR transaction is already being processed. Please wait."
+      "A QR transaction is already being processed."
     );
+
     return;
+
   }
 
-  if (!file.type || !file.type.startsWith("image/")) {
+
+  if (
+    !file.type ||
+    !file.type.startsWith(
+      "image/"
+    )
+  ) {
+
     showError(
-      "Please select a valid image file."
+      "Please select a valid QR image."
     );
+
     return;
+
   }
+
 
   uploadProcessing = true;
-  requestInProgress = true;
+
   cameraLocked = true;
+
   capturedQR = "";
 
-  setLoading(true);
 
   setCameraStatus(
     "Reading uploaded QR image..."
   );
 
+
   try {
 
-    /*
-     * ==========================================================
-     * READ FILE DIRECTLY AS DATA URL
-     * ==========================================================
-     */
+    const dataURL =
+      await readFileAsDataURL(
+        file
+      );
 
-    const imageDataURL =
-      await readFileAsDataURL(file);
-
-
-    /*
-     * ==========================================================
-     * LOAD IMAGE
-     * ==========================================================
-     */
 
     const image =
-      await loadImageFromDataURL(imageDataURL);
+      await loadImageFromDataURL(
+        dataURL
+      );
 
-
-    /*
-     * ==========================================================
-     * DECODE QR
-     * ==========================================================
-     */
 
     setCameraStatus(
       "Decoding uploaded QR..."
     );
 
-    const decodedQR =
-      decodeUploadedQRRobust(image);
+
+    const qr =
+      decodeUploadedQR(
+        image
+      );
 
 
-    if (!decodedQR) {
+    if (!qr) {
 
       throw new Error(
         "No readable QR code was found in the image."
@@ -1331,63 +1381,65 @@
     }
 
 
-    /*
-     * ==========================================================
-     * QR SUCCESS
-     * ==========================================================
-     */
-
     capturedQR =
-      String(decodedQR).trim();
+      String(
+        qr
+      ).trim();
 
 
-    if (!capturedQR) {
+    /*
+       INSTANT LOCAL RESULT
+    */
 
-      throw new Error(
-        "The QR image contains empty data."
+    const localResult =
+      buildLocalResult(
+        capturedQR,
+        "QR IMAGE UPLOAD"
+      );
+
+
+    if (localResult) {
+
+      showOptimisticResult(
+        localResult
       );
 
     }
 
 
-    console.log(
-      "UPLOAD QR DECODED:",
-      capturedQR
-    );
-
-
     /*
-     * ==========================================================
-     * SEND SAME QR TO APPS SCRIPT
-     * ==========================================================
-     */
+       BACKGROUND SAVE
+    */
 
-    setCameraStatus(
-      "QR decoded — sending to server..."
-    );
-
-
-    processQR(
+    saveTransaction(
       capturedQR,
-      "QR IMAGE UPLOAD"
+      "QR IMAGE UPLOAD",
+      localResult
     );
 
 
   } catch (error) {
 
     console.error(
-      "UPLOAD ERROR:",
+      "Upload error:",
       error
     );
 
 
-    requestInProgress = false;
     uploadProcessing = false;
+
     cameraLocked = false;
+
     capturedQR = "";
 
 
-    setLoading(false);
+    document
+      .getElementById(
+        "loadingBox"
+      )
+      .classList.remove(
+        "show"
+      );
 
 
     setCameraStatus(
@@ -1407,14 +1459,19 @@
 }
 
 
-/* =============================================================
-   READ FILE AS DATA URL
-   ============================================================= */
+/* ============================================================
+   FILE -> DATA URL
+   ============================================================ */
 
-function readFileAsDataURL(file) {
+function readFileAsDataURL(
+  file
+) {
 
   return new Promise(
-    function(resolve, reject) {
+    function(
+      resolve,
+      reject
+    ) {
 
       const reader =
         new FileReader();
@@ -1427,12 +1484,14 @@ function readFileAsDataURL(file) {
 
             reject(
               new Error(
-                "The image file could not be read."
+                "The image could not be read."
               )
             );
 
             return;
+
           }
+
 
           resolve(
             reader.result
@@ -1446,26 +1505,16 @@ function readFileAsDataURL(file) {
 
           reject(
             new Error(
-              "The browser could not read the selected image."
+              "The browser could not read the image."
             )
           );
 
         };
 
 
-      reader.onabort =
-        function() {
-
-          reject(
-            new Error(
-              "Reading the image was cancelled."
-            )
-          );
-
-        };
-
-
-      reader.readAsDataURL(file);
+      reader.readAsDataURL(
+        file
+      );
 
     }
   );
@@ -1473,63 +1522,26 @@ function readFileAsDataURL(file) {
 }
 
 
-/* =============================================================
-   LOAD IMAGE FROM DATA URL
-   ============================================================= */
+/* ============================================================
+   DATA URL -> IMAGE
+   ============================================================ */
 
-function loadImageFromDataURL(dataURL) {
+function loadImageFromDataURL(
+  dataURL
+) {
 
   return new Promise(
-    function(resolve, reject) {
+    function(
+      resolve,
+      reject
+    ) {
 
       const image =
         new Image();
 
-      let finished = false;
-
-
-      /*
-       * Safety timeout.
-       *
-       * This prevents:
-       *
-       * Reading uploaded QR image...
-       *
-       * from staying forever.
-       */
-
-      const timeout =
-        setTimeout(
-          function() {
-
-            if (finished) {
-              return;
-            }
-
-            finished = true;
-
-            reject(
-              new Error(
-                "The uploaded image took too long to load."
-              )
-            );
-
-          },
-          10000
-        );
-
 
       image.onload =
         function() {
-
-          if (finished) {
-            return;
-          }
-
-          finished = true;
-
-          clearTimeout(timeout);
-
 
           if (
             !image.naturalWidth ||
@@ -1538,15 +1550,18 @@ function loadImageFromDataURL(dataURL) {
 
             reject(
               new Error(
-                "The uploaded image has no readable dimensions."
+                "Invalid image."
               )
             );
 
             return;
+
           }
 
 
-          resolve(image);
+          resolve(
+            image
+          );
 
         };
 
@@ -1554,18 +1569,9 @@ function loadImageFromDataURL(dataURL) {
       image.onerror =
         function() {
 
-          if (finished) {
-            return;
-          }
-
-          finished = true;
-
-          clearTimeout(timeout);
-
-
           reject(
             new Error(
-              "The uploaded image could not be loaded."
+              "Could not load uploaded image."
             )
           );
 
@@ -1581,49 +1587,34 @@ function loadImageFromDataURL(dataURL) {
 }
 
 
-/* =============================================================
-   ROBUST QR DECODER
-   ============================================================= */
+/* ============================================================
+   QR DECODER
+   ============================================================ */
 
-function decodeUploadedQRRobust(image) {
+function decodeUploadedQR(
+  image
+) {
 
   if (
     typeof jsQR !== "function"
   ) {
 
     throw new Error(
-      "QR decoder library was not loaded. Please refresh the page."
+      "QR decoder library was not loaded."
     );
 
   }
 
 
   const originalWidth =
-    image.naturalWidth ||
-    image.width;
+    image.naturalWidth;
+
 
   const originalHeight =
-    image.naturalHeight ||
-    image.height;
+    image.naturalHeight;
 
 
-  if (
-    !originalWidth ||
-    !originalHeight
-  ) {
-
-    throw new Error(
-      "Invalid uploaded image dimensions."
-    );
-
-  }
-
-
-  /*
-   * Try several sizes.
-   */
-
-  const targetSizes = [
+  const sizes = [
     300,
     500,
     700,
@@ -1633,56 +1624,36 @@ function decodeUploadedQRRobust(image) {
 
 
   for (
-    let i = 0;
-    i < targetSizes.length;
-    i++
+    const target of sizes
   ) {
 
-    const target =
-      targetSizes[i];
-
-
     const scale =
-      target /
       Math.max(
-        originalWidth,
-        originalHeight
-      );
-
-
-    const finalScale =
-      Math.max(
-        scale,
-        1
+        1,
+        target /
+        Math.max(
+          originalWidth,
+          originalHeight
+        )
       );
 
 
     const width =
-      Math.max(
-        1,
-        Math.round(
-          originalWidth *
-          finalScale
-        )
+      Math.round(
+        originalWidth *
+        scale
       );
 
 
     const height =
-      Math.max(
-        1,
-        Math.round(
-          originalHeight *
-          finalScale
-        )
+      Math.round(
+        originalHeight *
+        scale
       );
 
 
-    /*
-     * Normal image.
-     */
-
     let result =
-      decodeCanvasQR(
+      decodeCanvas(
         image,
         width,
         height,
@@ -1695,12 +1666,8 @@ function decodeUploadedQRRobust(image) {
     }
 
 
-    /*
-     * Try grayscale/contrast preprocessing.
-     */
-
     result =
-      decodeCanvasQR(
+      decodeCanvas(
         image,
         width,
         height,
@@ -1720,11 +1687,11 @@ function decodeUploadedQRRobust(image) {
 }
 
 
-/* =============================================================
-   DECODE CANVAS QR
-   ============================================================= */
+/* ============================================================
+   CANVAS QR
+   ============================================================ */
 
-function decodeCanvasQR(
+function decodeCanvas(
   image,
   width,
   height,
@@ -1786,19 +1753,10 @@ function decodeCanvasQR(
 
   } catch (error) {
 
-    console.error(
-      "Canvas image error:",
-      error
-    );
-
     return null;
 
   }
 
-
-  /*
-   * Optional grayscale / contrast processing.
-   */
 
   if (preprocess) {
 
@@ -1812,27 +1770,13 @@ function decodeCanvasQR(
       i += 4
     ) {
 
-      const r =
-        data[i];
-
-      const g =
-        data[i + 1];
-
-      const b =
-        data[i + 2];
-
-
       const gray =
         Math.round(
-          0.299 * r +
-          0.587 * g +
-          0.114 * b
+          0.299 * data[i] +
+          0.587 * data[i + 1] +
+          0.114 * data[i + 2]
         );
 
-
-      /*
-       * Strong black/white threshold.
-       */
 
       const value =
         gray < 180
@@ -1853,10 +1797,6 @@ function decodeCanvasQR(
 
   }
 
-
-  /*
-   * jsQR attempts both normal and inverted QR.
-   */
 
   const result =
     jsQR(
@@ -1885,988 +1825,977 @@ function decodeCanvasQR(
 }
 
 
-  /* ============================================================
-     PROCESS QR THROUGH APPS SCRIPT
-     ============================================================ */
+/* ============================================================
+   SAVE TO APPS SCRIPT
+   ============================================================ */
 
-  function processQR(
-    qrValue,
-    source
-  ) {
+function saveTransaction(
+  qr,
+  source,
+  localResult
+) {
 
-    if (
-      !qrValue
-    ) {
+  requestInProgress = true;
+
+  capturedQR =
+    qr;
+
+
+  /*
+     Important:
+     Do NOT wait before showing the local result.
+     The result is already on screen.
+  */
+
+
+  const callbackName =
+    createCallbackName();
+
+
+  jsonpRequest(
+    "scan",
+    {
+      qr:
+        qr,
+
+      source:
+        source
+    },
+    callbackName,
+    30000,
+    function(serverResponse) {
 
       requestInProgress = false;
 
+      uploadProcessing = false;
+
       cameraLocked = false;
+
+      capturedQR = "";
+
+
+      document
+        .getElementById(
+          "loadingBox"
+        )
+        .classList.remove(
+          "show"
+        );
+
+
+      /*
+         SERVER IS FINAL AUTHORITY
+      */
+
+      if (
+        serverResponse &&
+        serverResponse.success
+      ) {
+
+        updateLocalStateFromServer(
+          serverResponse
+        );
+
+
+        fillResult(
+          serverResponse
+        );
+
+
+        const badge =
+          document.getElementById(
+            "statusBadge"
+          );
+
+
+        if (
+          serverResponse.status === "IN"
+        ) {
+
+          badge.className =
+            "status-badge status-in";
+
+          badge.textContent =
+            "TIME IN";
+
+        } else {
+
+          badge.className =
+            "status-badge status-out";
+
+          badge.textContent =
+            "TIME OUT";
+
+        }
+
+
+        setText(
+          "messageBox",
+          serverResponse.message
+        );
+
+
+        setCameraStatus(
+          "Transaction saved — camera ready for next QR."
+        );
+
+
+        scheduleResultClear();
+
+
+        return;
+
+      }
+
+
+      /*
+         Server rejected/failure.
+      */
+
+      showError(
+        serverResponse &&
+        serverResponse.message
+          ? serverResponse.message
+          : "The server could not save the attendance transaction."
+      );
+
+    },
+    function(errorMessage) {
+
+      requestInProgress = false;
 
       uploadProcessing = false;
 
-      setLoading(false);
+      cameraLocked = false;
+
+      capturedQR = "";
+
+
+      document
+        .getElementById(
+          "loadingBox"
+        )
+        .classList.remove(
+          "show"
+        );
+
+
+      /*
+         Since local result was shown optimistically,
+         we must mark the transaction as failed.
+      */
 
       showError(
-        "No QR data was detected."
+        "Attendance was displayed instantly, but the server did not confirm the save: " +
+        errorMessage
       );
 
-      return;
-
     }
+  );
+
+}
 
 
-    /*
-     * Prevent duplicate transaction.
-     */
+/* ============================================================
+   UPDATE LOCAL STATE
+   ============================================================ */
+
+function updateLocalStateFromServer(
+  data
+) {
+
+  const key =
+    normalizePlate(
+      data.plate
+    );
+
+
+  if (!key) {
+    return;
+  }
+
+
+  const existing =
+    visitorsByPlate[key] ||
+    {};
+
+
+  visitorsByPlate[key] = {
+
+    ...existing,
+
+    rank:
+      data.rank || existing.rank || "",
+
+    firstName:
+      data.firstName || existing.firstName || "",
+
+    mi:
+      data.mi || existing.mi || "",
+
+    lastName:
+      data.lastName || existing.lastName || "",
+
+    office:
+      data.office || existing.office || "",
+
+    contact:
+      data.contact || existing.contact || "",
+
+    vehicle:
+      data.vehicle || existing.vehicle || "",
+
+    plate:
+      data.plate || existing.plate || "",
+
+    vehicleColor:
+      data.vehicleColor ||
+      existing.vehicleColor ||
+      "",
+
+    purpose:
+      data.purpose ||
+      existing.purpose ||
+      "",
+
+    status:
+      data.status || "",
+
+    timeIn:
+      data.timeIn || "",
+
+    timeOut:
+      data.timeOut || ""
+
+  };
+
+}
+
+
+/* ============================================================
+   JSONP REQUEST
+   ============================================================ */
+
+function jsonpRequest(
+  action,
+  params,
+  callbackName,
+  timeoutMs,
+  onSuccess,
+  onError
+) {
+
+  let finished = false;
+
+
+  const script =
+    document.createElement(
+      "script"
+    );
+
+
+  const query =
+    new URLSearchParams();
+
+
+  query.set(
+    "action",
+    action
+  );
+
+
+  query.set(
+    "callback",
+    callbackName
+  );
+
+
+  for (
+    const key in params
+  ) {
 
     if (
-      requestInProgress &&
-      capturedQR !== qrValue
+      Object.prototype.hasOwnProperty.call(
+        params,
+        key
+      )
     ) {
 
-      return;
-
-    }
-
-
-    requestInProgress = true;
-
-
-    const qr =
-      String(
-        qrValue
-      ).trim();
-
-
-    capturedQR =
-      qr;
-
-
-    /*
-     * =========================================================
-     * NORMALIZE SOURCE
-     * =========================================================
-     */
-
-    const scanSource =
-      source ===
-      "QR IMAGE UPLOAD"
-
-        ? "QR IMAGE UPLOAD"
-
-        : "CAMERA SCANNER";
-
-
-    setLoading(true);
-
-
-    setCameraStatus(
-      "Sending captured QR to server..."
-    );
-
-
-    /*
-     * =========================================================
-     * JSONP CALLBACK
-     * =========================================================
-     */
-
-    const callbackName =
-      "__cgfleet_callback_" +
-      (++jsonpCounter) +
-      "_" +
-      Date.now();
-
-
-    const script =
-      document.createElement(
-        "script"
+      query.set(
+        key,
+        params[key]
       );
 
-
-    let finished = false;
-
-
-    /*
-     * =========================================================
-     * BUILD REQUEST
-     * =========================================================
-     */
-
-    const params =
-      new URLSearchParams();
-
-
-    params.set(
-      "action",
-      "scan"
-    );
-
-
-    params.set(
-      "qr",
-      qr
-    );
-
-
-    params.set(
-      "source",
-      scanSource
-    );
-
-
-    params.set(
-      "callback",
-      callbackName
-    );
-
-
-    const requestURL =
-      APPS_SCRIPT_URL +
-      "?" +
-      params.toString();
-
-
-    console.log(
-      "Sending QR request:",
-      requestURL
-    );
-
-
-    /*
-     * =========================================================
-     * CLEANUP
-     * =========================================================
-     */
-
-    function cleanup() {
-
-      if (
-        timeoutID
-      ) {
-
-        clearTimeout(
-          timeoutID
-        );
-
-      }
-
-
-      try {
-
-        if (
-          script &&
-          script.parentNode
-        ) {
-
-          script.parentNode.removeChild(
-            script
-          );
-
-        }
-
-      } catch (error) {
-
-        console.warn(
-          "Script cleanup error:",
-          error
-        );
-
-      }
-
-
-      try {
-
-        delete window[
-          callbackName
-        ];
-
-      } catch (error) {
-
-        window[
-          callbackName
-        ] = undefined;
-
-      }
-
     }
-
-
-    /*
-     * =========================================================
-     * APPS SCRIPT RESPONSE
-     * =========================================================
-     */
-
-    window[
-      callbackName
-    ] =
-      function(response) {
-
-        if (finished) {
-          return;
-        }
-
-
-        finished = true;
-
-
-        cleanup();
-
-
-        console.log(
-          "Apps Script response:",
-          response
-        );
-
-
-        requestInProgress =
-          false;
-
-        uploadProcessing =
-          false;
-
-
-        setLoading(false);
-
-
-        /*
-         * =====================================================
-         * SUCCESS
-         * =====================================================
-         */
-
-        if (
-          response &&
-          response.success
-        ) {
-
-          displayResult(
-            response,
-            scanSource
-          );
-
-
-          setCameraStatus(
-            "Transaction complete — ready for the next QR."
-          );
-
-
-          /*
-           * Unlock after server response.
-           *
-           * Captured QR is already stored in memory,
-           * so moving the camera away did not cancel it.
-           */
-
-          cameraLocked =
-            false;
-
-          capturedQR =
-            "";
-
-
-          stableQR =
-            "";
-
-          stableSince =
-            0;
-
-
-          return;
-
-        }
-
-
-        /*
-         * =====================================================
-         * SERVER RETURNED ERROR
-         * =====================================================
-         */
-
-        const message =
-          response &&
-          response.message
-
-            ? response.message
-
-            : "The server returned an unsuccessful response.";
-
-
-        showError(
-          message
-        );
-
-
-        cameraLocked =
-          false;
-
-        capturedQR =
-          "";
-
-
-        stableQR =
-          "";
-
-        stableSince =
-          0;
-
-
-        setCameraStatus(
-          "Camera ready — hold QR steady for about 1 second."
-        );
-
-      };
-
-
-    /*
-     * =========================================================
-     * SCRIPT ERROR
-     * =========================================================
-     */
-
-    script.onerror =
-      function() {
-
-        if (finished) {
-          return;
-        }
-
-
-        finished = true;
-
-
-        cleanup();
-
-
-        console.error(
-          "Apps Script request failed:",
-          requestURL
-        );
-
-
-        requestInProgress =
-          false;
-
-        uploadProcessing =
-          false;
-
-        cameraLocked =
-          false;
-
-        capturedQR =
-          "";
-
-
-        setLoading(false);
-
-
-        showError(
-          "Could not connect to the Google Apps Script server."
-        );
-
-
-        setCameraStatus(
-          "Camera ready — hold QR steady for about 1 second."
-        );
-
-      };
-
-
-    /*
-     * =========================================================
-     * TIMEOUT
-     * =========================================================
-     *
-     * 30 seconds instead of the previous 15 seconds.
-     *
-     * This gives Google Apps Script enough time for a
-     * possible cold start.
-     */
-
-    const timeoutID =
-      setTimeout(
-        function() {
-
-          if (finished) {
-            return;
-          }
-
-
-          finished = true;
-
-
-          cleanup();
-
-
-          console.error(
-            "Apps Script request timed out:",
-            requestURL
-          );
-
-
-          requestInProgress =
-            false;
-
-          uploadProcessing =
-            false;
-
-          cameraLocked =
-            false;
-
-          capturedQR =
-            "";
-
-
-          setLoading(false);
-
-
-          showError(
-            "The Google Apps Script server did not respond in time. Please check the connection and try again."
-          );
-
-
-          setCameraStatus(
-            "Camera ready — hold QR steady for about 1 second."
-          );
-
-        },
-        30000
-      );
-
-
-    /*
-     * =========================================================
-     * SEND REQUEST
-     * ========================================================= */
-
-    script.src =
-      requestURL;
-
-
-    document.body.appendChild(
-      script
-    );
 
   }
 
 
-  /* ============================================================
-     DISPLAY RESULT
-     ============================================================ */
+  const url =
+    APPS_SCRIPT_URL +
+    "?" +
+    query.toString();
 
-  function displayResult(
-    data,
-    frontendSource
-  ) {
 
-    clearTimeout(
-      resultTimer
-    );
+  console.log(
+    "Apps Script request:",
+    url
+  );
 
 
-    /*
-     * =========================================================
-     * VISITOR DETAILS
-     * ========================================================= */
-
-    setText(
-      "resultRank",
-      valueOrDash(
-        data.rank
-      )
-    );
-
-
-    setText(
-      "resultFirstName",
-      valueOrDash(
-        data.firstName
-      )
-    );
-
-
-    setText(
-      "resultMI",
-      valueOrDash(
-        data.mi
-      )
-    );
-
-
-    setText(
-      "resultLastName",
-      valueOrDash(
-        data.lastName
-      )
-    );
-
-
-    setText(
-      "resultOffice",
-      valueOrDash(
-        data.office
-      )
-    );
-
-
-    setText(
-      "resultContact",
-      valueOrDash(
-        data.contact
-      )
-    );
-
-
-    setText(
-      "resultVehicle",
-      valueOrDash(
-        data.vehicle
-      )
-    );
-
-
-    setText(
-      "resultPlate",
-      valueOrDash(
-        data.plate
-      )
-    );
-
-
-    setText(
-      "resultVehicleColor",
-      valueOrDash(
-        data.vehicleColor
-      )
-    );
-
-
-    /*
-     * =========================================================
-     * ATTENDANCE
-     * ========================================================= */
-
-    setText(
-      "resultTimeIn",
-      valueOrDash(
-        data.timeIn
-      )
-    );
-
-
-    setText(
-      "resultTimeOut",
-      valueOrDash(
-        data.timeOut
-      )
-    );
-
-
-    setText(
-      "resultDate",
-      valueOrDash(
-        data.date ||
-        data.dateTime
-      )
-    );
-
-
-    /*
-     * =========================================================
-     * SOURCE
-     * =========================================================
-     *
-     * Server value is preferred.
-     */
-
-    const serverSource =
-      data.source;
-
-
-    const source =
-      serverSource ||
-      frontendSource ||
-      "UNKNOWN";
-
-
-    setText(
-      "resultSource",
-      source
-    );
-
-
-    /*
-     * =========================================================
-     * MESSAGE
-     * ========================================================= */
-
-    setText(
-      "messageBox",
-      data.message ||
-      "Attendance transaction completed."
-    );
-
-
-    /*
-     * =========================================================
-     * STATUS
-     * ========================================================= */
-
-    const status =
-      String(
-        data.status ||
-        data.attendanceStatus ||
-        ""
-      ).toUpperCase();
-
-
-    const badge =
-      document.getElementById(
-        "statusBadge"
-      );
-
-
-    badge.className =
-      "status-badge";
-
-
-    if (
-      status === "IN"
-    ) {
-
-      badge.classList.add(
-        "status-in"
-      );
-
-      badge.textContent =
-        "TIME IN";
-
-    }
-
-    else if (
-      status === "OUT"
-    ) {
-
-      badge.classList.add(
-        "status-out"
-      );
-
-      badge.textContent =
-        "TIME OUT";
-
-    }
-
-    else {
-
-      badge.classList.add(
-        "status-error"
-      );
-
-      badge.textContent =
-        status ||
-        "SUCCESS";
-
-    }
-
-
-    /*
-     * =========================================================
-     * SHOW RESULT
-     * ========================================================= */
-
-    const resultCard =
-      document.getElementById(
-        "resultCard"
-      );
-
-
-    resultCard.classList.add(
-      "show"
-    );
-
-
-    /*
-     * Scroll result into view.
-     */
-
+  let timeoutID =
     setTimeout(
       function() {
 
-        resultCard.scrollIntoView({
-          behavior: "smooth",
-          block: "nearest"
-        });
+        if (finished) {
+          return;
+        }
+
+
+        finished = true;
+
+        cleanup();
+
+
+        onError(
+          "The Google Apps Script server did not respond in time."
+        );
 
       },
-      50
+      timeoutMs
     );
 
 
-    /*
-     * =========================================================
-     * AUTOMATICALLY CLEAR AFTER 7 SECONDS
-     * ========================================================= */
+  window[
+    callbackName
+  ] =
+    function(data) {
 
-    resultTimer =
-      setTimeout(
-        function() {
-
-          resultCard.classList.remove(
-            "show"
-          );
+      if (finished) {
+        return;
+      }
 
 
-          cameraLocked =
-            false;
-
-          requestInProgress =
-            false;
-
-          uploadProcessing =
-            false;
-
-          capturedQR =
-            "";
-
-          stableQR =
-            "";
-
-          stableSince =
-            0;
+      finished = true;
 
 
-          setCameraStatus(
-            "Camera ready — hold QR steady for about 1 second."
-          );
+      cleanup();
 
-        },
-        7000
+
+      onSuccess(
+        data
       );
+
+    };
+
+
+  script.onerror =
+    function() {
+
+      if (finished) {
+        return;
+      }
+
+
+      finished = true;
+
+
+      cleanup();
+
+
+      onError(
+        "Could not connect to the Google Apps Script server."
+      );
+
+    };
+
+
+  script.src =
+    url;
+
+
+  document.body.appendChild(
+    script
+  );
+
+
+  function cleanup() {
+
+    try {
+
+      clearTimeout(
+        timeoutID
+      );
+
+    } catch (e) {}
+
+
+    try {
+
+      if (
+        script &&
+        script.parentNode
+      ) {
+
+        script.parentNode.removeChild(
+          script
+        );
+
+      }
+
+    } catch (e) {}
+
+
+    try {
+
+      delete window[
+        callbackName
+      ];
+
+    } catch (e) {
+
+      window[
+        callbackName
+      ] = undefined;
+
+    }
+
+  }
+
+}
+
+
+/* ============================================================
+   CALLBACK NAME
+   ============================================================ */
+
+function createCallbackName() {
+
+  jsonpCounter++;
+
+  return (
+    "__cgfleet_" +
+    Date.now() +
+    "_" +
+    jsonpCounter
+  );
+
+}
+
+
+/* ============================================================
+   FILL RESULT
+   ============================================================ */
+
+function fillResult(
+  data
+) {
+
+  setText(
+    "resultRank",
+    valueOrDash(
+      data.rank
+    )
+  );
+
+  setText(
+    "resultFirstName",
+    valueOrDash(
+      data.firstName
+    )
+  );
+
+  setText(
+    "resultMI",
+    valueOrDash(
+      data.mi
+    )
+  );
+
+  setText(
+    "resultLastName",
+    valueOrDash(
+      data.lastName
+    )
+  );
+
+  setText(
+    "resultOffice",
+    valueOrDash(
+      data.office
+    )
+  );
+
+  setText(
+    "resultContact",
+    valueOrDash(
+      data.contact
+    )
+  );
+
+  setText(
+    "resultVehicle",
+    valueOrDash(
+      data.vehicle
+    )
+  );
+
+  setText(
+    "resultPlate",
+    valueOrDash(
+      data.plate
+    )
+  );
+
+  setText(
+    "resultVehicleColor",
+    valueOrDash(
+      data.vehicleColor
+    )
+  );
+
+  setText(
+    "resultTimeIn",
+    valueOrDash(
+      data.timeIn
+    )
+  );
+
+  setText(
+    "resultTimeOut",
+    valueOrDash(
+      data.timeOut
+    )
+  );
+
+  setText(
+    "resultDate",
+    valueOrDash(
+      data.date ||
+      data.dateTime
+    )
+  );
+
+  setText(
+    "resultSource",
+    valueOrDash(
+      data.source
+    )  
+  );
+
+
+  if (
+    data.message
+  ) {
+
+    setText(
+      "messageBox",
+      data.message
+    );
 
   }
 
 
-  /* ============================================================
-     SHOW ERROR
-     ============================================================ */
+  document
+    .getElementById(
+      "resultCard"
+    )
+    .classList.add(
+      "show"
+    );
 
-  function showError(
+}
+
+
+/* ============================================================
+   ERROR
+   ============================================================ */
+
+function showError(
+  message
+) {
+
+  clearTimeout(
+    resultTimer
+  );
+
+
+  const badge =
+    document.getElementById(
+      "statusBadge"
+    );
+
+
+  badge.className =
+    "status-badge status-error";
+
+
+  badge.textContent =
+    "ERROR";
+
+
+  setText(
+    "messageBox",
     message
-  ) {
-
-    clearTimeout(
-      resultTimer
-    );
+  );
 
 
-    const resultCard =
-      document.getElementById(
-        "resultCard"
+  const fields = [
+
+    "resultRank",
+    "resultFirstName",
+    "resultMI",
+    "resultLastName",
+    "resultOffice",
+    "resultContact",
+    "resultVehicle",
+    "resultPlate",
+    "resultVehicleColor",
+    "resultTimeIn",
+    "resultTimeOut",
+    "resultDate",
+    "resultSource"
+
+  ];
+
+
+  fields.forEach(
+    function(id) {
+
+      setText(
+        id,
+        "—"
       );
 
-
-    const badge =
-      document.getElementById(
-        "statusBadge"
-      );
+    }
+  );
 
 
-    badge.className =
-      "status-badge status-error";
-
-
-    badge.textContent =
-      "ERROR";
-
-
-    setText(
-      "messageBox",
-      message
-    );
-
-
-    /*
-     * Clear visitor information.
-     */
-
-    const fields = [
-
-      "resultRank",
-
-      "resultFirstName",
-
-      "resultMI",
-
-      "resultLastName",
-
-      "resultOffice",
-
-      "resultContact",
-
-      "resultVehicle",
-
-      "resultPlate",
-
-      "resultVehicleColor",
-
-      "resultTimeIn",
-
-      "resultTimeOut",
-
-      "resultDate",
-
-      "resultSource"
-
-    ];
-
-
-    fields.forEach(
-      function(id) {
-
-        setText(
-          id,
-          "—"
-        );
-
-      }
-    );
-
-
-    resultCard.classList.add(
+  document
+    .getElementById(
+      "resultCard"
+    )
+    .classList.add(
       "show"
     );
 
 
-    /*
-     * Automatically hide error.
-     */
+  setCameraStatus(
+    "Camera ready — hold QR steady for about 1 second."
+  );
 
-    resultTimer =
-      setTimeout(
-        function() {
 
-          resultCard.classList.remove(
+  scheduleResultClear();
+
+}
+
+
+/* ============================================================
+   RESULT AUTO CLEAR
+   ============================================================ */
+
+function scheduleResultClear() {
+
+  clearTimeout(
+    resultTimer
+  );
+
+
+  resultTimer =
+    setTimeout(
+      function() {
+
+        document
+          .getElementById(
+            "resultCard"
+          )
+          .classList.remove(
             "show"
           );
 
-        },
-        7000
-      );
+      },
+      7000
+    );
 
-  }
-
-
-  /* ============================================================
-     LOADING
-     ============================================================ */
-
-  function setLoading(
-    show
-  ) {
-
-    const box =
-      document.getElementById(
-        "loadingBox"
-      );
+}
 
 
-    if (show) {
+/* ============================================================
+   LOADING
+   ============================================================ */
 
-      box.classList.add(
-        "show"
-      );
+function setLoading(
+  show
+) {
 
-    }
-
-    else {
-
-      box.classList.remove(
-        "show"
-      );
-
-    }
-
-  }
+  const box =
+    document.getElementById(
+      "loadingBox"
+    );
 
 
-  /* ============================================================
-     CAMERA STATUS
-     ============================================================ */
+  if (show) {
 
-  function setCameraStatus(
-    message
-  ) {
+    box.classList.add(
+      "show"
+    );
 
-    const element =
-      document.getElementById(
-        "cameraStatus"
-      );
+  } else {
 
-
-    if (element) {
-
-      element.textContent =
-        message;
-
-    }
-
-  }
-
-
-  /* ============================================================
-     SAFE TEXT
-     ============================================================ */
-
-  function setText(
-    elementId,
-    value
-  ) {
-
-    const element =
-      document.getElementById(
-        elementId
-      );
-
-
-    if (!element) {
-      return;
-    }
-
-
-    element.textContent =
-      value == null
-        ? ""
-        : String(value);
-
-  }
-
-
-  /* ============================================================
-     EMPTY VALUE
-     ============================================================ */
-
-  function valueOrDash(
-    value
-  ) {
-
-    if (
-      value === undefined ||
-      value === null ||
-      String(value).trim() === ""
-    ) {
-
-      return "—";
-
-    }
-
-
-    return String(
-      value
+    box.classList.remove(
+      "show"
     );
 
   }
 
+}
+
+
+/* ============================================================
+   CAMERA STATUS
+   ============================================================ */
+
+function setCameraStatus(
+  text
+) {
+
+  const el =
+    document.getElementById(
+      "cameraStatus"
+    );
+
+
+  if (el) {
+    el.textContent = text;
+  }
+
+}
+
+
+/* ============================================================
+   NORMALIZE PLATE
+   ============================================================ */
+
+function normalizePlate(
+  value
+) {
+
+  return String(
+    value || ""
+  )
+    .trim()
+    .toUpperCase()
+    .replace(
+      /[^A-Z0-9]/g,
+      ""
+    );
+
+}
+
+
+/* ============================================================
+   LOCAL QR EXTRACTION
+   ============================================================ */
+
+function extractPlateLocal(
+  value
+) {
+
+  const qr =
+    String(
+      value || ""
+    ).trim();
+
+
+  if (
+    qr.charAt(0) === "{" &&
+    qr.charAt(
+      qr.length - 1
+    ) === "}"
+  ) {
+
+    try {
+
+      const obj =
+        JSON.parse(
+          qr
+        );
+
+
+      if (
+        obj.plateNumber
+      ) {
+
+        return String(
+          obj.plateNumber
+        ).trim();
+
+      }
+
+
+      if (
+        obj.plate
+      ) {
+
+        return String(
+          obj.plate
+        ).trim();
+
+      }
+
+    } catch (e) {}
+
+  }
+
+
+  const match =
+    qr.match(
+      /^PLATE(?: NUMBER)?\s*[:=]\s*(.+)$/i
+    );
+
+
+  if (match) {
+    return match[1].trim();
+  }
+
+
+  return qr;
+
+}
+
+
+/* ============================================================
+   LOCAL DATE
+   ============================================================ */
+
+function formatLocalDate(
+  date
+) {
+
+  const month =
+    String(
+      date.getMonth() + 1
+    ).padStart(2, "0");
+
+
+  const day =
+    String(
+      date.getDate()
+    ).padStart(2, "0");
+
+
+  const year =
+    date.getFullYear();
+
+
+  return (
+    month +
+    "/" +
+    day +
+    "/" +
+    year
+  );
+
+}
+
+
+/* ============================================================
+   LOCAL DATE TIME
+   ============================================================ */
+
+function formatLocalDateTime(
+  date
+) {
+
+  const datePart =
+    formatLocalDate(
+      date
+    );
+
+
+  const hours =
+    String(
+      date.getHours()
+    ).padStart(2, "0");
+
+
+  const minutes =
+    String(
+      date.getMinutes()
+    ).padStart(2, "0");
+
+
+  const seconds =
+    String(
+      date.getSeconds()
+    ).padStart(2, "0");
+
+
+  return (
+    datePart +
+    " " +
+    hours +
+    ":" +
+    minutes +
+    ":" +
+    seconds
+  );
+
+}
+
+
+/* ============================================================
+   SAFE TEXT
+   ============================================================ */
+
+function setText(
+  id,
+  value
+) {
+
+  const el =
+    document.getElementById(
+      id
+    );
+
+
+  if (!el) {
+    return;
+  }
+
+
+  el.textContent =
+    value == null
+      ? ""
+      : String(value);
+
+}
+
+
+/* ============================================================
+   EMPTY VALUE
+   ============================================================ */
+
+function valueOrDash(
+  value
+) {
+
+  if (
+    value === undefined ||
+    value === null ||
+    String(value).trim() === ""
+  ) {
+
+    return "—";
+
+  }
+
+
+  return String(
+    value
+  );
+
+}
 
 </script>
 

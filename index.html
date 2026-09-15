@@ -629,145 +629,110 @@ function showReady() {
    JSONP REQUEST
    ========================================================= */
 
-function apiRequest(
-  action,
-  params
-) {
+function apiRequest(action, params = {}) {
 
-  return new Promise(
-    function(
-      resolve,
-      reject
-    ) {
+  return new Promise(function(resolve, reject) {
 
-      callbackCounter++;
+    const callbackName =
+      "cgfleet" +
+      Date.now() +
+      Math.floor(Math.random() * 100000);
 
-      const callbackName =
-        "cgfleet_" +
-        Date.now() +
-        "_" +
-        callbackCounter;
+    const script =
+      document.createElement("script");
 
-      const script =
-        document.createElement(
-          "script"
+    let finished = false;
+
+    const query =
+      new URLSearchParams();
+
+    query.set("action", action);
+    query.set("prefix", callbackName);
+    query.set("_", Date.now());
+
+    Object.keys(params).forEach(function(key) {
+      query.set(
+        key,
+        params[key] == null
+          ? ""
+          : String(params[key])
+      );
+    });
+
+    const url =
+      APPS_SCRIPT_URL +
+      "?" +
+      query.toString();
+
+    const timeout =
+      setTimeout(function() {
+
+        if (finished) {
+          return;
+        }
+
+        finished = true;
+
+        cleanup();
+
+        reject(
+          new Error(
+            "Could not connect to the Google Apps Script server."
+          )
         );
 
-      let completed =
-        false;
+      }, 20000);
 
-      const query =
-        new URLSearchParams();
+    function cleanup() {
 
+      clearTimeout(timeout);
 
-      query.set(
-        "action",
-        action
-      );
+      try {
+        delete window[callbackName];
+      } catch (e) {}
 
-      query.set(
-        "callback",
-        callbackName
-      );
-
-      query.set(
-        "_",
-        String(
-          Date.now()
-        )
-      );
-
-
-      params =
-        params || {};
-
-
-      Object.keys(
-        params
-      ).forEach(
-        function(key) {
-
-          query.set(
-            key,
-            params[key] == null
-              ? ""
-              : String(
-                  params[key]
-                )
-          );
-
-        }
-      );
-
-
-      const url =
-        APPS_SCRIPT_URL +
-        "?" +
-        query.toString();
-
-
-      let timer =
-        null;
-
-
-      function cleanup() {
-
-        if (timer) {
-
-          clearTimeout(
-            timer
-          );
-
-          timer = null;
-        }
-
-
-        try {
-
-          delete window[
-            callbackName
-          ];
-
-        } catch (err) {}
-
-
-        if (
-          script.parentNode
-        ) {
-
-          script.parentNode.removeChild(
-            script
-          );
-        }
+      if (script.parentNode) {
+        script.parentNode.removeChild(script);
       }
+    }
 
+    window[callbackName] =
+      function(data) {
 
-      timer =
-        setTimeout(
-          function() {
+        if (finished) {
+          return;
+        }
 
-            if (
-              completed
-            ) {
-              return;
-            }
+        finished = true;
 
+        cleanup();
 
-            completed =
-              true;
+        resolve(data);
+      };
 
-            cleanup();
+    script.onerror =
+      function() {
 
+        if (finished) {
+          return;
+        }
 
-            reject(
-              new Error(
-                "Could not connect to the Google Apps Script server."
-              )
-            );
+        finished = true;
 
-          },
-          20000
+        cleanup();
+
+        reject(
+          new Error(
+            "Could not connect to the Google Apps Script server."
+          )
         );
+      };
+
+    script.src = url;
+
+    document.body.appendChild(script);
+  });
+}
 
 
       window[

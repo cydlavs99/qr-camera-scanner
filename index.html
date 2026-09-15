@@ -32,7 +32,7 @@
       border-radius: 18px;
       padding: 22px;
       margin-bottom: 18px;
-      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+      box-shadow: 0 4px 18px rgba(0,0,0,0.08);
     }
 
     h1 {
@@ -71,7 +71,6 @@
     }
 
     .upload-area {
-      display: block;
       border: 2px dashed #9ca3af;
       border-radius: 14px;
       padding: 25px 15px;
@@ -130,7 +129,6 @@
       font-size: 24px;
       font-weight: bold;
       margin-bottom: 15px;
-      color: #111827;
     }
 
     .status-badge {
@@ -157,7 +155,7 @@
       justify-content: space-between;
       align-items: flex-start;
       gap: 15px;
-      padding: 11px 0;
+      padding: 10px 0;
       border-bottom: 1px solid #e5e7eb;
     }
 
@@ -166,7 +164,7 @@
     }
 
     .info-label {
-      color: #64748b;
+      color: #6b7280;
       font-weight: bold;
       flex: 0 0 48%;
     }
@@ -176,7 +174,6 @@
       font-weight: bold;
       word-break: break-word;
       flex: 1;
-      color: #111827;
     }
 
     .message {
@@ -235,25 +232,13 @@
     }
 
     @keyframes dots {
-      0% {
-        content: ".";
-      }
-
-      33% {
-        content: "..";
-      }
-
-      66% {
-        content: "...";
-      }
-
-      100% {
-        content: ".";
-      }
+      0% { content: "."; }
+      33% { content: ".."; }
+      66% { content: "..."; }
+      100% { content: "."; }
     }
 
     @media (max-width: 600px) {
-
       body {
         padding: 10px;
       }
@@ -283,7 +268,6 @@
       .info-value {
         text-align: left;
         flex: none;
-        width: 100%;
       }
     }
   </style>
@@ -293,15 +277,13 @@
 
 <div class="container">
 
-  <!-- ======================================================
-       HEADER
-       ====================================================== -->
+  <!-- =====================================================
+       CAMERA
+       ===================================================== -->
 
   <div class="card">
 
-    <h1>
-      CGFLEET
-    </h1>
+    <h1>CGFLEET</h1>
 
     <div class="subtitle">
       Visitors Parking Registration & Monitoring
@@ -324,9 +306,9 @@
   </div>
 
 
-  <!-- ======================================================
-       QR IMAGE UPLOAD
-       ====================================================== -->
+  <!-- =====================================================
+       UPLOAD
+       ===================================================== -->
 
   <div class="card">
 
@@ -334,10 +316,7 @@
       🖼️ Upload QR Image
     </div>
 
-    <label
-      for="qr-file"
-      class="upload-area"
-    >
+    <label for="qr-file" class="upload-area">
 
       <div class="upload-icon">
         🖼️
@@ -364,36 +343,26 @@
   </div>
 
 
-  <!-- ======================================================
+  <!-- =====================================================
        MESSAGE
-       ====================================================== -->
+       ===================================================== -->
 
-  <div
-    id="message"
-    class="message"
-  ></div>
+  <div id="message" class="message"></div>
 
 
-  <!-- ======================================================
+  <!-- =====================================================
        ATTENDANCE RESULT
-       ====================================================== -->
+       ===================================================== -->
 
-  <div
-    id="result"
-    class="result"
-  >
+  <div id="result" class="result">
 
     <div class="result-title">
       ATTENDANCE RESULT
     </div>
 
-
-    <!-- TIME IN / TIME OUT -->
-
-    <div
-      id="status-badge"
-      class="status-badge"
-    ></div>
+    <div id="status-badge" class="status-badge">
+      -
+    </div>
 
 
     <!-- RANK / POSITION -->
@@ -468,7 +437,7 @@
     </div>
 
 
-    <!-- OFFICE / AGENCY / ASSIGNMENT -->
+    <!-- OFFICE -->
 
     <div class="info-row">
 
@@ -486,7 +455,7 @@
     </div>
 
 
-    <!-- CONTACT NUMBER -->
+    <!-- CONTACT -->
 
     <div class="info-row">
 
@@ -504,7 +473,7 @@
     </div>
 
 
-    <!-- VEHICLE / MODEL -->
+    <!-- VEHICLE -->
 
     <div class="info-row">
 
@@ -522,7 +491,7 @@
     </div>
 
 
-    <!-- PLATE NUMBER -->
+    <!-- PLATE -->
 
     <div class="info-row">
 
@@ -531,7 +500,7 @@
       </div>
 
       <div
-        id="plate"
+        id="plate-number"
         class="info-value"
       >
         -
@@ -540,7 +509,7 @@
     </div>
 
 
-    <!-- COLOR OF VEHICLE -->
+    <!-- COLOR -->
 
     <div class="info-row">
 
@@ -594,16 +563,16 @@
     </div>
 
 
-    <!-- DATE / TIME -->
+    <!-- DATE -->
 
     <div class="info-row">
 
       <div class="info-label">
-        Date / Time
+        Date
       </div>
 
       <div
-        id="date-time"
+        id="scan-date"
         class="info-value"
       >
         -
@@ -612,7 +581,7 @@
     </div>
 
 
-    <!-- SCAN SOURCE -->
+    <!-- SOURCE -->
 
     <div class="info-row">
 
@@ -641,7 +610,7 @@
 <script>
 
 /* ============================================================
-   GOOGLE APPS SCRIPT WEB APP URL
+   GOOGLE APPS SCRIPT WEB APP
    ============================================================ */
 
 const APPS_SCRIPT_URL =
@@ -649,49 +618,29 @@ const APPS_SCRIPT_URL =
 
 
 /* ============================================================
-   SETTINGS
-   ============================================================ */
-
-const STABLE_TIME = 1000;
-
-const RESULT_DISPLAY_TIME = 7000;
-
-const SERVER_TIMEOUT = 15000;
-
-
-/* ============================================================
-   SCANNER VARIABLES
+   GLOBAL VARIABLES
    ============================================================ */
 
 let cameraScanner = null;
-
 let uploadScanner = null;
 
 let cameraRunning = false;
+let uploadRunning = false;
 
 let cameraLocked = false;
-
 let uploadLocked = false;
 
-
-/* ============================================================
-   QR STABILITY VARIABLES
-   ============================================================ */
-
 let stableQR = null;
-
 let stableSince = 0;
 
-
-/* ============================================================
-   REQUEST VARIABLES
-   ============================================================ */
+let resultTimer = null;
+let requestTimer = null;
 
 let requestInProgress = false;
 
-let requestTimer = null;
-
-let resultTimer = null;
+const STABLE_TIME = 1000;
+const RESULT_DISPLAY_TIME = 7000;
+const SERVER_TIMEOUT = 15000;
 
 
 /* ============================================================
@@ -742,7 +691,7 @@ document.addEventListener(
 
 
 /* ============================================================
-   START CAMERA
+   CAMERA SCANNER
    ============================================================ */
 
 async function startCameraScanner() {
@@ -753,7 +702,6 @@ async function startCameraScanner() {
       return;
     }
 
-
     if (!cameraScanner) {
 
       cameraScanner =
@@ -763,7 +711,6 @@ async function startCameraScanner() {
 
     }
 
-
     cameraStatus.textContent =
       "Starting camera...";
 
@@ -771,7 +718,8 @@ async function startCameraScanner() {
     await cameraScanner.start(
 
       {
-        facingMode: "environment"
+        facingMode:
+          "environment"
       },
 
       {
@@ -784,12 +732,10 @@ async function startCameraScanner() {
           ) {
 
             const size =
-              Math.floor(
-                Math.min(
-                  viewfinderWidth,
-                  viewfinderHeight
-                ) * 0.70
-              );
+              Math.min(
+                viewfinderWidth,
+                viewfinderHeight
+              ) * 0.70;
 
             return {
               width: size,
@@ -811,7 +757,6 @@ async function startCameraScanner() {
 
     cameraRunning = true;
 
-
     cameraStatus.textContent =
       "Point the camera at a QR code";
 
@@ -824,10 +769,8 @@ async function startCameraScanner() {
       error
     );
 
-
     cameraStatus.textContent =
       "Camera could not start. Please allow camera permission.";
-
 
     showMessage(
       "Camera could not start. Please check camera permission.",
@@ -840,29 +783,25 @@ async function startCameraScanner() {
 
 
 /* ============================================================
-   CAMERA QR DETECTION
+   CAMERA DETECTION
    ============================================================ */
 
-function onCameraDetect(decodedText) {
+function onCameraDetect(
+  decodedText
+) {
 
   if (!decodedText) {
     return;
   }
 
-
   if (cameraLocked) {
     return;
   }
 
-
-  if (requestInProgress) {
-    return;
-  }
-
-
   decodedText =
-    String(decodedText).trim();
-
+    String(
+      decodedText
+    ).trim();
 
   if (!decodedText) {
     return;
@@ -874,11 +813,13 @@ function onCameraDetect(decodedText) {
 
 
   /*
-   * If QR changes, start a new
-   * one-second stability timer.
-   */
+     NEW QR
+  */
 
-  if (stableQR !== decodedText) {
+  if (
+    stableQR !==
+    decodedText
+  ) {
 
     stableQR =
       decodedText;
@@ -886,45 +827,45 @@ function onCameraDetect(decodedText) {
     stableSince =
       now;
 
-
     cameraStatus.textContent =
       "QR detected — hold steady...";
 
-
     return;
+
   }
 
 
   /*
-   * Same QR is still visible.
-   */
+     SAME QR
+
+     WAIT 1 SECOND
+  */
 
   const stableFor =
-    now - stableSince;
+    now -
+    stableSince;
 
 
-  /*
-   * QR must remain stable
-   * for approximately one second.
-   */
-
-  if (stableFor >= STABLE_TIME) {
+  if (
+    stableFor >=
+    STABLE_TIME
+  ) {
 
     /*
-     * LOCK IMMEDIATELY.
-     *
-     * After this point, moving the QR
-     * away from the camera will NOT
-     * cancel this transaction.
-     */
+       LOCK THE QR IN MEMORY.
 
-    cameraLocked = true;
+       Even if the camera moves away,
+       this transaction continues.
+    */
 
+    cameraLocked =
+      true;
 
-    stableQR = null;
+    stableQR =
+      null;
 
-    stableSince = 0;
-
+    stableSince =
+      0;
 
     cameraStatus.textContent =
       "QR captured — processing...";
@@ -941,17 +882,16 @@ function onCameraDetect(decodedText) {
 
 
 /* ============================================================
-   CAMERA SCAN ERROR
+   CAMERA ERROR
    ============================================================ */
 
-function onCameraScanError(errorMessage) {
+function onCameraScanError(
+  errorMessage
+) {
 
   /*
-   * Normal scanning produces many
-   * "QR code not found" messages.
-   *
-   * We intentionally ignore them.
-   */
+     Ignore normal scanning errors.
+  */
 
 }
 
@@ -965,8 +905,12 @@ function processQR(
   source
 ) {
 
-  if (requestInProgress) {
+  if (
+    requestInProgress
+  ) {
+
     return;
+
   }
 
 
@@ -978,7 +922,7 @@ function processQR(
 
   if (!qrText) {
 
-    unlockScanners();
+    unlockCamera();
 
     showMessage(
       "Invalid QR code.",
@@ -986,6 +930,7 @@ function processQR(
     );
 
     return;
+
   }
 
 
@@ -1010,7 +955,7 @@ function processQR(
 
 
 /* ============================================================
-   SEND QR TO APPS SCRIPT
+   JSONP SERVER REQUEST
    ============================================================ */
 
 function sendQRToServer(
@@ -1018,17 +963,13 @@ function sendQRToServer(
   source
 ) {
 
-  /*
-   * JSONP is used because the frontend
-   * is hosted separately from Apps Script.
-   */
-
   const callbackName =
     "cgfleetCallback_" +
     Date.now() +
     "_" +
     Math.floor(
-      Math.random() * 100000
+      Math.random() *
+      100000
     );
 
 
@@ -1038,12 +979,9 @@ function sendQRToServer(
     );
 
 
-  let finished = false;
+  let finished =
+    false;
 
-
-  /* ----------------------------------------------------------
-     CLEANUP
-     ---------------------------------------------------------- */
 
   function cleanup() {
 
@@ -1051,8 +989,8 @@ function sendQRToServer(
       return;
     }
 
-
-    finished = true;
+    finished =
+      true;
 
 
     if (requestTimer) {
@@ -1075,7 +1013,7 @@ function sendQRToServer(
 
     }
 
-    catch (error) {
+    catch (e) {
 
       window[
         callbackName
@@ -1084,7 +1022,9 @@ function sendQRToServer(
     }
 
 
-    if (script.parentNode) {
+    if (
+      script.parentNode
+    ) {
 
       script.parentNode.removeChild(
         script
@@ -1095,65 +1035,58 @@ function sendQRToServer(
   }
 
 
-  /* ----------------------------------------------------------
-     JSONP CALLBACK
-     ---------------------------------------------------------- */
-
   window[
     callbackName
-  ] = function (
-    response
-  ) {
-
-    cleanup();
-
-
-    requestInProgress =
-      false;
-
-
-    loading.classList.remove(
-      "show"
-    );
-
-
-    if (
-      response &&
-      response.success
+  ] =
+    function (
+      response
     ) {
 
-      displayResult(
-        response,
-        source
+      cleanup();
+
+
+      requestInProgress =
+        false;
+
+
+      loading.classList.remove(
+        "show"
       );
 
-    }
 
-    else {
-
-      const errorMessage =
+      if (
         response &&
-        response.message
-          ? response.message
-          : "QR processing failed.";
+        response.success
+      ) {
+
+        displayResult(
+          response,
+          source
+        );
+
+      }
+
+      else {
+
+        const msg =
+          response &&
+          response.message
+            ? response.message
+            : "QR processing failed.";
 
 
-      showMessage(
-        errorMessage,
-        "error"
-      );
+        showMessage(
+          msg,
+          "error"
+        );
 
 
-      unlockScanners();
+        unlockCamera();
 
-    }
+      }
 
-  };
+    };
 
-
-  /* ----------------------------------------------------------
-     SCRIPT ERROR
-     ---------------------------------------------------------- */
 
   script.onerror =
     function () {
@@ -1176,14 +1109,10 @@ function sendQRToServer(
       );
 
 
-      unlockScanners();
+      unlockCamera();
 
     };
 
-
-  /* ----------------------------------------------------------
-     BUILD REQUEST URL
-     ---------------------------------------------------------- */
 
   const url =
     APPS_SCRIPT_URL +
@@ -1213,10 +1142,6 @@ function sendQRToServer(
   );
 
 
-  /* ----------------------------------------------------------
-     TIMEOUT
-     ---------------------------------------------------------- */
-
   requestTimer =
     setTimeout(
       function () {
@@ -1244,7 +1169,7 @@ function sendQRToServer(
         );
 
 
-        unlockScanners();
+        unlockCamera();
 
       },
       SERVER_TIMEOUT
@@ -1254,7 +1179,7 @@ function sendQRToServer(
 
 
 /* ============================================================
-   DISPLAY ATTENDANCE RESULT
+   DISPLAY RESULT
    ============================================================ */
 
 function displayResult(
@@ -1270,26 +1195,27 @@ function displayResult(
   );
 
 
-  /* ----------------------------------------------------------
-     STATUS
-     ---------------------------------------------------------- */
-
   const status =
     String(
       data.status ||
       data.attendanceStatus ||
+      data.action ||
       ""
     ).toUpperCase();
 
 
+  /*
+     STATUS
+  */
+
   if (
     status === "OUT" ||
+    status.includes("TIME OUT") ||
     status.includes("OUT")
   ) {
 
     statusBadge.textContent =
       "TIME OUT";
-
 
     statusBadge.className =
       "status-badge time-out";
@@ -1301,105 +1227,282 @@ function displayResult(
     statusBadge.textContent =
       "TIME IN";
 
-
     statusBadge.className =
       "status-badge time-in";
 
   }
 
 
-  /* ----------------------------------------------------------
-     VISITOR DETAILS
-     ---------------------------------------------------------- */
+  /*
+     RANK / POSITION
+  */
 
   setText(
     "rank",
-    data.rank
+    getValue(
+      data,
+      [
+        "rank",
+        "position",
+        "RANK / Position",
+        "Rank / Position"
+      ]
+    )
   );
 
+
+  /*
+     FIRST NAME
+  */
 
   setText(
     "first-name",
-    data.firstName
+    getValue(
+      data,
+      [
+        "firstName",
+        "First Name"
+      ]
+    )
   );
 
+
+  /*
+     MI
+  */
 
   setText(
     "mi",
-    data.mi
+    getValue(
+      data,
+      [
+        "mi",
+        "MI",
+        "M.I"
+      ]
+    )
   );
 
+
+  /*
+     LAST NAME
+  */
 
   setText(
     "last-name",
-    data.lastName
+    getValue(
+      data,
+      [
+        "lastName",
+        "Last Name"
+      ]
+    )
   );
 
+
+  /*
+     OFFICE / AGENCY / ASSIGNMENT
+  */
 
   setText(
     "office",
-    data.office
+    getValue(
+      data,
+      [
+        "office",
+        "Office / Agency / Assignment"
+      ]
+    )
   );
 
+
+  /*
+     CONTACT NUMBER
+  */
 
   setText(
     "contact",
-    data.contact
+    getValue(
+      data,
+      [
+        "contact",
+        "contactNumber",
+        "Contact Number",
+        "phone"
+      ]
+    )
   );
 
+
+  /*
+     VEHICLE / MODEL
+  */
 
   setText(
     "vehicle",
-    data.vehicle
+    getValue(
+      data,
+      [
+        "vehicle",
+        "vehicleModel",
+        "Vehicle / Model",
+        "Vehicle Model"
+      ]
+    )
   );
 
+
+  /*
+     PLATE NUMBER
+  */
 
   setText(
-    "plate",
-    data.plate
+    "plate-number",
+    getValue(
+      data,
+      [
+        "plate",
+        "plateNumber",
+        "Plate Number",
+        "qr"
+      ]
+    )
   );
 
+
+  /*
+     COLOR OF VEHICLE
+  */
 
   setText(
     "vehicle-color",
-    data.vehicleColor
+    getValue(
+      data,
+      [
+        "vehicleColor",
+        "colorOfVehicle",
+        "Color of Vehicle"
+      ]
+    )
   );
 
 
-  /* ----------------------------------------------------------
-     ATTENDANCE TIMES
-     ---------------------------------------------------------- */
+  /*
+     TIME IN
+  */
 
   setText(
     "time-in",
-    data.timeIn
+    getValue(
+      data,
+      [
+        "timeIn",
+        "Time In"
+      ]
+    )
   );
 
+
+  /*
+     TIME OUT
+  */
 
   setText(
     "time-out",
-    data.timeOut
+    getValue(
+      data,
+      [
+        "timeOut",
+        "Time Out"
+      ]
+    )
   );
 
 
-  /* ----------------------------------------------------------
-     SERVER DATE / TIME
-     ---------------------------------------------------------- */
+  /*
+     DATE
+
+     Backend sends dateTime:
+     MM/dd/yyyy HH:mm:ss
+
+     Extract only:
+     MM/dd/yyyy
+  */
+
+  let dateValue =
+    getValue(
+      data,
+      [
+        "date",
+        "scanDate",
+        "Date"
+      ]
+    );
+
+
+  if (!dateValue) {
+
+    const dateTime =
+      getValue(
+        data,
+        [
+          "dateTime"
+        ]
+      );
+
+
+    if (dateTime) {
+
+      dateValue =
+        String(
+          dateTime
+        ).substring(
+          0,
+          10
+        );
+
+    }
+
+  }
+
 
   setText(
-    "date-time",
-    data.dateTime
+    "scan-date",
+    dateValue
   );
 
 
-  /* ----------------------------------------------------------
-     SOURCE
-     ---------------------------------------------------------- */
+  /*
+     SCAN SOURCE
+  */
 
-  const serverSource =
-    data.source ||
-    data.scanSource ||
-    source;
+  let serverSource =
+    getValue(
+      data,
+      [
+        "source",
+        "scanSource",
+        "Scan Source"
+      ]
+    );
+
+
+  if (!serverSource) {
+
+    serverSource =
+      source;
+
+  }
+
+
+  /*
+     FORCE CORRECT DISPLAY
+  */
+
+  serverSource =
+    normalizeDisplaySource(
+      serverSource
+    );
 
 
   setText(
@@ -1408,9 +1511,9 @@ function displayResult(
   );
 
 
-  /* ----------------------------------------------------------
-     AUTO CLEAR
-     ---------------------------------------------------------- */
+  /*
+     AUTO CLEAR AFTER 7 SECONDS
+  */
 
   if (resultTimer) {
 
@@ -1433,11 +1536,65 @@ function displayResult(
         clearResultFields();
 
 
-        unlockScanners();
+        unlockCamera();
 
       },
       RESULT_DISPLAY_TIME
     );
+
+}
+
+
+/* ============================================================
+   NORMALIZE DISPLAY SOURCE
+   ============================================================ */
+
+function normalizeDisplaySource(
+  source
+) {
+
+  const value =
+    String(
+      source || ""
+    )
+      .trim()
+      .toUpperCase();
+
+
+  if (
+    value ===
+      "CAMERA" ||
+    value ===
+      "SCANNER" ||
+    value ===
+      "SCAN" ||
+    value ===
+      "CAMERA SCANNER"
+  ) {
+
+    return "CAMERA SCANNER";
+
+  }
+
+
+  if (
+    value ===
+      "UPLOAD" ||
+    value ===
+      "IMAGE" ||
+    value ===
+      "FILE" ||
+    value ===
+      "QR IMAGE UPLOAD"
+  ) {
+
+    return "QR IMAGE UPLOAD";
+
+  }
+
+
+  return value ||
+    "UNKNOWN";
 
 }
 
@@ -1466,6 +1623,7 @@ async function handleUpload(
       "";
 
     return;
+
   }
 
 
@@ -1475,6 +1633,7 @@ async function handleUpload(
       "";
 
     return;
+
   }
 
 
@@ -1527,17 +1686,8 @@ async function handleUpload(
       "none";
 
 
-    /*
-     * Lock uploaded QR before sending.
-     */
-
-    uploadLocked =
-      true;
-
-
-    processQR(
-      qrText,
-      "QR IMAGE UPLOAD"
+    processUploadQR(
+      qrText
     );
 
   }
@@ -1566,13 +1716,36 @@ async function handleUpload(
   }
 
 
-  /*
-   * Allow selecting the same file again
-   * after the operation is complete.
-   */
-
   event.target.value =
     "";
+
+}
+
+
+/* ============================================================
+   PROCESS UPLOADED QR
+   ============================================================ */
+
+function processUploadQR(
+  qrText
+) {
+
+  if (
+    requestInProgress
+  ) {
+
+    uploadLocked =
+      false;
+
+    return;
+
+  }
+
+
+  processQR(
+    qrText,
+    "QR IMAGE UPLOAD"
+  );
 
 }
 
@@ -1581,13 +1754,9 @@ async function handleUpload(
    UNLOCK SCANNERS
    ============================================================ */
 
-function unlockScanners() {
+function unlockCamera() {
 
   cameraLocked =
-    false;
-
-
-  uploadLocked =
     false;
 
 
@@ -1606,11 +1775,15 @@ function unlockScanners() {
 
   }
 
+
+  uploadLocked =
+    false;
+
 }
 
 
 /* ============================================================
-   SHOW MESSAGE
+   MESSAGE
    ============================================================ */
 
 function showMessage(
@@ -1632,10 +1805,6 @@ function showMessage(
 }
 
 
-/* ============================================================
-   CLEAR MESSAGE
-   ============================================================ */
-
 function clearMessage() {
 
   message.textContent =
@@ -1649,7 +1818,7 @@ function clearMessage() {
 
 
 /* ============================================================
-   SET TEXT
+   RESULT HELPERS
    ============================================================ */
 
 function setText(
@@ -1671,11 +1840,13 @@ function setText(
   if (
     value !== undefined &&
     value !== null &&
-    String(value).trim() !== ""
+    String(
+      value
+    ).trim() !== ""
   ) {
 
     element.textContent =
-      value;
+      String(value);
 
   }
 
@@ -1685,6 +1856,50 @@ function setText(
       "-";
 
   }
+
+}
+
+
+/* ============================================================
+   GET VALUE
+   ============================================================ */
+
+function getValue(
+  obj,
+  keys
+) {
+
+  if (!obj) {
+    return "";
+  }
+
+
+  for (
+    let i = 0;
+    i < keys.length;
+    i++
+  ) {
+
+    const key =
+      keys[i];
+
+
+    if (
+      obj[key] !== undefined &&
+      obj[key] !== null &&
+      String(
+        obj[key]
+      ).trim() !== ""
+    ) {
+
+      return obj[key];
+
+    }
+
+  }
+
+
+  return "";
 
 }
 
@@ -1738,7 +1953,7 @@ function clearResultFields() {
 
 
   setText(
-    "plate",
+    "plate-number",
     "-"
   );
 
@@ -1762,7 +1977,7 @@ function clearResultFields() {
 
 
   setText(
-    "date-time",
+    "scan-date",
     "-"
   );
 
@@ -1776,7 +1991,7 @@ function clearResultFields() {
 
 
 /* ============================================================
-   PAGE EXIT
+   SAFETY
    ============================================================ */
 
 window.addEventListener(
@@ -1790,17 +2005,13 @@ window.addEventListener(
         cameraRunning
       ) {
 
-        cameraScanner
-          .stop()
-          .catch(
-            function () {}
-          );
+        cameraScanner.stop();
 
       }
 
     }
 
-    catch (error) {}
+    catch (e) {}
 
   }
 );
